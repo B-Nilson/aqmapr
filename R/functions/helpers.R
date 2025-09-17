@@ -65,3 +65,23 @@ pretty_text <- function(text) {
     stop("This type of text is not supported")
   }
 }
+
+# Create icon url for AQmap monitor marker
+make_aqmap_marker_icon_url <- function(networks, pm25_1hr) {
+  icon_url_template <- "https://aqmap.ca/aqmap/icons/icon_%s_%s.png"
+  icon_shapes <- list(agency = 23, lcm = 21, purpleair = 21, aqegg = 22)
+
+  # Get shape for each network
+  network_shapes <- unlist(icon_shapes[networks])
+
+  # Calculate AQHI+ for each concentration
+  aqhi_plus <- pm25_1hr |> 
+    aqhi::AQHI_plus() |> 
+    dplyr::pull(AQHI_plus) |> 
+    as.character() |>
+    handyr::swap(NA, "-") # handle missing values
+
+  # Build icon url
+  icon_url_template |>
+    sprintf(network_shapes, aqhi_plus)
+}

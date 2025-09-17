@@ -11,8 +11,7 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
     "lng",
     "prov_terr",
     date_last_obs = "date",
-    "pm25_1hr",
-    icon_url = "icon_url_1hr"
+    "pm25_1hr"
   )
 
   # Determine time since local file was updated,
@@ -33,9 +32,10 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
     dplyr::select(dplyr::any_of(desired_cols)) |>
     # dplyr::filter(!is.na(pm25_1hr)) |>
     dplyr::mutate(
-      icon_url = file.path(aqmap_url, icon_url),
-      network = network |> 
-        translate_network(as_factor = TRUE)
+      network = network |>
+        translate_network(as_factor = TRUE),
+      icon_url = network |> 
+        make_aqmap_marker_icon_url(pm25_1hr = pm25_1hr)
     )
 }
 
