@@ -11,16 +11,32 @@ get_file_age <- function(local_path, since = Sys.time()) {
 }
 
 # Standardize varieties of network inputs
-translate_network <- function(network) {
+translate_network <- function(networks) {
   allowed_networks <- list(
     agency = c("fem", "naps", "agency", "fems"),
     purpleair = c("pa", "purpleair", "pas", "purpleairs"),
     aqegg = c("aqegg", "egg", "eggs")
   )
-  network <- allowed_networks |>
-    sapply(\(x) tolower(network) %in% x)
-  if (!any(network)) {
-    stop("Network not supported")
+  which_network <- allowed_networks |>
+    sapply(\(x) tolower(networks) %in% x) |> 
+    max.col()
+  if (any(is.na(which_network))) {
+    stop(paste0("Unknown network: ", networks[is.na(which_network)]))
   }
-  names(network)[which(network)]
+  names(allowed_networks)[which_network]
+}
+
+# Translate from code names to pretty names for display
+pretty_text <- function(text) {
+  if (all(text %in% c("agency", "purpleair", "aqegg"))) {
+    text |> 
+      factor(
+        levels = c("agency", "purpleair", "aqegg"),
+        labels = c("Agency", "PurpleAir", "AQegg")
+      ) |> 
+      as.character()
+  }else {
+    stop("This type of text is not supported")
+  }
+
 }

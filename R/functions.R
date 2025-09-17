@@ -1,14 +1,22 @@
+# Create leaflet map similiar to AQmap
 make_leaflet_map <- function(marker_data = NULL) {
   map <- leaflet::leaflet() |>
     leaflet::addProviderTiles(leaflet::providers$OpenStreetMap)
 
   if (!is.null(marker_data)) {
+    # TODO: add default icon_url if value/column is missing
     map <- map |>
       leaflet::addMarkers(
         data = marker_data,
+        group = ~as.character(network) |> 
+          pretty_text(), 
         lng = ~lng,
         lat = ~lat,
         icon = ~ leaflet::icons(icon_url, iconWidth = 32, iconHeight = 32)
+      ) |> 
+      leaflet::addLayersControl(
+        overlayGroups = levels(marker_data$network) |> 
+          pretty_text(),
       )
   }
 
@@ -49,7 +57,12 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
   readRDS(local_path) |>
     dplyr::select(dplyr::any_of(desired_cols)) |>
     # dplyr::filter(!is.na(pm25_1hr)) |>
-    dplyr::mutate(icon_url = file.path(aqmap_url, icon_url))
+    dplyr::mutate(
+      icon_url = file.path(aqmap_url, icon_url),
+      network = network |> 
+        translate_network() |>
+        factor(levels = c("agency", "purpleair", "aqegg"))
+    )
 }
 
 # Read in AQmap plot data (hourly data for past 30+ days)
