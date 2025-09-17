@@ -1,7 +1,7 @@
 source("functions.R")
 source("helpers.R")
-source("get_data.R")
-source("get_map.R")
+source("./handlers/get_data.R")
+source("./handlers/get_map.R")
 
 app <- ambiorix::Ambiorix$new(port = 8000L, host = "127.0.0.1")
 
