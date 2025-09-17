@@ -54,7 +54,7 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
 
 get_file_age <- function(local_path, since = Sys.time()) {
   if (!file.exists(local_path)) {
-    return(NA)
+    return(as.difftime(Inf, units = "days"))
   }
   last_update_time <- file.info(local_path)$mtime
   
