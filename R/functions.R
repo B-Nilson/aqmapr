@@ -32,14 +32,14 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
     icon_url = "icon_url_1hr"
   )
 
-  # Determine time since local file was updated, 
+  # Determine time since local file was updated,
   # (relative to when file should have been last updated)
-  newest_file <- lubridate::now(tz = "UTC") |> 
+  newest_file <- lubridate::now(tz = "UTC") |>
     lubridate::floor_date("10 mins")
   local_file_age <- get_file_age(local_path, since = newest_file)
-  
+
   # Download .rds file if needed
-  if (local_file_age > "10 mins"){
+  if (local_file_age > "10 mins") {
     aqmap_url |>
       file.path("data", file_name) |>
       download.file(local_path, mode = "wb")
@@ -82,7 +82,7 @@ get_file_age <- function(local_path, since = Sys.time()) {
     return(as.difftime(Inf, units = "days"))
   }
   last_update_time <- file.info(local_path)$mtime
-  
+
   since - last_update_time
 }
 
