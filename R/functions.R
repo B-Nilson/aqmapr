@@ -52,29 +52,33 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
     dplyr::mutate(icon_url = file.path(aqmap_url, icon_url))
 }
 
+# Read in AQmap plot data (hourly data for past 30+ days)
+# for a given network (ex. fem) and site id (ex. 10102)
 load_aqmap_plot_data <- function(
   network,
-  site_id,
-  data_dir = "../data/plotting/"
+  site_id
 ) {
   stopifnot(length(network) == 1, is.character(network))
   stopifnot(length(site_id) == 1, is.character(site_id) | is.numeric(site_id))
 
-  aqmap_url <- "https://aqmap.ca/aqmap"
+  aqmap_url <- "https://aqmap.ca/aqmap/data/plotting/"
   plot_file_template <- "%s_recent_hourly.csv"
 
   # Handle aliases for network
   network <- translate_network(network)
 
   # Build desired file url
-  site_id <- ifelse(network == "agency", site_id, paste0("sensor_", site_id))
-  file_name <- sprintf(plot_file_template, site_id)
+  if (network != "agency") {
+    # Prepend "sensor_" for non-agency networks
+    site_id <- paste0("sensor_", site_id)
+  }
+  file_name <- plot_file_template |> 
+    sprintf(site_id)
 
-  # Build source url and destination path
-  source_url <- aqmap_url |>
-    file.path("data/plotting/", network, file_name)
-
-  data.table::fread(source_url)
+  # Read in data
+  aqmap_url |>
+    file.path(network, file_name) |> 
+    data.table::fread()
 }
 
 get_file_age <- function(local_path, since = Sys.time()) {
