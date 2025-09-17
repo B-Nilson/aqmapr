@@ -32,9 +32,7 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
     dplyr::select(dplyr::any_of(desired_cols)) |>
     dplyr::mutate(
       network = network |>
-        translate_network(as_factor = TRUE),
-      icon_url = network |>
-        make_aqmap_marker_icon_url(pm25_1hr = pm25_1hr)
+        translate_network(as_factor = TRUE)
     )
 }
 
