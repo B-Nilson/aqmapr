@@ -35,8 +35,7 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
     dplyr::mutate(
       icon_url = file.path(aqmap_url, icon_url),
       network = network |> 
-        translate_network() |>
-        factor(levels = c("agency", "purpleair", "aqegg"))
+        translate_network(as_factor = TRUE)
     )
 }
 
@@ -53,7 +52,7 @@ load_aqmap_plot_data <- function(
   plot_file_template <- "%s_recent_hourly.csv"
 
   # Handle aliases for network
-  network <- translate_network(network)
+  network <- translate_network(network, group_lcms = FALSE)
 
   # Build desired file url
   if (network != "agency") {
