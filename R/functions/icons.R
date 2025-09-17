@@ -35,10 +35,9 @@ make_icon_svg <- function(networks, pm25_1hr, force = FALSE) {
       fill_colour = names(path) |> handyr::swap(NA, with = "#bbbbbb"),
       text_colour = prismatic::best_contrast(fill_colour),
       font_size = dplyr::case_when(
-        pm25_1hr <= 9 ~ 117,
+        pm25_1hr <= 9 | is.na(pm25_1hr) | pm25_1hr > 999 ~ 119,
         pm25_1hr <= 99 ~ 99,
-        pm25_1hr <= 999 ~ 73,
-        TRUE ~ 130 # shown as "+"
+        pm25_1hr <= 999 ~ 90
       ) |>
         as.character(),
       size = ifelse(is.na(pm25_1hr), 17, 33) |>
