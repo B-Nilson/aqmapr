@@ -6,10 +6,10 @@ make_leaflet_map <- function(marker_data = NULL) {
   if (!is.null(marker_data)) {
     map <- map |>
       add_obs_markers(marker_data = marker_data) |>
-    leaflet::addLayersControl(
-      overlayGroups = levels(marker_data$network) |>
-        pretty_text()
-    )
+      leaflet::addLayersControl(
+        overlayGroups = levels(marker_data$network) |>
+          pretty_text()
+      )
   }
 
   return(map)
@@ -17,6 +17,10 @@ make_leaflet_map <- function(marker_data = NULL) {
 
 add_obs_markers <- function(map, marker_data) {
   icon_size <- list("obs" = 32, "missing_obs" = 16)
+
+  # Ensure icons exist
+  marker_data$network |> # set force to TRUE to overwrite icons
+    make_icon_svg(pm25_1hr = marker_data$pm25_1hr, force = FALSE)
 
   # Add helper columns
   marker_data <- marker_data |>
@@ -29,7 +33,7 @@ add_obs_markers <- function(map, marker_data) {
       icon_height = icon_width,
       # Build url to icon
       icon_url = network |>
-        make_aqmap_marker_icon_url(pm25_1hr = pm25_1hr)
+        make_marker_icon_path(pm25_1hr = pm25_1hr)
     )
 
   # Add markers to map - 1 pane for missing, 1 for not
@@ -40,12 +44,12 @@ add_obs_markers <- function(map, marker_data) {
       data = marker_data,
       group = ~ as.character(network) |>
         pretty_text(),
-      options = ~ leaflet::pathOptions(pane = pane) |> 
+      options = ~ leaflet::pathOptions(pane = pane) |>
         c(leaflet::markerOptions(zIndexOffset = round(pm25_1hr * 10))),
       lng = ~lng,
       lat = ~lat,
       icon = ~ leaflet::icons(
-        icon_url,
+        iconUrl = icon_url,
         iconWidth = icon_width,
         iconHeight = icon_height
       )
