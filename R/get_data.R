@@ -13,7 +13,7 @@ get_data <- function(req, res) {
   if (name == "recent") {
     out_data <- load_recent_aqmap_data() |>
       handyr::on_error(.return = NULL)
-  }else {
+  } else {
     out_data <- NULL
   }
 

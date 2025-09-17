@@ -1,4 +1,3 @@
-
 get_map <- function(req, res) {
   recent_aqmap_data <- load_recent_aqmap_data() |>
     handyr::on_error(.return = NULL)

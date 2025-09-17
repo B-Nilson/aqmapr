@@ -3,12 +3,12 @@ make_leaflet_map <- function(marker_data = NULL) {
     leaflet::addProviderTiles(leaflet::providers$OpenStreetMap)
 
   if (!is.null(marker_data)) {
-    map <- base_map |>
+    map <- map |>
       leaflet::addMarkers(
         data = marker_data,
         lng = ~lng,
         lat = ~lat,
-        icon = ~leaflet::icons(icon_url, iconWidth = 32, iconHeight = 32)
+        icon = ~ leaflet::icons(icon_url, iconWidth = 32, iconHeight = 32)
       )
   }
 
@@ -40,6 +40,6 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
   # Load and cleanup
   readRDS(local_path) |>
     dplyr::select(dplyr::any_of(desired_cols)) |>
-    dplyr::filter(!is.na(pm25_1hr)) |>
+    # dplyr::filter(!is.na(pm25_1hr)) |>
     dplyr::mutate(icon_url = file.path(aqmap_url, icon_url))
 }
