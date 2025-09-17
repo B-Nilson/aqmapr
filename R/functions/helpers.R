@@ -30,7 +30,9 @@ translate_network <- function(networks, group_lcms = TRUE, as_factor = FALSE) {
 
   # Include a placeholder if singular so max.col behave as expected
   remove_last <- length(networks) == 1
-  if (remove_last) networks <- c(networks, networks)
+  if (remove_last) {
+    networks <- c(networks, networks)
+  }
 
   # Determine which network
   which_network <- allowed_networks |>
@@ -38,7 +40,9 @@ translate_network <- function(networks, group_lcms = TRUE, as_factor = FALSE) {
     max.col()
 
   # Handle edge cases
-  if (remove_last) which_network <- which_network[-length(which_network)]
+  if (remove_last) {
+    which_network <- which_network[-length(which_network)]
+  }
   if (any(is.na(which_network))) {
     stop(paste0("Unknown network: ", networks[is.na(which_network)]))
   }
@@ -46,7 +50,7 @@ translate_network <- function(networks, group_lcms = TRUE, as_factor = FALSE) {
   # Return standardized network name (factorize if needed)
   standardized_network <- names(allowed_networks)[which_network]
   if (as_factor) {
-    standardized_network <- standardized_network |> 
+    standardized_network <- standardized_network |>
       factor(levels = names(allowed_networks))
   }
   return(standardized_network)
@@ -75,9 +79,9 @@ make_aqmap_marker_icon_url <- function(networks, pm25_1hr) {
   network_shapes <- unlist(icon_shapes[networks])
 
   # Calculate AQHI+ for each concentration
-  aqhi_plus <- pm25_1hr |> 
-    aqhi::AQHI_plus() |> 
-    dplyr::pull(AQHI_plus) |> 
+  aqhi_plus <- pm25_1hr |>
+    aqhi::AQHI_plus() |>
+    dplyr::pull(AQHI_plus) |>
     as.character() |>
     handyr::swap(NA, "-") # handle missing values
 

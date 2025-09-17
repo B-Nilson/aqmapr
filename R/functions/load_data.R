@@ -30,11 +30,10 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
   # Load and cleanup
   readRDS(local_path) |>
     dplyr::select(dplyr::any_of(desired_cols)) |>
-    # dplyr::filter(!is.na(pm25_1hr)) |>
     dplyr::mutate(
       network = network |>
         translate_network(as_factor = TRUE),
-      icon_url = network |> 
+      icon_url = network |>
         make_aqmap_marker_icon_url(pm25_1hr = pm25_1hr)
     )
 }
@@ -59,11 +58,11 @@ load_aqmap_plot_data <- function(
     # Prepend "sensor_" for non-agency networks
     site_id <- paste0("sensor_", site_id)
   }
-  file_name <- plot_file_template |> 
+  file_name <- plot_file_template |>
     sprintf(site_id)
 
   # Read in data
   aqmap_url |>
-    file.path(network, file_name) |> 
+    file.path(network, file_name) |>
     data.table::fread()
 }

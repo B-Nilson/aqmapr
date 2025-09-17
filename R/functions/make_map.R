@@ -18,15 +18,19 @@ make_leaflet_map <- function(marker_data = NULL) {
       leaflet::addMapPane(names(icon_size)[1], zIndex = 660) |>
       leaflet::addMarkers(
         data = marker_data,
-        group = ~as.character(network) |> 
-          pretty_text(), 
+        group = ~ as.character(network) |>
+          pretty_text(),
         options = ~ leaflet::pathOptions(pane = pane),
         lng = ~lng,
         lat = ~lat,
-        icon = ~leaflet::icons(icon_url, iconWidth = icon_width, iconHeight = icon_height)
-      ) |> 
+        icon = ~ leaflet::icons(
+          icon_url,
+          iconWidth = icon_width,
+          iconHeight = icon_height
+        )
+      ) |>
       leaflet::addLayersControl(
-        overlayGroups = levels(marker_data$network) |> 
+        overlayGroups = levels(marker_data$network) |>
           pretty_text(),
       )
   }
