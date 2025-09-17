@@ -40,7 +40,8 @@ add_obs_markers <- function(map, marker_data) {
       data = marker_data,
       group = ~ as.character(network) |>
         pretty_text(),
-      options = ~ leaflet::pathOptions(pane = pane),
+      options = ~ leaflet::pathOptions(pane = pane) |> 
+        c(leaflet::markerOptions(zIndexOffset = round(pm25_1hr * 10))),
       lng = ~lng,
       lat = ~lat,
       icon = ~ leaflet::icons(
