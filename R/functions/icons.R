@@ -62,7 +62,7 @@ make_icon_svg <- function(networks, pm25_1hr, force = FALSE) {
           paste(collapse = "\n")
       }
     )
-  icons$template <- svg_templates[icons$network] |> 
+  icons$template <- svg_templates[icons$network] |>
     unlist()
 
   # Replace placeholders
