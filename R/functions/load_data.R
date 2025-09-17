@@ -28,12 +28,14 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
   }
 
   # Load and cleanup
-  readRDS(local_path) |>
+  obs <- readRDS(local_path) |>
     dplyr::select(dplyr::any_of(desired_cols)) |>
     dplyr::mutate(
       network = network |>
         translate_network(as_factor = TRUE)
     )
+  obs$pm25_1hr[is.nan(obs$pm25_1hr)] <- NA_real_
+  return(obs)
 }
 
 # Read in AQmap plot data (hourly data for past 30+ days)
