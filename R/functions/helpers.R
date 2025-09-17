@@ -99,11 +99,11 @@ make_marker_icon_path <- function(networks, pm25_1hr) {
 
 make_icon_svg <- function(networks, pm25_1hr, force = FALSE) {
   # Combine inputs
-  icons <- data.frame(networks, pm25_1hr) |>
+  icons <- data.frame(network = as.character(networks), pm25_1hr) |>
     # Build icon details
     dplyr::mutate(
       text = make_safe_icon_text(pm25_1hr),
-      path = make_marker_icon_path(networks, pm25_1hr),
+      path = make_marker_icon_path(network, pm25_1hr),
       fill_colour = names(path) |> handyr::swap(NA, with = "#bbbbbb"),
       text_colour = prismatic::best_contrast(fill_colour),
       font_size = dplyr::case_when(
@@ -126,15 +126,16 @@ make_icon_svg <- function(networks, pm25_1hr, force = FALSE) {
 
   # Attach icon templates
   svg_templates <- "../images/%s_icon_template.svg" |>
-    sprintf(unique(networks)) |>
-    setNames(unique(networks)) |>
+    sprintf(unique(icons$network)) |>
+    setNames(unique(icons$network)) |>
     lapply(
       \(x) {
         readLines(x) |>
           paste(collapse = "\n")
       }
     )
-  icons$template <- svg_templates[icons$networks]
+  icons$template <- svg_templates[icons$network] |> 
+    unlist()
 
   # Replace placeholders
   icons$svg <- icons$template |>
