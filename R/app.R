@@ -1,23 +1,15 @@
-source("./constants.R")
-source("./functions/helpers.R")
-source("./functions/load_data.R")
-source("./functions/icons.R")
-source("./functions/monitors.R")
-source("./functions/monitor_hover.R")
-source("./functions/make_map.R")
-source("./handlers/get_data.R")
-source("./handlers/get_map.R")
+start_server <- function() {
+  app <- ambiorix::Ambiorix$new(port = .server$port, host = .server$host)
 
-app <- ambiorix::Ambiorix$new(port = .server$port, host = .server$host)
+  app$static(.icon_dir$local, .icon_dir$server)
 
-app$static(.icon_dir$local, .icon_dir$server)
+  # i.e. /data/recent/json
+  app$get("/data/:name/:type", get_data)
 
-# i.e. /data/recent/json
-app$get("/data/:name/:type", get_data)
+  # i.e. /data/plotting/agency/10102/json
+  app$get("/data/:name/:network/:site_id/:type", get_data)
 
-# i.e. /data/plotting/agency/10102/json
-app$get("/data/:name/:network/:site_id/:type", get_data)
+  app$get("/", get_map)
 
-app$get("/", get_map)
-
-app$start()
+  app$start()
+}
