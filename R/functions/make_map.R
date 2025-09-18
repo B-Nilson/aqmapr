@@ -14,4 +14,3 @@ make_leaflet_map <- function(marker_data = NULL) {
 
   return(map)
 }
-

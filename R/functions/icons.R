@@ -41,7 +41,7 @@ make_icon_svg <- function(networks, pm25_1hr, force = FALSE) {
         pm25_1hr <= 999 ~ .font_sizes$markers[3]
       ) |>
         as.character(),
-      size = is.na(pm25_1hr) |> 
+      size = is.na(pm25_1hr) |>
         ifelse(.marker_sizes$missing, .marker_sizes$obs) |>
         as.character()
     ) |>
