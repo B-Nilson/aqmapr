@@ -5,7 +5,7 @@
   markers = c(119, 99, 90)
 )
 
-.marker_sizes <- list("missing" = 17, "obs" = 33) # px
+.marker_sizes <- list(missing = 17, obs = 33, legend = 22) # px
 
 .aqmap_url <- "https://aqmap.ca/aqmap"
 
