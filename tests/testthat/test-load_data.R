@@ -12,3 +12,21 @@ test_that("load_recent_aqmap_data() works", {
   expect_equal(names(result), expected_cols)
   expect_true(nrow(result) > 0)
 })
+
+test_that("load_aqmap_plot_data() works", {
+  .cst <- load_constants()
+  networks <- c("agency", "purpleair", "aqegg")
+  # TODO: what if these go offline permanently?
+  site_ids <- c(10102, 182, "egg00805f7bd1a80143")
+
+  result <- networks |> 
+    purrr::map2(site_ids, ~ load_aqmap_plot_data(network = .x, site_id = .y)) |> 
+    stats::setNames(networks) 
+ 
+  # Returned data is correct
+  for(network in networks) {
+    expect_s3_class(result[[network]], "data.table")
+    expect_true(nrow(result[[network]]) > 0)
+    expect_true("pm25" %in% names(result[[network]]))
+  }
+})
