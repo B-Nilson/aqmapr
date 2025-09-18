@@ -59,7 +59,7 @@ make_icon_svg <- function(networks, pm25_1hr, force = FALSE) {
   }
 
   # Attach icon templates
-  svg_templates <- "../images/%s_icon_template.svg" |>
+  svg_templates <- "images/%s_icon_template.svg" |>
     sprintf(unique(icons$network)) |>
     setNames(unique(icons$network)) |>
     lapply(

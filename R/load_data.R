@@ -1,5 +1,5 @@
 # Download and read in most recent AQmap obs datafile
-load_recent_aqmap_data <- function(data_dir = "../data") {
+load_recent_aqmap_data <- function(data_dir = "data") {
   file_name <- "aqmap_most_recent_obs.Rds"
   local_path <- file.path(data_dir, file_name)
 

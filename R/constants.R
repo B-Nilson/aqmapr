@@ -4,7 +4,7 @@
 )
 
 .icon_dir <- list(
-  local = "../images/icons",
+  local = "images/icons",
   server = "/icons"
 )
 .force_update_icons <- FALSE
