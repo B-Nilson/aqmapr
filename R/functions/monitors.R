@@ -40,8 +40,8 @@ add_obs_markers <- function(map, marker_data) {
 
   # Add markers to map - 1 pane for missing, 1 for not
   map <- map |>
-    leaflet::addMapPane(names(.marker_sizes)[1], zIndex = 650) |>
-    leaflet::addMapPane(names(.marker_sizes)[2], zIndex = 660) |>
+    leaflet::addMapPane(names(.marker_sizes)[1], zIndex = 415) |>
+    leaflet::addMapPane(names(.marker_sizes)[2], zIndex = 420) |>
     leaflet::addMarkers(
       data = marker_data,
       group = ~ as.character(network) |>
