@@ -1,4 +1,12 @@
 add_obs_markers <- function(map, marker_data) {
+  hover_options <- leaflet::labelOptions(
+    sticky = FALSE,
+    textOnly = FALSE,
+    opacity = 0.9,
+    offset = c(15, 0),
+    direction = "right"
+  )
+
   # Ensure icons exist
   marker_data$network |>
     make_icon_svg(
@@ -17,7 +25,17 @@ add_obs_markers <- function(map, marker_data) {
       icon_height = icon_width,
       # Build url to icon
       icon_url = network |>
-        make_marker_icon_path(pm25_1hr = pm25_1hr)
+        make_marker_icon_path(pm25_1hr = pm25_1hr),
+      # Build hover label
+      label = make_monitor_hover(
+        name = name,
+        network = network,
+        date_last_obs = date_last_obs,
+        pm25_10min = pm25_10min,
+        pm25_1hr = pm25_1hr,
+        pm25_3hr = pm25_3hr,
+        pm25_24hr = pm25_24hr
+      )
     )
 
   # Add markers to map - 1 pane for missing, 1 for not
@@ -36,6 +54,8 @@ add_obs_markers <- function(map, marker_data) {
         iconUrl = icon_url,
         iconWidth = icon_width,
         iconHeight = icon_height
-      )
+      ),
+      label = ~ label |> lapply(htmltools::HTML),
+      labelOptions = hover_options
     )
 }

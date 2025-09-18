@@ -8,3 +8,7 @@
 .marker_sizes <- list("missing" = 17, "obs" = 33) # px
 
 .aqmap_url <- "https://aqmap.ca/aqmap"
+
+.units <- list(
+  pm25 = "&mu;g m <sup>-3</sup>"
+)

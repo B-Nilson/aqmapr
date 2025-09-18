@@ -10,7 +10,10 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
     "lng",
     "prov_terr",
     date_last_obs = "date",
-    "pm25_1hr"
+    pm25_10min = "pm25_recent",
+    "pm25_1hr",
+    "pm25_3hr",
+    "pm25_24hr"
   )
 
   # Determine time since local file was updated,
@@ -31,7 +34,8 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
     dplyr::select(dplyr::any_of(desired_cols)) |>
     dplyr::mutate(
       network = network |>
-        translate_network(as_factor = TRUE)
+        translate_network(as_factor = TRUE),
+      pm25_10min = ifelse(network == "agency", NA_real_, pm25_10min),
     )
   obs$pm25_1hr[is.nan(obs$pm25_1hr)] <- NA_real_
   return(obs)
