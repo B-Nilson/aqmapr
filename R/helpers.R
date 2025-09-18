@@ -11,20 +11,16 @@ get_file_age <- function(local_path, since = Sys.time()) {
 }
 
 # Standardize varieties of network inputs
-translate_network <- function(networks, group_lcms = TRUE, as_factor = FALSE) {
-  if (!".cst" %in% ls()) {
-    .cst <- load_constants()
-  }
-
+translate_network <- function(networks, allowed_networks, group_lcms = TRUE, as_factor = FALSE) {
   # Group together low cost monitors if deisred
   if (group_lcms) {
-    is_lcm <- names(.cst$allowed_networks) != "agency"
+    is_lcm <- names(allowed_networks) != "agency"
     allowed_networks <- list(
-      agency = .cst$allowed_networks$agency,
-      lcm = unlist(.cst$allowed_networks[is_lcm])
+      agency = allowed_networks$agency,
+      lcm = unlist(allowed_networks[is_lcm])
     )
   } else {
-    allowed_networks <- .cst$allowed_networks
+    allowed_networks <- allowed_networks
   }
 
   # Include a placeholder if singular so max.col behave as expected

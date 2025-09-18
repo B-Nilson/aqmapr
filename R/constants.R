@@ -5,6 +5,8 @@ load_constants = function() {
       port = 8000
     ),
 
+    data_dir = system.file("extdata", package = "aqmapr"),
+
     image_dir = system.file("images", package = "aqmapr"),
 
     icon_dir = list(

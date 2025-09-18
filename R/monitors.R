@@ -1,4 +1,4 @@
-add_obs_markers <- function(map, marker_data) {
+add_obs_markers <- function(map, marker_data, template_dir, icon_dir, font_sizes, marker_sizes, force_update_icons = FALSE) {
   hover_options <- leaflet::labelOptions(
     sticky = FALSE,
     textOnly = FALSE,
@@ -6,10 +6,6 @@ add_obs_markers <- function(map, marker_data) {
     offset = c(15, 0),
     direction = "right"
   )
-  if (!".cst" %in% ls()) {
-    .cst <- load_constants()
-  }
-
   # Make monitor icons based on that networks mean
   network_means <- marker_data |>
     dplyr::group_by(.data$network) |>
@@ -17,6 +13,10 @@ add_obs_markers <- function(map, marker_data) {
   unique_networks <- levels(marker_data$network) |>
     make_icon_svg(
       pm25_1hr = network_means$pm25_1hr,
+      template_dir = template_dir,
+      icon_dir = icon_dir,
+      font_sizes = font_sizes,
+      marker_sizes = marker_sizes,
       force = TRUE
     )
 
@@ -24,7 +24,11 @@ add_obs_markers <- function(map, marker_data) {
   marker_data$network |>
     make_icon_svg(
       pm25_1hr = marker_data$pm25_1hr,
-      force = .cst$force_update_icons
+      template_dir = template_dir,
+      icon_dir = icon_dir,
+      font_sizes = font_sizes,
+      marker_sizes = marker_sizes,
+      force = force_update_icons
     )
 
   # Add helper columns
@@ -32,13 +36,13 @@ add_obs_markers <- function(map, marker_data) {
     dplyr::mutate(
       # Determine pane to use based on pm25_1hr missing or not
       pane = is.na(.data$pm25_1hr) |>
-        ifelse(names(.cst$marker_sizes)[1], names(.cst$marker_sizes)[2]),
+        ifelse(names(marker_sizes)[1], names(marker_sizes)[2]),
       # Select icon size similarily - smaller for missing obs
-      icon_width = unname(unlist(.cst$marker_sizes[.data$pane])),
+      icon_width = unname(unlist(marker_sizes[.data$pane])),
       icon_height = .data$icon_width,
       # Build url to icon
       icon_url = .data$network |>
-        make_marker_icon_path(pm25_1hr = .data$pm25_1hr),
+        make_marker_icon_path(pm25_1hr = .data$pm25_1hr, icon_dir = icon_dir),
       # Build hover label
       label = make_monitor_hover(
         name = .data$name,
@@ -52,9 +56,9 @@ add_obs_markers <- function(map, marker_data) {
     )
 
   # Add markers to map - 1 pane for missing, 1 for not
-  map <- map |>
-    leaflet::addMapPane(names(.cst$marker_sizes)[1], zIndex = 415) |>
-    leaflet::addMapPane(names(.cst$marker_sizes)[2], zIndex = 420) |>
+  map |>
+    leaflet::addMapPane(names(marker_sizes)[1], zIndex = 415) |>
+    leaflet::addMapPane(names(marker_sizes)[2], zIndex = 420) |>
     leaflet::addMarkers(
       data = marker_data,
       group = ~ as.character(network) |>
@@ -73,24 +77,22 @@ add_obs_markers <- function(map, marker_data) {
     )
 }
 
-add_monitor_legend = function(
+add_monitor_legend <- function(
   map,
   networks,
   legend_details = list(
     hover = "Monitor Types",
     title = "Monitor Types"
   ),
+  icon_dir,
+  marker_size,
   position = "bottomright"
 ) {
-  if (!".cst" %in% ls()) {
-    .cst <- load_constants()
-  }
-  
   # Make icon paths
   network_icons <- networks |>
     make_marker_icon_path(
       pm25_1hr = rep(-1, length(networks)),
-      local = FALSE
+      icon_dir = icon_dir
     ) |>
     stats::setNames(networks)
 
@@ -101,7 +103,7 @@ add_monitor_legend = function(
 
   # Make icon references
   style <- "vertical-align: middle; max-width: %spx; max-height: %spx;" |>
-    sprintf(.cst$marker_sizes$legend, .cst$marker_sizes$legend)
+    sprintf(marker_size, marker_size)
   icons <- network_icons |>
     lapply(
       \(pth) htmltools::tags$img(src = pth, style = style)

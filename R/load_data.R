@@ -1,9 +1,5 @@
 # Download and read in most recent AQmap obs datafile
-load_recent_aqmap_data <- function(data_dir = "./inst/extdata") {
-  if (!".cst" %in% ls()) {
-    .cst <- load_constants()
-  }
-
+load_recent_aqmap_data <- function(data_dir = "./inst/extdata", aqmap_url, desired_cols) {
   file_name <- "aqmap_most_recent_obs.Rds"
   local_path <- file.path(data_dir, file_name)
 
@@ -15,18 +11,19 @@ load_recent_aqmap_data <- function(data_dir = "./inst/extdata") {
 
   # Download .rds file if needed
   if (local_file_age > "10 mins") {
-    .cst$aqmap_url |>
+    aqmap_url |>
       file.path("data", file_name) |>
       utils::download.file(local_path, mode = "wb")
   }
 
   # Load and cleanup
   obs <- readRDS(local_path) |>
-    dplyr::select(dplyr::any_of(.cst$recent_data_cols)) |>
+    dplyr::select(dplyr::any_of(desired_cols)) |>
+    # TODO: refactor
     dplyr::filter(stats::complete.cases(.data$site_id, .data$network, .data$lat, .data$lng, .data$date_last_obs)) |>
     dplyr::mutate(
       network = .data$network |>
-        translate_network(as_factor = TRUE),
+        translate_network(allowed_networks = .cst$allowed_networks, as_factor = TRUE),
       pm25_10min = ifelse(.data$network == "agency", NA_real_, .data$pm25_10min),
     )
   obs$pm25_1hr[is.nan(obs$pm25_1hr)] <- NA_real_
@@ -37,20 +34,19 @@ load_recent_aqmap_data <- function(data_dir = "./inst/extdata") {
 # for a given network (ex. fem) and site id (ex. 10102)
 load_aqmap_plot_data <- function(
   network,
-  site_id
+  site_id,
+  aqmap_url
 ) {
   stopifnot(length(network) == 1, is.character(network))
   stopifnot(length(site_id) == 1, is.character(site_id) | is.numeric(site_id))
+  stopifnot(length(aqmap_url) == 1, is.character(aqmap_url))
 
-  if (!".cst" %in% ls()) {
-    .cst <- load_constants()
-  }
-
-  plot_data_url <- file.path(.cst$aqmap_url, "data/plotting")
+  plot_data_url <- file.path(aqmap_url, "data/plotting")
   plot_file_template <- "%s_recent_hourly.csv"
 
   # Handle aliases for network
-  network <- translate_network(network, group_lcms = FALSE)
+  network <- network |>
+    translate_network(allowed_networks = .cst$allowed_networks, group_lcms = FALSE)
 
   # Build desired file url
   if (network != "agency") {
@@ -64,12 +60,4 @@ load_aqmap_plot_data <- function(
   plot_data_url |>
     file.path(network, file_name) |>
     data.table::fread()
-}
-
-load_aqmap_meta_data <- function() {
-  if (!".cst" %in% ls()) {
-    .cst <- load_constants()
-  }
-  load_recent_aqmap_data() |>
-    dplyr::select(-dplyr::starts_with(c("pm25_", "date")))
 }

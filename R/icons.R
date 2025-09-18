@@ -1,10 +1,6 @@
 # Create icon path for each network/concentration pair
-make_marker_icon_path <- function(networks, pm25_1hr, local = TRUE) {
-  if (!".cst" %in% ls()) {
-    .cst <- load_constants()
-  }
-  base_dir <- ifelse(local, .cst$icon_dir$local, .cst$icon_dir$server)
-  icon_url_template <- file.path(base_dir, "%s_icon_%s.svg")
+make_marker_icon_path <- function(networks, pm25_1hr, icon_dir) {
+  icon_url_template <- file.path(icon_dir, "%s_icon_%s.svg")
   icon_shapes <- list(agency = 23, lcm = 21, purpleair = 21, aqegg = 22)
 
   # Get shape for each network
@@ -27,28 +23,24 @@ make_marker_icon_path <- function(networks, pm25_1hr, local = TRUE) {
     stats::setNames(aqhi_plus$colour)
 }
 
-make_icon_svg <- function(networks, pm25_1hr, force = FALSE) {
-  if (!".cst" %in% ls()) {
-    .cst <- load_constants()
-  }
-
+make_icon_svg <- function(networks, pm25_1hr, template_dir, icon_dir, font_sizes, marker_sizes, force = FALSE) {
   # Combine inputs
   icons <- data.frame(network = as.character(networks), pm25_1hr) |>
     # Build icon details
     dplyr::mutate(
       text = make_safe_icon_text(.data$pm25_1hr),
-      path = make_marker_icon_path(.data$network, .data$pm25_1hr),
+      path = make_marker_icon_path(.data$network, .data$pm25_1hr, icon_dir = icon_dir),
       fill_colour = names(.data$path) |> handyr::swap(NA, with = "#bbbbbb"),
       text_colour = prismatic::best_contrast(.data$fill_colour),
       font_size = dplyr::case_when(
         .data$pm25_1hr <= 9 | is.na(.data$pm25_1hr) | .data$pm25_1hr > 999 ~
-          .cst$font_sizes$markers[1],
-        .data$pm25_1hr <= 99 ~ .cst$font_sizes$markers[2],
-        .data$pm25_1hr <= 999 ~ .cst$font_sizes$markers[3]
+          font_sizes[1],
+        .data$pm25_1hr <= 99 ~ font_sizes[2],
+        .data$pm25_1hr <= 999 ~ font_sizes[3]
       ) |>
         as.character(),
       size = is.na(pm25_1hr) |>
-        ifelse(.cst$marker_sizes$missing, .cst$marker_sizes$obs) |>
+        ifelse(marker_sizes$missing, marker_sizes$obs) |>
         as.character()
     ) |>
     # Ignore if icon already exists or is duplicated
@@ -60,7 +52,7 @@ make_icon_svg <- function(networks, pm25_1hr, force = FALSE) {
   }
 
   # Attach icon templates
-  svg_templates <- .cst$image_dir |> 
+  svg_templates <- template_dir |> 
     file.path("%s_icon_template.svg") |>
     sprintf(unique(icons$network)) |>
     stats::setNames(unique(icons$network)) |>

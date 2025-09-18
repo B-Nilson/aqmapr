@@ -6,6 +6,10 @@ get_data <- function(req, res) {
   network <- req$params$network # for name == "plotting"
   site_id <- req$params$site_id # for name == "plotting"
 
+  if (!".cst" %in% ls()) {
+    .cst <- load_constants()
+  }
+
   # Set default type if not specified
   if (is.null(type)) {
     type <- allowed_types[1]
@@ -13,15 +17,28 @@ get_data <- function(req, res) {
 
   # Load requested data
   if (name == "recent") {
-    out_data <- load_recent_aqmap_data() |>
+    out_data <- load_recent_aqmap_data(
+      aqmap_url = .cst$aqmap_url,
+      data_dir = .cst$data_dir,
+      desired_cols = .cst$recent_data_cols
+    ) |>
       handyr::on_error(.return = NULL)
   } else if (name == "plotting") {
-    out_data <- load_aqmap_plot_data(network = network, site_id = site_id) |>
+    out_data <- load_aqmap_plot_data(
+      network = network,
+      site_id = site_id,
+      aqmap_url = .cst$aqmap_url
+    ) |>
       handyr::on_error(.return = NULL)
   } else if (name == "meta") {
-    out_data <- load_aqmap_meta_data() |>
+    out_data <- load_recent_aqmap_data(
+      aqmap_url = .cst$aqmap_url,
+      data_dir = .cst$data_dir,
+      desired_cols = .cst$recent_data_cols
+    )  |>
+      dplyr::select(-dplyr::starts_with(c("pm25_", "date"))) |>
       handyr::on_error(.return = NULL)
-  }else {
+  } else {
     out_data <- NULL
   }
 
