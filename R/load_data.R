@@ -65,3 +65,11 @@ load_aqmap_plot_data <- function(
     file.path(network, file_name) |>
     data.table::fread()
 }
+
+load_aqmap_meta_data <- function() {
+  if (!".cst" %in% ls()) {
+    .cst <- load_constants()
+  }
+  load_recent_aqmap_data() |>
+    dplyr::select(-dplyr::starts_with(c("pm25_", "date")))
+}

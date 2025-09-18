@@ -18,7 +18,10 @@ get_data <- function(req, res) {
   } else if (name == "plotting") {
     out_data <- load_aqmap_plot_data(network = network, site_id = site_id) |>
       handyr::on_error(.return = NULL)
-  } else {
+  } else if (name == "meta") {
+    out_data <- load_aqmap_meta_data() |>
+      handyr::on_error(.return = NULL)
+  }else {
     out_data <- NULL
   }
 
