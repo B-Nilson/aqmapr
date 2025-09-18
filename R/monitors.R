@@ -1,4 +1,4 @@
-add_obs_markers <- function(map, marker_data, template_dir, icon_dir, font_sizes, marker_sizes, force_update_icons = FALSE) {
+add_obs_markers <- function(map, marker_data, template_dir, icon_dir, font_sizes, marker_sizes, pm25_units, text, force_update_icons = FALSE) {
   hover_options <- leaflet::labelOptions(
     sticky = FALSE,
     textOnly = FALSE,
@@ -51,7 +51,9 @@ add_obs_markers <- function(map, marker_data, template_dir, icon_dir, font_sizes
         pm25_10min = .data$pm25_10min,
         pm25_1hr = .data$pm25_1hr,
         pm25_3hr = .data$pm25_3hr,
-        pm25_24hr = .data$pm25_24hr
+        pm25_24hr = .data$pm25_24hr,
+        pm25_units = pm25_units,
+        text = text$monitor_hover
       )
     )
 

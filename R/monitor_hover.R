@@ -5,14 +5,10 @@ make_monitor_hover = function(
   pm25_10min,
   pm25_1hr,
   pm25_3hr,
-  pm25_24hr
+  pm25_24hr,
+  pm25_units,
+  text
 ) {
-  if (!".cst" %in% ls()) {
-    .cst <- load_constants()
-  }
-
-  text <- .cst$text$monitor_hover
-
   # Format date for converting to local using js later
   date_last_obs <- date_last_obs |>
     format("%Y-%m-%dT%H:%M:%SZ")
@@ -28,6 +24,7 @@ make_monitor_hover = function(
       pm25_1hr = pm25_1hr,
       pm25_3hr = pm25_3hr,
       pm25_24hr = pm25_24hr,
+      pm25_units = pm25_units,
       text = text
     )
   )
@@ -39,16 +36,16 @@ make_pm_summary_table <- function(
   pm25_1hr,
   pm25_3hr,
   pm25_24hr,
+  pm25_units,
   text
 ) {
-  if (!".cst" %in% ls()) {
-    .cst <- load_constants()
-  }
-
-  pm25_units <- paste0(" ", .cst$units$pm25)
   # Hide 10 min. average for agency
   recent_row <- text$pm_10min |>
-    make_obs_table_row(value = pm25_10min, units = pm25_units)
+    make_obs_table_row(
+      value = pm25_10min,
+      units = pm25_units,
+      missing_text = text$no_data
+    )
   recent_row[network == "agency"] <- ""
 
   # Build table
@@ -58,19 +55,29 @@ make_pm_summary_table <- function(
     text$pm_title,
     "</th></tr>",
     recent_row,
-    text$pm_1hr |> make_obs_table_row(value = pm25_1hr, units = pm25_units),
-    text$pm_3hr |> make_obs_table_row(value = pm25_3hr, units = pm25_units),
-    text$pm_24hr |> make_obs_table_row(value = pm25_24hr, units = pm25_units),
+    text$pm_1hr |>
+      make_obs_table_row(
+        value = pm25_1hr,
+        units = pm25_units,
+        missing_text = text$no_data
+      ),
+    text$pm_3hr |>
+      make_obs_table_row(
+        value = pm25_3hr,
+        units = pm25_units,
+        missing_text = text$no_data
+      ),
+    text$pm_24hr |>
+      make_obs_table_row(
+        value = pm25_24hr,
+        units = pm25_units,
+        missing_text = text$no_data
+      ),
     "</table>"
   )
 }
 
-make_obs_table_row <- function(label, value, units) {
-  if (!".cst" %in% ls()) {
-    .cst <- load_constants()
-  }
-  
-  missing_text <- .cst$text$monitor_hover$no_data
+make_obs_table_row <- function(label, value, units, missing_text = "No Data.") {
   value <- value |>
     handyr::swap(NA, with = missing_text)
   paste0(

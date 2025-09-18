@@ -16,6 +16,7 @@ get_map <- function(req, res) {
     icon_dirs = .cst$icon_dir,
     font_sizes = .cst$font_sizes,
     marker_sizes = .cst$marker_sizes,
+    pm25_units = .cst$pm25_units,
     text = .cst$text,
     force_update_icons = .cst$force_update_icons
   )

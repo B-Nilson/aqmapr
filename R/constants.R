@@ -61,10 +61,10 @@ load_constants = function() {
         type = "Type: ",
         time = "Time: ",
         pm_title = "PM<sub>2.5</sub> averages:",
-        pm_10min = "10 min.: ",
-        pm_1hr = "1 hr.  ",
-        pm_3hr = "3 hr.: ",
-        pm_24hr = "24 hr.: ",
+        pm_10min = "10 min.:",
+        pm_1hr = "1 hr.:",
+        pm_3hr = "3 hr.:",
+        pm_24hr = "24 hr.:",
         no_data = "No Data."
       ),
       monitor_legend = list(

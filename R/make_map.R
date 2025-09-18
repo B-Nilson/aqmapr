@@ -5,6 +5,7 @@ make_leaflet_map <- function(
   icon_dirs,
   font_sizes,
   marker_sizes,
+  pm25_units,
   text,
   force_update_icons = FALSE
 ) {
@@ -19,6 +20,8 @@ make_leaflet_map <- function(
         icon_dir = icon_dirs$local,
         font_sizes = font_sizes$markers,
         marker_sizes = marker_sizes,
+        pm25_units = pm25_units,
+        text = text,
         force_update_icons = force_update_icons
       ) |>
       add_monitor_legend(
