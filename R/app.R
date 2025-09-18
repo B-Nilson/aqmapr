@@ -1,7 +1,11 @@
 start_server <- function() {
-  app <- ambiorix::Ambiorix$new(port = .server$port, host = .server$host)
+  .cst <- load_constants()
+  app <- ambiorix::Ambiorix$new(
+    port = .cst$server$port,
+    host = .cst$server$host
+  )
 
-  app$static(.icon_dir$local, .icon_dir$server)
+  app$static(.cst$icon_dir$local, .cst$icon_dir$server)
 
   # i.e. /data/recent/json
   app$get("/data/:name/:type", get_data)

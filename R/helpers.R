@@ -12,15 +12,19 @@ get_file_age <- function(local_path, since = Sys.time()) {
 
 # Standardize varieties of network inputs
 translate_network <- function(networks, group_lcms = TRUE, as_factor = FALSE) {
+  if (!".cst" %in% ls()) {
+    .cst <- load_constants()
+  }
+
   # Group together low cost monitors if deisred
   if (group_lcms) {
-    is_lcm <- names(.allowed_networks) != "agency"
+    is_lcm <- names(.cst$allowed_networks) != "agency"
     allowed_networks <- list(
-      agency = .allowed_networks$agency,
-      lcm = unlist(.allowed_networks[is_lcm])
+      agency = .cst$allowed_networks$agency,
+      lcm = unlist(.cst$allowed_networks[is_lcm])
     )
   } else {
-    allowed_networks <- .allowed_networks
+    allowed_networks <- .cst$allowed_networks
   }
 
   # Include a placeholder if singular so max.col behave as expected
@@ -53,11 +57,15 @@ translate_network <- function(networks, group_lcms = TRUE, as_factor = FALSE) {
 
 # Translate from code names to pretty names for display
 pretty_text <- function(text) {
-  if (all(text %in% names(.allowed_networks))) {
+  if (!".cst" %in% ls()) {
+    .cst <- load_constants()
+  }
+
+  if (all(text %in% names(.cst$allowed_networks))) {
     text |>
       factor(
-        levels = names(.allowed_networks),
-        labels = unname(.text$networks[names(.allowed_networks)])
+        levels = names(.cst$allowed_networks),
+        labels = unname(.cst$text$networks[names(.cst$allowed_networks)])
       ) |>
       as.character()
   } else {

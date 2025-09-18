@@ -2,9 +2,24 @@ Package: aqmapr
 Title: AQmap as an ambiorix app 
 Version: 0.0.0.9000
 Authors@R: 
-    person("Bryaden", "Nilson", , "brayden.nilson@ec.gc.ca", role = c("aut", "cre"))
+    person("Brayden", "Nilson", email = "brayden.nilson@ec.gc.ca", role = c("aut", "cre"))
 Description: aqmapr leverages the package `ambiorix` to produce a full-stack implementation of https://aqmap.ca/aqmap. It collects resources from the existing AQmap page and provides both convenient access points for data as well as a replicated map.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
+Imports: 
+    ambiorix,
+    aqhi (>= 0.1.0),
+    data.table,
+    dplyr,
+    handyr (>= 0.0.0.9000),
+    htmltools,
+    leaflet,
+    lubridate,
+    prismatic,
+    purrr,
+    rlang,
+    stringr
+Remotes:  
+    github.com/B-Nilson

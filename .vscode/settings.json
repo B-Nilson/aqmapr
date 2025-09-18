@@ -6,6 +6,5 @@
     "[quarto]": {
         "editor.formatOnSave": true,
         "editor.defaultFormatter": "quarto.quarto"
-    },
-    "editor.formatOnSave": true
+    }
 }

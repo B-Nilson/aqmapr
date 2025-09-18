@@ -3,3 +3,7 @@
 ^aqmapr\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+inst/images/icons
+inst/extdata
+^[.]?air[.]toml$
+^\.vscode$

@@ -4,5 +4,5 @@
 .httr-oauth
 .DS_Store
 .quarto
-data/
-images/icons/*
+inst/extdata/
+inst/images/icons/*

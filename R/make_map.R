@@ -1,5 +1,9 @@
 # Create leaflet map similiar to AQmap
 make_leaflet_map <- function(marker_data = NULL) {
+  if (!".cst" %in% ls()) {
+    .cst <- load_constants()
+  }
+  
   map <- leaflet::leaflet() |>
     leaflet::addProviderTiles(leaflet::providers$OpenStreetMap)
 
@@ -8,7 +12,7 @@ make_leaflet_map <- function(marker_data = NULL) {
       add_obs_markers(marker_data = marker_data) |>
       add_monitor_legend(
         networks = levels(marker_data$network),
-        legend_details = .text$monitor_legend
+        legend_details = .cst$text$monitor_legend
       ) |>
       leaflet::addLayersControl(
         overlayGroups = levels(marker_data$network) |>
