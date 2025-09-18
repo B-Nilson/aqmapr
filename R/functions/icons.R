@@ -6,6 +6,11 @@ make_marker_icon_path <- function(networks, pm25_1hr) {
   # Get shape for each network
   network_shapes <- unlist(icon_shapes[networks])
 
+  # Handle station marker icons
+  is_station_marker <- pm25_1hr == -1
+  pm25_1hr[is_station_marker] <- pm25_1hr[!is_station_marker] |>
+    mean(na.rm = TRUE)
+
   # Calculate AQHI+ for each concentration
   aqhi_plus <- pm25_1hr |>
     aqhi::AQHI_plus() |>
@@ -15,13 +20,12 @@ make_marker_icon_path <- function(networks, pm25_1hr) {
         handyr::swap(NA, "-") # handle missing values
     )
 
-  # Format concentrations for text
-  pm25_1hr_safe <- aqhi_plus$pm25_1hr_ugm3 |>
-    make_safe_icon_text()
+  # Handle station marker icons
+  aqhi_plus$pm25_1hr_ugm3[is_station_marker] <- -1
 
   # Build icon path, and attach colour
   icon_url_template |>
-    sprintf(networks, pm25_1hr_safe) |>
+    sprintf(networks, make_safe_icon_text(aqhi_plus$pm25_1hr_ugm3)) |>
     setNames(aqhi_plus$colour)
 }
 
@@ -89,7 +93,8 @@ make_icon_svg <- function(networks, pm25_1hr, force = FALSE) {
 make_safe_icon_text <- function(icon_values) {
   icon_values |>
     round() |>
-    handyr::clamp(range = c(0, 1000)) |>
+    handyr::clamp(range = c(-1, 1000)) |>
     handyr::swap(1000, with = "+") |>
+    handyr::swap(-1, with = "") |>
     handyr::swap(NA, with = "-")
 }

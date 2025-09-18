@@ -10,6 +10,8 @@ source("./handlers/get_map.R")
 
 app <- ambiorix::Ambiorix$new(port = 8000L, host = "127.0.0.1")
 
+app$static("../images/icons", "icons")
+
 # i.e. /data/recent/json
 app$get("/data/:name/:type", get_data)
 

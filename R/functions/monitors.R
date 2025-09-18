@@ -7,6 +7,16 @@ add_obs_markers <- function(map, marker_data) {
     direction = "right"
   )
 
+  # Make monitor icons based on that networks mean
+  network_means <- marker_data |>
+    dplyr::group_by(network) |>
+    dplyr::summarise(pm25_1hr = mean(pm25_1hr, na.rm = TRUE))
+  unique_networks <- levels(marker_data$network) |>
+    make_icon_svg(
+      pm25_1hr = network_means$pm25_1hr,
+      force = TRUE
+    )
+
   # Ensure icons exist
   marker_data$network |>
     make_icon_svg(
