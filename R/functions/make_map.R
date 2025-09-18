@@ -8,10 +8,7 @@ make_leaflet_map <- function(marker_data = NULL) {
       add_obs_markers(marker_data = marker_data) |>
       add_monitor_legend(
         networks = levels(marker_data$network),
-        legend_details = list(
-          hover = "Fine particulate matter monitor types. Values are in units of &mu;g m<sup>-3</sup>, colour coded using the Canadian AQHI+ system.",
-          title = htmltools::HTML("PM<sub>2.5</sub> Monitors")
-        )
+        legend_details = .text$monitor_legend
       ) |>
       leaflet::addLayersControl(
         overlayGroups = levels(marker_data$network) |>

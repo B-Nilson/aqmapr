@@ -1,6 +1,6 @@
 # Create icon path for each network/concentration pair
 make_marker_icon_path <- function(networks, pm25_1hr, local = TRUE) {
-  base_dir <- ifelse(local, "../images/icons", "/icons")
+  base_dir <- ifelse(local, .icon_dir$local, .icon_dir$server)
   icon_url_template <- file.path(base_dir, "%s_icon_%s.svg")
   icon_shapes <- list(agency = 23, lcm = 21, purpleair = 21, aqegg = 22)
 

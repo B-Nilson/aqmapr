@@ -8,9 +8,9 @@ source("./functions/make_map.R")
 source("./handlers/get_data.R")
 source("./handlers/get_map.R")
 
-app <- ambiorix::Ambiorix$new(port = 8000L, host = "127.0.0.1")
+app <- ambiorix::Ambiorix$new(port = .server$port, host = .server$host)
 
-app$static("../images/icons", "icons")
+app$static(.icon_dir$local, .icon_dir$server)
 
 # i.e. /data/recent/json
 app$get("/data/:name/:type", get_data)

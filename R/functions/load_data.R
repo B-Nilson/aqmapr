@@ -2,19 +2,6 @@
 load_recent_aqmap_data <- function(data_dir = "../data") {
   file_name <- "aqmap_most_recent_obs.Rds"
   local_path <- file.path(data_dir, file_name)
-  desired_cols <- c(
-    site_id = "sensor_index",
-    name = "monitor",
-    "network",
-    "lat",
-    "lng",
-    "prov_terr",
-    date_last_obs = "date",
-    pm25_10min = "pm25_recent",
-    "pm25_1hr",
-    "pm25_3hr",
-    "pm25_24hr"
-  )
 
   # Determine time since local file was updated,
   # (relative to when file should have been last updated)
@@ -31,7 +18,7 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
 
   # Load and cleanup
   obs <- readRDS(local_path) |>
-    dplyr::select(dplyr::any_of(desired_cols)) |>
+    dplyr::select(dplyr::any_of(.recent_data_cols)) |>
     dplyr::filter(complete.cases(site_id, network, lat, lng, date_last_obs)) |>
     dplyr::mutate(
       network = network |>

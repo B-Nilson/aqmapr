@@ -12,20 +12,15 @@ get_file_age <- function(local_path, since = Sys.time()) {
 
 # Standardize varieties of network inputs
 translate_network <- function(networks, group_lcms = TRUE, as_factor = FALSE) {
-  allowed_networks <- list(
-    agency = c("fem", "naps", "agency", "fems"),
-    lcm = c("lcm", "lcms"),
-    purpleair = c("pa", "purpleair", "pas", "purpleairs"),
-    aqegg = c("aqegg", "egg", "eggs")
-  )
-
   # Group together low cost monitors if deisred
   if (group_lcms) {
-    is_lcm <- names(allowed_networks) != "agency"
+    is_lcm <- names(.allowed_networks) != "agency"
     allowed_networks <- list(
-      agency = allowed_networks$agency,
-      lcm = unlist(allowed_networks[is_lcm])
+      agency = .allowed_networks$agency,
+      lcm = unlist(.allowed_networks[is_lcm])
     )
+  } else {
+    allowed_networks <- .allowed_networks
   }
 
   # Include a placeholder if singular so max.col behave as expected
@@ -58,11 +53,11 @@ translate_network <- function(networks, group_lcms = TRUE, as_factor = FALSE) {
 
 # Translate from code names to pretty names for display
 pretty_text <- function(text) {
-  if (all(text %in% c("agency", "lcm", "purpleair", "aqegg"))) {
+  if (all(text %in% names(.allowed_networks))) {
     text |>
       factor(
-        levels = c("agency", "lcm", "purpleair", "aqegg"),
-        labels = c("Regulatory", "Low-cost", "PurpleAir", "AQegg")
+        levels = names(.allowed_networks),
+        labels = unname(.text$networks[names(.allowed_networks)])
       ) |>
       as.character()
   } else {

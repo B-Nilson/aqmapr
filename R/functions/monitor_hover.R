@@ -7,15 +7,7 @@ make_monitor_hover = function(
   pm25_3hr,
   pm25_24hr
 ) {
-  text <- list(
-    type = "Type: ",
-    time = "Time: ",
-    pm_title = "PM<sub>2.5</sub> averages:",
-    pm_10min = "10 min.: ",
-    pm_1hr = "1 hr.  ",
-    pm_3hr = "3 hr.: ",
-    pm_24hr = "24 hr.: "
-  )
+  text <- .text$monitor_hover
 
   # Format date for converting to local using js later
   date_last_obs <- date_last_obs |>
@@ -66,9 +58,9 @@ make_pm_summary_table <- function(
 }
 
 make_obs_table_row <- function(label, value, units) {
-  text <- "No Data."
+  missing_text <- .text$monitor_hover$no_data
   value <- value |>
-    handyr::swap(NA, with = text)
+    handyr::swap(NA, with = missing_text)
   paste0(
     "<tr><td style='width: 1%;'>",
     label,
