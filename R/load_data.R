@@ -1,5 +1,9 @@
 # Download and read in most recent AQmap obs datafile
-load_recent_aqmap_data <- function(data_dir = "./inst/extdata", aqmap_url, desired_cols) {
+load_recent_aqmap_data <- function(data_dir, aqmap_url, desired_cols) {
+  stopifnot(length(data_dir) == 1, is.character(data_dir))
+  stopifnot(length(aqmap_url) == 1, is.character(aqmap_url))
+  stopifnot(length(desired_cols) > 0, is.character(desired_cols))
+
   file_name <- "aqmap_most_recent_obs.Rds"
   local_path <- file.path(data_dir, file_name)
 

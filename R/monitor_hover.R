@@ -9,15 +9,16 @@ make_monitor_hover = function(
   pm25_units,
   text
 ) {
-  # Format date for converting to local using js later
-  date_last_obs <- date_last_obs |>
-    format("%Y-%m-%dT%H:%M:%SZ")
+  stopifnot(is.character(name), length(name) > 0, all(!is.na(name)))
+  stopifnot(is.factor(network), length(network) > 0, all(!is.na(network)))
+  stopifnot(lubridate::is.POSIXct(date_last_obs), length(date_last_obs) > 0)
+  stopifnot(is.list(text), length(text) > 0, c("type", "time") %in% names(text))
 
   # Build hover text
   paste0(
     paste0("<big><b>", name |> stringr::str_sub(end = 20), "</b></big><br>"),
     paste0(text$type, "<b>", pretty_text(network), "</b><br>"),
-    paste0(text$time, "<b>", date_last_obs, "</b><br>"),
+    paste0(text$time, "<b>", pretty_text(date_last_obs), "</b><br>"),
     make_pm_summary_table(
       network = network,
       pm25_10min = pm25_10min,
@@ -39,6 +40,15 @@ make_pm_summary_table <- function(
   pm25_units,
   text
 ) {
+  stopifnot(is.factor(network), length(network) > 0, all(!is.na(network)))
+  stopifnot(is.list(text), length(text) > 0, "pm_title" %in% names(text))
+  stopifnot(
+    length(network) == length(pm25_10min),
+    length(network) == length(pm25_1hr),
+    length(network) == length(pm25_3hr),
+    length(network) == length(pm25_24hr)
+  )
+
   # Hide 10 min. average for agency
   recent_row <- text$pm_10min |>
     make_obs_table_row(
@@ -78,6 +88,14 @@ make_pm_summary_table <- function(
 }
 
 make_obs_table_row <- function(label, value, units, missing_text = "No Data.") {
+  stopifnot(is.character(label), length(label) > 0)
+  stopifnot(is.character(value) | is.numeric(value), length(value) > 0)
+  stopifnot(is.character(units), length(units) > 0)
+  stopifnot(is.character(missing_text), length(missing_text) > 0)
+  stopifnot(length(label) == 1 | length(label) == length(value))
+  stopifnot(length(units) == 1 | length(units) == length(value))
+  stopifnot(length(missing_text) == 1)
+
   value <- value |>
     handyr::swap(NA, with = missing_text)
   paste0(

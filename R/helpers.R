@@ -57,7 +57,10 @@ pretty_text <- function(text) {
     .cst <- load_constants()
   }
 
-  if (all(text %in% names(.cst$allowed_networks))) {
+  if (lubridate::is.POSIXct(text)) {
+    text |> 
+      format("%Y-%m-%dT%H:%M:%SZ")
+  } else if (all(text %in% names(.cst$allowed_networks))) {
     text |>
       factor(
         levels = names(.cst$allowed_networks),
