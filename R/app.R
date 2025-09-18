@@ -1,6 +1,7 @@
 source("./constants.R")
 source("./functions/helpers.R")
 source("./functions/load_data.R")
+source("./functions/icons.R")
 source("./functions/make_map.R")
 source("./handlers/get_data.R")
 source("./handlers/get_map.R")
