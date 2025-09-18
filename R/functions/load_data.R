@@ -1,6 +1,5 @@
 # Download and read in most recent AQmap obs datafile
 load_recent_aqmap_data <- function(data_dir = "../data") {
-  aqmap_url <- "https://aqmap.ca/aqmap"
   file_name <- "aqmap_most_recent_obs.Rds"
   local_path <- file.path(data_dir, file_name)
   desired_cols <- c(
@@ -22,7 +21,7 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
 
   # Download .rds file if needed
   if (local_file_age > "10 mins") {
-    aqmap_url |>
+    .aqmap_url |>
       file.path("data", file_name) |>
       download.file(local_path, mode = "wb")
   }
@@ -47,7 +46,7 @@ load_aqmap_plot_data <- function(
   stopifnot(length(network) == 1, is.character(network))
   stopifnot(length(site_id) == 1, is.character(site_id) | is.numeric(site_id))
 
-  aqmap_url <- "https://aqmap.ca/aqmap/data/plotting/"
+  plot_data_url <- file.path(.aqmap_url, "data/plotting")
   plot_file_template <- "%s_recent_hourly.csv"
 
   # Handle aliases for network
@@ -62,7 +61,7 @@ load_aqmap_plot_data <- function(
     sprintf(site_id)
 
   # Read in data
-  aqmap_url |>
+  plot_data_url |>
     file.path(network, file_name) |>
     data.table::fread()
 }

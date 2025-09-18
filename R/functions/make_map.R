@@ -16,20 +16,21 @@ make_leaflet_map <- function(marker_data = NULL) {
 }
 
 add_obs_markers <- function(map, marker_data) {
-  icon_size <- list("obs" = 32, "missing_obs" = 16)
-
   # Ensure icons exist
-  marker_data$network |> # set force to TRUE to overwrite icons
-    make_icon_svg(pm25_1hr = marker_data$pm25_1hr, force = FALSE)
+  marker_data$network |>
+    make_icon_svg(
+      pm25_1hr = marker_data$pm25_1hr,
+      force = .force_update_icons
+    )
 
   # Add helper columns
   marker_data <- marker_data |>
     dplyr::mutate(
       # Determine pane to use based on pm25_1hr missing or not
       pane = is.na(pm25_1hr) |>
-        ifelse(names(icon_size)[2], names(icon_size)[1]),
+        ifelse(names(.marker_sizes)[1], names(.marker_sizes)[2]),
       # Select icon size similarily - smaller for missing obs
-      icon_width = unname(unlist(icon_size[pane])),
+      icon_width = unname(unlist(.marker_sizes[pane])),
       icon_height = icon_width,
       # Build url to icon
       icon_url = network |>
@@ -38,8 +39,8 @@ add_obs_markers <- function(map, marker_data) {
 
   # Add markers to map - 1 pane for missing, 1 for not
   map <- map |>
-    leaflet::addMapPane(names(icon_size)[2], zIndex = 650) |>
-    leaflet::addMapPane(names(icon_size)[1], zIndex = 660) |>
+    leaflet::addMapPane(names(.marker_sizes)[1], zIndex = 650) |>
+    leaflet::addMapPane(names(.marker_sizes)[2], zIndex = 660) |>
     leaflet::addMarkers(
       data = marker_data,
       group = ~ as.character(network) |>

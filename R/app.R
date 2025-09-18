@@ -1,3 +1,4 @@
+source("./constants.R")
 source("./functions/helpers.R")
 source("./functions/load_data.R")
 source("./functions/make_map.R")
