@@ -32,6 +32,7 @@ load_recent_aqmap_data <- function(data_dir = "../data") {
   # Load and cleanup
   obs <- readRDS(local_path) |>
     dplyr::select(dplyr::any_of(desired_cols)) |>
+    dplyr::filter(complete.cases(site_id, network, lat, lng, date_last_obs)) |>
     dplyr::mutate(
       network = network |>
         translate_network(as_factor = TRUE),
