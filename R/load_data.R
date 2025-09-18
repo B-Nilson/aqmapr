@@ -18,6 +18,7 @@ load_recent_aqmap_data <- function(data_dir = "./inst/extdata", aqmap_url, desir
 
   # Load and cleanup
   obs <- readRDS(local_path) |>
+    dplyr::mutate(monitor_type = .data$network) |>
     dplyr::select(dplyr::any_of(desired_cols)) |>
     # TODO: refactor
     dplyr::filter(stats::complete.cases(.data$site_id, .data$network, .data$lat, .data$lng, .data$date_last_obs)) |>

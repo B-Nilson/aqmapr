@@ -26,6 +26,7 @@ load_constants = function() {
       site_id = "sensor_index",
       name = "monitor",
       "network",
+      "monitor_type", # (un-grouped network - i.e PA or EGG instead of lcm)
       "lat",
       "lng",
       "prov_terr",
