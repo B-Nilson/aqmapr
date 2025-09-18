@@ -7,4 +7,4 @@ Description: aqmapr leverages the package `ambiorix` to produce a full-stack imp
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.0.0
+RoxygenNote: 7.3.3
