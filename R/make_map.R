@@ -21,7 +21,7 @@ make_leaflet_map <- function(
         font_sizes = font_sizes$markers,
         marker_sizes = marker_sizes,
         pm25_units = pm25_units,
-        text = text,
+        marker_hover_text = text$monitor_hover,
         force_update_icons = force_update_icons
       ) |>
       add_monitor_legend(

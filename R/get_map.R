@@ -6,7 +6,8 @@ get_map <- function(req, res) {
   recent_aqmap_data <- load_recent_aqmap_data(
     aqmap_url = .cst$aqmap_url,
     data_dir = .cst$data_dir,
-    desired_cols = .cst$recent_data_cols
+    desired_cols = .cst$recent_data_cols,
+    allowed_networks = .cst$allowed_networks
   ) |>
     handyr::on_error(.return = NULL)
 

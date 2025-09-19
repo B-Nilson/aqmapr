@@ -20,21 +20,24 @@ get_data <- function(req, res) {
     out_data <- load_recent_aqmap_data(
       aqmap_url = .cst$aqmap_url,
       data_dir = .cst$data_dir,
-      desired_cols = .cst$recent_data_cols
+      desired_cols = .cst$recent_data_cols,
+      allowed_networks = .cst$allowed_networks
     ) |>
       handyr::on_error(.return = NULL)
   } else if (name == "plotting") {
     out_data <- load_aqmap_plot_data(
       network = network,
       site_id = site_id,
-      aqmap_url = .cst$aqmap_url
+      aqmap_url = .cst$aqmap_url,
+      allowed_networks = .cst$allowed_networks
     ) |>
       handyr::on_error(.return = NULL)
   } else if (name == "meta") {
     out_data <- load_recent_aqmap_data(
       aqmap_url = .cst$aqmap_url,
       data_dir = .cst$data_dir,
-      desired_cols = .cst$recent_data_cols
+      desired_cols = .cst$recent_data_cols,
+      allowed_networks = .cst$allowed_networks
     ) |>
       dplyr::select(-dplyr::starts_with(c("pm25_", "date"))) |>
       handyr::on_error(.return = NULL)

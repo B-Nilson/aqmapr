@@ -1,12 +1,15 @@
 test_that("make_monitor_hover() works", {
+  .cst <- load_constants()
   result <- make_monitor_hover(
     name = "name",
-    network = "agency",
+    network = factor("agency", levels = c("agency", "lcm")),
     date_last_obs = lubridate::ymd_h("2020-01-01 01"),
     pm25_10min = 1,
     pm25_1hr = 2,
     pm25_3hr = 3,
-    pm25_24hr = 4
+    pm25_24hr = 4,
+    pm25_units = .cst$units$pm25,
+    text = .cst$text$monitor_hover
   )
   expected <- paste0(
     "<big><b>name</b></big><br>",
@@ -23,20 +26,15 @@ test_that("make_monitor_hover() works", {
 })
 
 test_that("make_pm_summary_table() works", {
+  .cst <- load_constants()
   result <- make_pm_summary_table(
-    network = "agency",
+    network = factor("agency", levels = c("agency", "lcm")),
     pm25_10min = 1,
     pm25_1hr = 2,
     pm25_3hr = 3,
     pm25_24hr = 4,
-    text = list(
-      pm_title = "PM<sub>2.5</sub> averages:",
-      pm_10min = "10 min.:",
-      pm_1hr = "1 hr.:",
-      pm_3hr = "3 hr.:",
-      pm_24hr = "24 hr.:",
-      no_data = "No Data."
-    )
+    pm25_units = .cst$units$pm25,
+    text = .cst$text$monitor_hover
   )
   expected <- paste0(
     "<table>",

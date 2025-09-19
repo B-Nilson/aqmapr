@@ -1,5 +1,10 @@
 # Download and read in most recent AQmap obs datafile
-load_recent_aqmap_data <- function(data_dir, aqmap_url, desired_cols) {
+load_recent_aqmap_data <- function(
+  data_dir,
+  aqmap_url,
+  desired_cols,
+  allowed_networks
+) {
   stopifnot(length(data_dir) == 1, is.character(data_dir))
   stopifnot(length(aqmap_url) == 1, is.character(aqmap_url))
   stopifnot(length(desired_cols) > 0, is.character(desired_cols))
@@ -35,7 +40,7 @@ load_recent_aqmap_data <- function(data_dir, aqmap_url, desired_cols) {
     dplyr::mutate(
       network = .data$network |>
         translate_network(
-          allowed_networks = .cst$allowed_networks,
+          allowed_networks = allowed_networks,
           as_factor = TRUE
         ),
       pm25_10min = ifelse(
@@ -53,7 +58,8 @@ load_recent_aqmap_data <- function(data_dir, aqmap_url, desired_cols) {
 load_aqmap_plot_data <- function(
   network,
   site_id,
-  aqmap_url
+  aqmap_url,
+  allowed_networks
 ) {
   stopifnot(length(network) == 1, is.character(network))
   stopifnot(length(site_id) == 1, is.character(site_id) | is.numeric(site_id))
@@ -65,7 +71,7 @@ load_aqmap_plot_data <- function(
   # Handle aliases for network
   network <- network |>
     translate_network(
-      allowed_networks = .cst$allowed_networks,
+      allowed_networks = allowed_networks,
       group_lcms = FALSE
     )
 
