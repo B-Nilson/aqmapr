@@ -7,8 +7,11 @@ test_that("add_obs_markers() works", {
     data_dir = .cst$data_dir,
     desired_cols = .cst$recent_data_cols,
     allowed_networks = .cst$allowed_networks
-  ) |> 
-    dplyr::filter(!is.na(pm25_1hr)) |>
+  ) |>
+    dplyr::filter(
+      !is.na(pm25_1hr),
+      date_last_obs >= Sys.time() - lubridate::hours(3)
+    ) |>
     dplyr::distinct(monitor_type, .keep_all = TRUE)
 
   map |>
