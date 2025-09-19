@@ -22,7 +22,7 @@ Imports:
     rlang,
     stringr
 Remotes: 
-    github.com/B-Nilson
+    github::B-Nilson/handyr
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
