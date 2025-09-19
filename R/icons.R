@@ -1,5 +1,9 @@
 # Create icon path for each network/concentration pair
 make_marker_icon_path <- function(networks, pm25_1hr, icon_dir) {
+  stopifnot(is.character(networks), length(networks) > 0, all(!is.na(networks)))
+  stopifnot(is.numeric(pm25_1hr), length(pm25_1hr) > 0)
+  stopifnot(is.character(icon_dir), length(icon_dir) == 1)
+
   icon_url_template <- file.path(icon_dir, "%s_icon_%s.svg")
   icon_shapes <- list(agency = 23, lcm = 21, purpleair = 21, aqegg = 22)
 
@@ -20,17 +24,44 @@ make_marker_icon_path <- function(networks, pm25_1hr, icon_dir) {
   # Build icon path, and attach colour
   icon_url_template |>
     sprintf(networks, make_safe_icon_text(aqhi_plus$pm25_1hr_ugm3)) |>
-    stats::setNames(aqhi_plus$colour)
+    stats::setNames(aqhi_plus$colour |> handyr::swap(NA, with = "#bbbbbb"))
 }
 
-make_icon_svg <- function(networks, pm25_1hr, template_dir, icon_dir, font_sizes, marker_sizes, force = FALSE) {
+make_icon_svg <- function(
+  networks,
+  pm25_1hr,
+  template_dir,
+  icon_dir,
+  font_sizes,
+  marker_sizes,
+  force = FALSE
+) {
+  stopifnot(is.character(networks), length(networks) > 0, all(!is.na(networks)))
+  stopifnot(is.numeric(pm25_1hr), length(pm25_1hr) > 0)
+  stopifnot(is.character(template_dir), length(template_dir) == 1)
+  stopifnot(
+    is.numeric(font_sizes),
+    length(font_sizes) > 0,
+    all(!is.na(font_sizes))
+  )
+  stopifnot(
+    is.list(marker_sizes),
+    is.numeric(unlist(marker_sizes)),
+    length(marker_sizes) > 0,
+    all(!is.na(marker_sizes))
+  )
+
   # Combine inputs
-  icons <- data.frame(network = as.character(networks), pm25_1hr) |>
+  icons <- data.frame(network = networks, pm25_1hr) |>
     # Build icon details
     dplyr::mutate(
       text = make_safe_icon_text(.data$pm25_1hr),
-      path = make_marker_icon_path(.data$network, .data$pm25_1hr, icon_dir = icon_dir),
-      fill_colour = names(.data$path) |> handyr::swap(NA, with = "#bbbbbb"),
+      path = make_marker_icon_path(
+        .data$network,
+        .data$pm25_1hr,
+        icon_dir = icon_dir
+      ),
+      fill_colour = names(.data$path),
       text_colour = prismatic::best_contrast(.data$fill_colour),
       font_size = dplyr::case_when(
         .data$pm25_1hr <= 9 | is.na(.data$pm25_1hr) | .data$pm25_1hr > 999 ~
@@ -52,7 +83,7 @@ make_icon_svg <- function(networks, pm25_1hr, template_dir, icon_dir, font_sizes
   }
 
   # Attach icon templates
-  svg_templates <- template_dir |> 
+  svg_templates <- template_dir |>
     file.path("%s_icon_template.svg") |>
     sprintf(unique(icons$network)) |>
     stats::setNames(unique(icons$network)) |>
@@ -86,6 +117,7 @@ make_icon_svg <- function(networks, pm25_1hr, template_dir, icon_dir, font_sizes
 }
 
 make_safe_icon_text <- function(icon_values) {
+  stopifnot(length(icon_values) > 0, is.numeric(icon_values))
   icon_values |>
     round() |>
     handyr::clamp(range = c(-1, 1000)) |>

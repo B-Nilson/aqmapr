@@ -1,0 +1,51 @@
+test_that("make_marker_icon_path() works", {
+  .cst <- load_constants()
+  networks <- names(.cst$allowed_networks)
+  pm25_1hr <- c(-1, NA, 1000, rep(1, length(networks) - 3))
+  result <- make_marker_icon_path(
+    networks = networks,
+    pm25_1hr = pm25_1hr,
+    icon_dir = .cst$icon_dir$local
+  )
+  # check colours (names) are right
+  names(result) |>
+    expect_equal(c("#650205", "#bbbbbb", "#650205", "#21C6F5"))
+  # check length
+  length(result) |>
+    expect_equal(length(.cst$allowed_networks))
+  # check right name (order of pieces etc)
+  result |>
+    basename() |>
+    expect_equal(
+      networks |>
+        paste0("_icon_", make_safe_icon_text(pm25_1hr)) |>
+        paste0(".svg")
+    )
+})
+
+test_that("make_icon_svg() works", {
+  .cst <- load_constants()
+  temp_dir <- tempdir()
+  networks <- names(.cst$allowed_networks)
+  result <- make_icon_svg(
+    networks = networks,
+    pm25_1hr = c(-1, NA, 1, 1000),
+    template_dir = .cst$image_dir,
+    icon_dir = temp_dir,
+    font_sizes = .cst$font_sizes$markers,
+    marker_sizes = .cst$marker_sizes,
+    force = TRUE
+  )
+  files_created <- temp_dir |>
+    list.files(pattern = "*_icon_[-,1,+]?.svg", full.names = TRUE)
+
+  length(files_created) |>
+    expect_equal(length(.cst$allowed_networks))
+
+  file.remove(files_created)
+})
+
+test_that("make_safe_icon_text() works", {
+  expect_equal(make_safe_icon_text(1), "1")
+  expect_equal(make_safe_icon_text(c(1000, -1, NA)), c("+", "", "-"))
+})
