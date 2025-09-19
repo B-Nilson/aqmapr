@@ -6,9 +6,20 @@ add_obs_markers <- function(
   font_sizes,
   marker_sizes,
   pm25_units,
-  text,
+  marker_hover_text,
   force_update_icons = FALSE
 ) {
+  stopifnot("leaflet" %in% class(map))
+  stopifnot(is.data.frame(marker_data))
+  stopifnot(
+    is.list(marker_sizes),
+    length(marker_sizes) == 3,
+    all(c("missing", "obs", "legend") %in% names(marker_sizes))
+  )
+  stopifnot(is.character(pm25_units), length(pm25_units) == 1)
+  stopifnot(is.list(marker_hover_text), length(marker_hover_text) > 0)
+  stopifnot(is.logical(force_update_icons), length(force_update_icons) == 1)
+
   hover_options <- leaflet::labelOptions(
     sticky = FALSE,
     textOnly = FALSE,
@@ -65,7 +76,7 @@ add_obs_markers <- function(
         pm25_3hr = .data$pm25_3hr,
         pm25_24hr = .data$pm25_24hr,
         pm25_units = pm25_units,
-        text = text$monitor_hover
+        text = marker_hover_text
       )
     )
 
@@ -95,13 +106,28 @@ add_monitor_legend <- function(
   map,
   networks,
   legend_details = list(
-    hover = "Monitor Types",
-    title = "Monitor Types"
+    hover = "Hover text",
+    title = "Legend Title"
   ),
   icon_dir,
   marker_size,
   position = "bottomright"
 ) {
+  stopifnot("leaflet" %in% class(map))
+  stopifnot(is.character(networks), length(networks) > 0)
+  stopifnot(
+    is.list(legend_details),
+    length(legend_details) == 2,
+    all(c("hover", "title") %in% names(legend_details))
+  )
+  stopifnot(is.character(icon_dir), length(icon_dir) == 1)
+  stopifnot(is.numeric(marker_size), length(marker_size) == 1)
+  stopifnot(
+    is.character(position),
+    length(position) == 1,
+    position %in% c("bottomright", "bottomleft", "topleft", "topright")
+  )
+
   # Make icon paths
   network_icons <- networks |>
     make_marker_icon_path(
