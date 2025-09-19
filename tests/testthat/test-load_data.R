@@ -28,6 +28,10 @@ test_that("load_aqmap_plot_data() works", {
     desired_cols = .cst$recent_data_cols,
     allowed_networks = .cst$allowed_networks
   ) |>
+    dplyr::filter(
+      !is.na(pm25_1hr),
+      date_last_obs >= Sys.time() - lubridate::hours(3)
+    ) |>
     dplyr::distinct(monitor_type, .keep_all = TRUE)
 
   result <- meta$monitor_type |>
