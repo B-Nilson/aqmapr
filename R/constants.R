@@ -5,12 +5,12 @@ load_constants = function() {
       port = 8000
     ),
 
-    data_dir = system.file("extdata", package = "aqmapr"),
+    data_dir = tempdir(),
 
     image_dir = system.file("images", package = "aqmapr"),
 
     icon_dir = list(
-      local = system.file("images", "icons", package = "aqmapr"),
+      local = tempdir(),
       server = "/icons"
     ),
     force_update_icons = FALSE,
