@@ -11,7 +11,12 @@ get_file_age <- function(local_path, since = Sys.time()) {
 }
 
 # Standardize varieties of network inputs
-translate_network <- function(networks, allowed_networks, group_lcms = TRUE, as_factor = FALSE) {
+translate_network <- function(
+  networks,
+  allowed_networks,
+  group_lcms = TRUE,
+  as_factor = FALSE
+) {
   # Group together low cost monitors if deisred
   if (group_lcms) {
     is_lcm <- names(allowed_networks) != "agency"
@@ -58,7 +63,7 @@ pretty_text <- function(text) {
   }
 
   if (lubridate::is.POSIXct(text)) {
-    text |> 
+    text |>
       format("%Y-%m-%dT%H:%M:%SZ")
   } else if (all(text %in% names(.cst$allowed_networks))) {
     text |>

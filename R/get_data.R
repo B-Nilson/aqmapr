@@ -35,7 +35,7 @@ get_data <- function(req, res) {
       aqmap_url = .cst$aqmap_url,
       data_dir = .cst$data_dir,
       desired_cols = .cst$recent_data_cols
-    )  |>
+    ) |>
       dplyr::select(-dplyr::starts_with(c("pm25_", "date"))) |>
       handyr::on_error(.return = NULL)
   } else {

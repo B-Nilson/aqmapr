@@ -1,4 +1,14 @@
-add_obs_markers <- function(map, marker_data, template_dir, icon_dir, font_sizes, marker_sizes, pm25_units, text, force_update_icons = FALSE) {
+add_obs_markers <- function(
+  map,
+  marker_data,
+  template_dir,
+  icon_dir,
+  font_sizes,
+  marker_sizes,
+  pm25_units,
+  text,
+  force_update_icons = FALSE
+) {
   hover_options <- leaflet::labelOptions(
     sticky = FALSE,
     textOnly = FALSE,
@@ -22,6 +32,7 @@ add_obs_markers <- function(map, marker_data, template_dir, icon_dir, font_sizes
 
   # Ensure icons exist
   marker_data$network |>
+    as.character() |>
     make_icon_svg(
       pm25_1hr = marker_data$pm25_1hr,
       template_dir = template_dir,
@@ -42,6 +53,7 @@ add_obs_markers <- function(map, marker_data, template_dir, icon_dir, font_sizes
       icon_height = .data$icon_width,
       # Build url to icon
       icon_url = .data$network |>
+        as.character() |>
         make_marker_icon_path(pm25_1hr = .data$pm25_1hr, icon_dir = icon_dir),
       # Build hover label
       label = make_monitor_hover(
@@ -109,14 +121,14 @@ add_monitor_legend <- function(
   icons <- network_icons |>
     lapply(
       \(pth) htmltools::tags$img(src = pth, style = style)
-    ) |> 
+    ) |>
     stats::setNames(networks)
 
   # Make text for beside each icon
   style <- "vertical-align: middle;"
   texts <- networks |>
     pretty_text() |>
-    lapply(htmltools::tags$span, style = style) |> 
+    lapply(htmltools::tags$span, style = style) |>
     stats::setNames(networks)
 
   # Combine tags
@@ -129,7 +141,7 @@ add_monitor_legend <- function(
       icons$lcm,
       texts$lcm,
     )
-    
+
   # Add to map
   map |>
     leaflet::addControl(

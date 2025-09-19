@@ -25,11 +25,24 @@ load_recent_aqmap_data <- function(data_dir, aqmap_url, desired_cols) {
     dplyr::mutate(monitor_type = .data$network) |>
     dplyr::select(dplyr::any_of(desired_cols)) |>
     # TODO: refactor
-    dplyr::filter(stats::complete.cases(.data$site_id, .data$network, .data$lat, .data$lng, .data$date_last_obs)) |>
+    dplyr::filter(stats::complete.cases(
+      .data$site_id,
+      .data$network,
+      .data$lat,
+      .data$lng,
+      .data$date_last_obs
+    )) |>
     dplyr::mutate(
       network = .data$network |>
-        translate_network(allowed_networks = .cst$allowed_networks, as_factor = TRUE),
-      pm25_10min = ifelse(.data$network == "agency", NA_real_, .data$pm25_10min),
+        translate_network(
+          allowed_networks = .cst$allowed_networks,
+          as_factor = TRUE
+        ),
+      pm25_10min = ifelse(
+        .data$network == "agency",
+        NA_real_,
+        .data$pm25_10min
+      ),
     )
   obs$pm25_1hr[is.nan(obs$pm25_1hr)] <- NA_real_
   return(obs)
@@ -51,7 +64,10 @@ load_aqmap_plot_data <- function(
 
   # Handle aliases for network
   network <- network |>
-    translate_network(allowed_networks = .cst$allowed_networks, group_lcms = FALSE)
+    translate_network(
+      allowed_networks = .cst$allowed_networks,
+      group_lcms = FALSE
+    )
 
   # Build desired file url
   if (network != "agency") {
