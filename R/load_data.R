@@ -9,6 +9,20 @@ load_recent_aqmap_data <- function(
   stopifnot(length(aqmap_url) == 1, is.character(aqmap_url))
   stopifnot(length(desired_cols) > 0, is.character(desired_cols))
 
+  # Create data directory if needed
+  if (!dir.exists(data_dir)) {
+    if (interactive()) {
+      # Check user okay (if user present)
+      response <- readline(
+        prompt = paste0("Create directory", data_dir, "? [y/n] ")
+      )
+      if (tolower(response) != "y") {
+        stop("User declined to create directory")
+      }
+    }
+    dir.create(data_dir, showWarnings = FALSE, recursive = TRUE)
+  }
+
   file_name <- "aqmap_most_recent_obs.Rds"
   local_path <- file.path(data_dir, file_name)
 
