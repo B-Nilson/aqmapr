@@ -24,7 +24,7 @@ test_that("add_obs_markers() works", {
       pm25_units = .cst$units$pm25,
       marker_hover_text = .cst$text$monitor_hover,
       force_update_icons = .cst$force_update_icons
-    ) |> 
+    ) |>
     expect_no_error()
 })
 
@@ -40,6 +40,6 @@ test_that("add_monitor_legend() works", {
       icon_dir = .cst$icon_dir$server,
       marker_size = .cst$marker_sizes$legend,
       position = "bottomright"
-    ) |> 
+    ) |>
     expect_no_error()
 })
