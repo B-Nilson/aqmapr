@@ -1,3 +1,8 @@
+#' Start the Ambiorix server
+#'
+#' Start the Ambiorix server and listen on the specified port and host.
+#'
+#' @export
 start_server <- function() {
   .cst <- load_constants()
   app <- ambiorix::Ambiorix$new(
