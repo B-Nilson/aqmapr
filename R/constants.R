@@ -10,7 +10,7 @@ load_constants = function() {
     image_dir = system.file("images", package = "aqmapr"),
 
     icon_dir = list(
-      local = tempdir(),
+      local = system.file("images/icons", package = "aqmapr"),
       server = "/icons"
     ),
     force_update_icons = FALSE,

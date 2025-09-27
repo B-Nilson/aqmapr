@@ -31,13 +31,14 @@ add_obs_markers <- function(
   network_means <- marker_data |>
     dplyr::group_by(.data$network) |>
     dplyr::summarise(pm25_1hr = mean(.data$pm25_1hr, na.rm = TRUE))
-  unique_networks <- levels(marker_data$network) |>
+  levels(marker_data$network) |>
     make_icon_svg(
       pm25_1hr = network_means$pm25_1hr,
       template_dir = template_dir,
       icon_dir = icon_dir,
       font_sizes = font_sizes,
       marker_sizes = marker_sizes,
+      for_legend = TRUE,
       force = TRUE
     )
 

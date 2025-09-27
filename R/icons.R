@@ -1,30 +1,21 @@
 # Create icon path for each network/concentration pair
-make_marker_icon_path <- function(networks, pm25_1hr, icon_dir) {
+make_marker_icon_path <- function(
+  networks,
+  pm25_1hr,
+  icon_dir,
+  for_legend = FALSE
+) {
   stopifnot(is.character(networks), length(networks) > 0, all(!is.na(networks)))
   stopifnot(is.numeric(pm25_1hr), length(pm25_1hr) > 0)
   stopifnot(is.character(icon_dir), length(icon_dir) == 1)
 
+  # Handle station marker icons
+  icon_values <- pm25_1hr |>
+    make_safe_icon_text(for_legend = for_legend)
+
+  # Build icon path
   icon_url_template <- file.path(icon_dir, "%s_icon_%s.svg")
-  icon_shapes <- list(agency = 23, lcm = 21, purpleair = 21, aqegg = 22)
-
-  # Get shape for each network
-  network_shapes <- unlist(icon_shapes[networks])
-
-  # Handle station marker icons
-  is_station_marker <- pm25_1hr == -1
-  pm25_1hr[is_station_marker] <- pm25_1hr[!is_station_marker] |>
-    mean(na.rm = TRUE)
-
-  # Calculate AQHI+ for each concentration
-  aqhi_plus <- aqhi::AQHI_plus(pm25_1hr)
-
-  # Handle station marker icons
-  aqhi_plus$pm25_1hr_ugm3[is_station_marker] <- -1
-
-  # Build icon path, and attach colour
-  icon_url_template |>
-    sprintf(networks, make_safe_icon_text(aqhi_plus$pm25_1hr_ugm3)) |>
-    stats::setNames(aqhi_plus$colour |> handyr::swap(NA, with = "#bbbbbb"))
+  icon_url_template |> sprintf(networks, icon_values)
 }
 
 make_icon_svg <- function(
@@ -34,6 +25,7 @@ make_icon_svg <- function(
   icon_dir,
   font_sizes,
   marker_sizes,
+  for_legend = FALSE,
   force = FALSE
 ) {
   stopifnot(is.character(networks), length(networks) > 0, all(!is.na(networks)))
@@ -55,13 +47,17 @@ make_icon_svg <- function(
   icons <- data.frame(network = networks, pm25_1hr) |>
     # Build icon details
     dplyr::mutate(
-      text = make_safe_icon_text(.data$pm25_1hr),
-      path = make_marker_icon_path(
-        .data$network,
-        .data$pm25_1hr,
-        icon_dir = icon_dir
-      ),
-      fill_colour = names(.data$path),
+      text = .data$pm25_1hr |>
+        make_safe_icon_text(for_legend = for_legend),
+      path = .data$network |>
+        make_marker_icon_path(
+          pm25_1hr = .data$pm25_1hr,
+          icon_dir = icon_dir,
+          for_legend = for_legend
+        ),
+      fill_colour = .data$pm25_1hr |>
+        aqhi::AQHI_plus(detailed = FALSE) |>
+        aqhi::get_aqhi_colours(),
       text_colour = prismatic::best_contrast(.data$fill_colour),
       font_size = dplyr::case_when(
         .data$pm25_1hr <= 9 | is.na(.data$pm25_1hr) | .data$pm25_1hr > 999 ~
@@ -116,8 +112,17 @@ make_icon_svg <- function(
     purrr::walk2(icons$svg, ~ writeLines(.y, .x))
 }
 
-make_safe_icon_text <- function(icon_values) {
+make_safe_icon_text <- function(icon_values, for_legend = FALSE) {
   stopifnot(length(icon_values) > 0, is.numeric(icon_values))
+  stopifnot(
+    is.logical(for_legend),
+    length(for_legend) == 1 | length(for_legend) == length(icon_values)
+  )
+
+  # Repeat for_legend if needed
+  if (length(for_legend) == 1) {
+    for_legend <- rep(for_legend, length(icon_values))
+  }
   icon_values |>
     round() |>
     handyr::clamp(range = c(-1, 1000)) |>
