@@ -47,10 +47,9 @@ make_aqmap <- function(
         icon_dir = icon_dirs$server,
         marker_size = marker_sizes$legend
       ) |>
-      leaflet::addLayersControl(
-        baseGroups = names(base_maps),
-        overlayGroups = levels(marker_data$network) |>
-          pretty_text(),
+      append_to_layer_contol(
+        layer_groups = levels(marker_data$network) |>
+          pretty_text()
       )
   }
 
