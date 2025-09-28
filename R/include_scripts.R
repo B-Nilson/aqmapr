@@ -1,8 +1,8 @@
 #' Include a css/js file in a leaflet map header
 #'
 #' @param map A leaflet map object
-#' @param path The path to the script file(s)
-#' @param type The type of script file(s), either "css" or "js"
+#' @param paths The path(s) to the script file(s)
+#' @param types The type(s) of script file(s), either "css" or "js"
 #'   Must be a single character string or vector the same length as `paths`.
 #'   Default is "js".
 #'

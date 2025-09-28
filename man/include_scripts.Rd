@@ -9,9 +9,9 @@ include_scripts(map, paths, types = "js")
 \arguments{
 \item{map}{A leaflet map object}
 
-\item{path}{The path to the script file(s)}
+\item{paths}{The path(s) to the script file(s)}
 
-\item{type}{The type of script file(s), either "css" or "js"
+\item{types}{The type(s) of script file(s), either "css" or "js"
 Must be a single character string or vector the same length as \code{paths}.
 Default is "js".}
 }
