@@ -47,7 +47,7 @@ make_aqmap <- function(
         icon_dir = icon_dirs$server,
         marker_size = marker_sizes$legend
       ) |>
-      append_to_layer_contol(
+      append_to_layer_control(
         layer_groups = levels(marker_data$network) |>
           pretty_text()
       )
