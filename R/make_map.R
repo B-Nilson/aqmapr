@@ -9,8 +9,18 @@ make_leaflet_map <- function(
   text,
   force_update_icons = FALSE
 ) {
+  js_paths <- c(
+    "/js/constants.js",
+    "/js/handlers.js",
+    "/js/map_layers.js",
+    "/js/track_map_state.js"
+  )
+
   map <- leaflet::leaflet() |>
-    leaflet::addProviderTiles(leaflet::providers$OpenStreetMap)
+    leaflet::addProviderTiles(leaflet::providers$OpenStreetMap, group = "Light Theme") |>
+    track_map_state() |>
+    include_scripts(paths = js_paths, types = "js") |> 
+    htmlwidgets::onRender("handle_page_render")
 
   if (!is.null(marker_data)) {
     map <- map |>
@@ -31,8 +41,10 @@ make_leaflet_map <- function(
         marker_size = marker_sizes$legend
       ) |>
       leaflet::addLayersControl(
+        baseGroups = c("Light Theme"),
         overlayGroups = levels(marker_data$network) |>
-          pretty_text()
+          pretty_text(),
+
       )
   }
 

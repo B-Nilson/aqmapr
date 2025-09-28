@@ -11,6 +11,7 @@ start_server <- function() {
   )
 
   app$static(.cst$icon_dir$local, .cst$icon_dir$server)
+  app$static(.cst$js_dir, "/js")
 
   # i.e. /data/recent/json
   app$get("/data/:name/:type", get_data)
