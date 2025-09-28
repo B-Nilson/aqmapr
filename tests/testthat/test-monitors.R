@@ -1,4 +1,5 @@
 test_that("add_obs_markers() works", {
+  skip("Requires server to be running")
   .cst <- load_constants()
   map <- leaflet::leaflet()
   networks <- names(.cst$allowed_networks)
