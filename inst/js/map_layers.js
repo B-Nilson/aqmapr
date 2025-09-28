@@ -7,35 +7,25 @@ var _layers = {
 
 // TODO: set this via R
 var _default_layers = {
-    "data": [0, 1], // same order as data_layers
-    "base": 0 // same order as base_layers
+    "data": ["Regulatory", "Low-cost"],
+    "base": "Light Theme"
 }
 
 function get_layers() {
-    // Get layer names for default layers
-    let initial_layers = [];
-    _default_layers.data.forEach(idx => initial_layers.push(_layers.data[idx]));
-    let base = _layers.base[_default_layers.base];
-
     // Loop through map layers and get pointers 
     let base_layers = [];
     let data_layers = [];
     let default_layers = [];
-    for (let i in _map._layers) {
-        let layer = _map._layers[i];
-        // Push relevent data layers to .all
-        if (layer.groupname != undefined &
-            layer.groupname != 'search' &
-            layer.groupname != base) data_layers.push(layer);
-        // Push base layers to .base
-        if (layer.groupname == base) base_layers.push(layer);
-        // Push default layers to .defaults
-        if (initial_layers.includes(layer.groupname)) default_layers.push(layer);
-        // stop running if we got all the layers we need
-        if (data_layers.length === _layers.data.length &
-            base_layers.length === _layers.base.length &
-            default_layers.length === initial_layers.length) {
-            break
+    for (let i in _map.layerManager._groupContainers) {
+        let layer = _map.layerManager._groupContainers[i];
+        // Split out base, data, and default layers
+        if (layer.groupname != undefined) {
+            let is_base = _layers.base.includes(layer.groupname);
+            let is_data = _layers.data.includes(layer.groupname);
+            let is_default = _default_layers.data.includes(layer.groupname) || _default_layers.base == layer.groupname;
+            if (is_base) base_layers.push(layer);
+            if (is_data) data_layers.push(layer);
+            if (is_default) default_layers.push(layer);
         }
     };
     return {

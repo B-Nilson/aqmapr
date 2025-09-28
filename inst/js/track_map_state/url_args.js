@@ -49,7 +49,7 @@ function get_url_args() {
 
 function get_default_args() {
     // Get leaflet id for default base layer and preprend "B"
-    let default_base = "B" + _map.layers.base[_default_layers.base].layer._leaflet_id;
+    let default_base = "B" + _map.layers.base[_layers.base.indexOf(_default_layers.base)].layer._leaflet_id;
     // Get leaflet ids for default data layers and preprend "L"
     let default_layers = _map.layers.defaults.map(layer => "L" + layer._leaflet_id);
     // Combine and return
