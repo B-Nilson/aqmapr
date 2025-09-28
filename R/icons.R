@@ -124,10 +124,13 @@ make_safe_icon_text <- function(icon_values, for_legend = FALSE) {
   if (length(for_legend) == 1) {
     for_legend <- rep(for_legend, length(icon_values))
   }
-  icon_values |>
+
+  safe_text <- icon_values |>
     round() |>
-    handyr::clamp(range = c(-1, 1000)) |>
+    handyr::clamp(range = c(0, 1000)) |>
     handyr::swap(1000, with = "+") |>
-    handyr::swap(-1, with = "") |>
     handyr::swap(NA, with = "-")
+  safe_text[for_legend] <- ""
+  
+  return(safe_text)
 }

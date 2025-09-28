@@ -2,13 +2,14 @@ test_that("make_marker_icon_path() works", {
   .cst <- load_constants()
   networks <- names(.cst$allowed_networks)
   pm25_1hr <- c(50, NA, 1000, rep(1, length(networks) - 3))
+  for_legend <- c(TRUE, rep(FALSE, length(pm25_1hr) - 1))
   result <- make_marker_icon_path(
     networks = networks,
     pm25_1hr = pm25_1hr,
     icon_dir = .cst$icon_dir$local,
-    for_legend = c(TRUE, rep(FALSE, length(pm25_1hr) - 1))
+    for_legend = for_legend
   )
-  
+
   # check length
   length(result) |>
     expect_equal(length(.cst$allowed_networks))
@@ -17,7 +18,7 @@ test_that("make_marker_icon_path() works", {
     basename() |>
     expect_equal(
       networks |>
-        paste0("_icon_", make_safe_icon_text(pm25_1hr)) |>
+        paste0("_icon_", pm25_1hr |> make_safe_icon_text(for_legend = for_legend)) |>
         paste0(".svg")
     )
 })
@@ -28,7 +29,8 @@ test_that("make_icon_svg() works", {
   networks <- names(.cst$allowed_networks)
   result <- make_icon_svg(
     networks = networks,
-    pm25_1hr = c(-1, NA, 1, 1000),
+    pm25_1hr = c(10, NA, 1, 1000),
+    for_legend = c(TRUE, FALSE, FALSE, FALSE),
     template_dir = .cst$image_dir,
     icon_dir = temp_dir,
     font_sizes = .cst$font_sizes$markers,
@@ -46,5 +48,5 @@ test_that("make_icon_svg() works", {
 
 test_that("make_safe_icon_text() works", {
   expect_equal(make_safe_icon_text(1), "1")
-  expect_equal(make_safe_icon_text(c(1000, -1, NA)), c("+", "", "-"))
+  expect_equal(make_safe_icon_text(c(1000, 50, NA), for_legend = c(FALSE, TRUE, FALSE)), c("+", "", "-"))
 })
