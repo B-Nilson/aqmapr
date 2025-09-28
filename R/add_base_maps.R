@@ -45,47 +45,7 @@ add_base_maps <- function(map, base_maps) {
 
   # Insert base layers into basemap control (create control if needed)
   map <- map |>
-    append_to_layer_contol(base_groups = names(base_maps))
+    append_to_layer_control(base_groups = names(base_maps))
 
-  return(map)
-}
-
-append_to_layer_contol <- function(
-  map,
-  base_groups = character(0),
-  layer_groups = character(0),
-  ...
-) {
-  # Determine if control is already present
-  is_control_call <- map$x$calls |>
-    sapply(\(x) x$method) ==
-    "addLayersControl"
-  has_control <- any(is_control_call)
-
-  if (has_control) {
-    # Get existing control bases/layers (group names)
-    existing_bases <- map$x$calls[is_control_call][[1]]$args[[1]]
-    existing_layers <- map$x$calls[is_control_call][[1]]$args[[2]]
-
-    # Append (unique) added bases/layers, drop duplicates
-    map$x$calls[is_control_call][[1]]$args[[1]] <- c(
-      existing_bases,
-      base_groups
-    ) |>
-      unique()
-    map$x$calls[is_control_call][[1]]$args[[2]] <- c(
-      existing_layers,
-      layer_groups
-    ) |>
-      unique()
-  } else {
-    # Otherwise, create new control
-    map <- map |>
-      leaflet::addLayersControl(
-        baseGroups = base_groups,
-        overlayGroups = layer_groups,
-        ...
-      )
-  }
   return(map)
 }
