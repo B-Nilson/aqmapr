@@ -38,6 +38,11 @@ load_constants = function() {
       "pm25_24hr"
     ),
 
+    base_maps = c(
+      "Light Theme" = "OpenStreetMap",
+      "Dark Theme" = "CartoDB.DarkMatter"
+    ),
+
     font_sizes = list(
       # 1, 2, and 3 digit values on observation markers
       markers = c(119, 99, 90)

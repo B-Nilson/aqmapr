@@ -68,7 +68,7 @@ function apply_args(set_view = true) {
     }
     // Set base layer
     let base_layer_idx = _map.layers.base.map(
-        (layer) => "B" + layer._leaflet_id).indexOf(_map.args.base);
+        (layer) => "B" + (layer.layer._leaflet_id + 1)).indexOf(_map.args.base);
     set_base_layer(base_layer_idx);
     // Set data layers
     let data_layer_idxs = _map.args.data.map(

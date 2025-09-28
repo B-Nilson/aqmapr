@@ -11,8 +11,9 @@ get_map <- function(req, res) {
   ) |>
     handyr::on_error(.return = NULL)
 
-  map <- make_leaflet_map(
+  map <- make_aqmap(
     marker_data = recent_aqmap_data,
+    base_maps = .cst$base_maps,
     template_dir = .cst$image_dir,
     icon_dirs = .cst$icon_dir,
     font_sizes = .cst$font_sizes,

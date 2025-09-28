@@ -27,10 +27,21 @@ function get_layers() {
         }
     };
     return {
-        base: base_layers,
+        base: get_base_layers(_layers.base),
         data: data_layers,
         defaults: default_layers
     };
+}
+
+function get_base_layers(base_layer_names) {
+  var base_layers = [];
+  for (let [key, layer] of Object.entries(_map.layerManager._byStamp)){
+    if (base_layer_names.includes(layer.group)){
+      base_layers.push(layer);
+      if (base_layers.length == base_layer_names.length) break
+    }else continue;
+  }
+  return base_layers;
 }
 
 function show_layers(layer_idxs) {

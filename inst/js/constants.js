@@ -1,5 +1,5 @@
 const _layers = {
-    "base": ["Light Theme"],
+    "base": ["Light Theme", "Dark Theme"],
     "data": {
         "lcm_obs": {
             "layer": "Low-cost",

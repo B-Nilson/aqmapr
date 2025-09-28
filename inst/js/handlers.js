@@ -14,6 +14,7 @@ async function handle_page_render() {
     }).then(() => {
         _map.on('overlayadd', handle_layer_change);
         _map.on('overlayremove', handle_layer_change);
+        _map.on('baselayerchange', handle_layer_change);
         _map.on('moveend', handle_map_move);
     });
 }
@@ -28,6 +29,9 @@ async function handle_layer_change(el) {
         _map.args.data.splice(
             _map.args.data.indexOf("L" + el.layer._leaflet_id), 1
         );
+    } else if (el.type === 'baselayerchange') {
+        // Update base layer id
+        _map.args.base = "B" + el.layer._leaflet_id;
     }
     // Update URL to reflect _map.args
     update_url_args();
