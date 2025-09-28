@@ -24,15 +24,22 @@
 #' )
 #' map |> add_base_maps(base_maps)
 add_base_maps <- function(map, base_maps) {
+  stopifnot("leaflet" %in% class(map))
+  stopifnot(is.character(base_maps), length(base_maps) > 0)
+
+  # Handle case where names are not provided
   if (is.null(names(base_maps))) {
     names(base_maps) <- base_maps
   }
+
+  # Loop through and add base maps
   for (name in names(base_maps)) {
     map <- map |>
       leaflet::addProviderTiles(
-        base_maps[[name]],
+        provider = base_maps[[name]],
         group = name
       ) |>
+      # Convert errors to warnings
       handyr::on_error(.return = map, .warn = TRUE)
   }
   return(map)

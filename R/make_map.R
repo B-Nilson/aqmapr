@@ -11,7 +11,7 @@ make_aqmap <- function(
   force_update_icons = FALSE
 ) {
   map <- leaflet::leaflet() |>
-    add_base_maps(base_maps) |>
+    add_base_maps(base_maps = base_maps) |>
     # Use leaflet.extras::addHash() + custom js
     # to track map location/layers/basemap
     track_map_state()
