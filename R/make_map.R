@@ -43,14 +43,3 @@ make_aqmap <- function(
 
   return(map)
 }
-
-add_base_maps <- function(map, base_maps) {
-  for (name in names(base_maps)) {
-    map <- map |>
-      leaflet::addProviderTiles(
-        base_maps[[name]],
-        group = name
-      )
-  }
-  return(map)
-}
