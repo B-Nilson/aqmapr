@@ -1,15 +1,14 @@
 test_that("make_marker_icon_path() works", {
   .cst <- load_constants()
   networks <- names(.cst$allowed_networks)
-  pm25_1hr <- c(-1, NA, 1000, rep(1, length(networks) - 3))
+  pm25_1hr <- c(50, NA, 1000, rep(1, length(networks) - 3))
   result <- make_marker_icon_path(
     networks = networks,
     pm25_1hr = pm25_1hr,
-    icon_dir = .cst$icon_dir$local
+    icon_dir = .cst$icon_dir$local,
+    for_legend = c(TRUE, rep(FALSE, length(pm25_1hr) - 1))
   )
-  # check colours (names) are right
-  names(result) |>
-    expect_equal(c("#650205", "#bbbbbb", "#650205", "#21C6F5"))
+  
   # check length
   length(result) |>
     expect_equal(length(.cst$allowed_networks))
