@@ -42,6 +42,7 @@ make_icon_svg <- function(
     length(marker_sizes) > 0,
     all(!is.na(marker_sizes))
   )
+  stopifnot(is.logical(force), length(force) == 1)
 
   # Combine inputs
   icons <- data.frame(network = networks, pm25_1hr) |>
