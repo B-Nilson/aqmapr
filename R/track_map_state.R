@@ -1,4 +1,4 @@
 track_map_state <- function(map) {
-  map |> 
+  map |>
     leaflet.extras::addHash()
 }

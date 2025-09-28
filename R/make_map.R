@@ -17,9 +17,12 @@ make_leaflet_map <- function(
   )
 
   map <- leaflet::leaflet() |>
-    leaflet::addProviderTiles(leaflet::providers$OpenStreetMap, group = "Light Theme") |>
+    leaflet::addProviderTiles(
+      leaflet::providers$OpenStreetMap,
+      group = "Light Theme"
+    ) |>
     track_map_state() |>
-    include_scripts(paths = js_paths, types = "js") |> 
+    include_scripts(paths = js_paths, types = "js") |>
     htmlwidgets::onRender("handle_page_render")
 
   if (!is.null(marker_data)) {
@@ -44,7 +47,6 @@ make_leaflet_map <- function(
         baseGroups = c("Light Theme"),
         overlayGroups = levels(marker_data$network) |>
           pretty_text(),
-
       )
   }
 

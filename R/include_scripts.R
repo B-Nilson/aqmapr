@@ -24,7 +24,7 @@ include_scripts <- function(map, paths, types = "js") {
   for (i in seq_along(paths)) {
     path <- paths[i]
     type <- types[i]
-    
+
     # Build html for inserting script into header
     if (type == "css") {
       script_tag <- htmltools::tags$link(href = path, rel = "stylesheet")
