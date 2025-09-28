@@ -1,6 +1,7 @@
 # Create leaflet map similiar to AQmap
-make_leaflet_map <- function(
+make_aqmap <- function(
   marker_data = NULL,
+  base_maps = c("Light Theme" = "OpenStreetMap"),
   template_dir,
   icon_dirs,
   font_sizes,
@@ -9,21 +10,11 @@ make_leaflet_map <- function(
   text,
   force_update_icons = FALSE
 ) {
-  js_paths <- c(
-    "/js/constants.js",
-    "/js/handlers.js",
-    "/js/map_layers.js",
-    "/js/track_map_state.js"
-  )
-
   map <- leaflet::leaflet() |>
-    leaflet::addProviderTiles(
-      leaflet::providers$OpenStreetMap,
-      group = "Light Theme"
-    ) |>
-    track_map_state() |>
-    include_scripts(paths = js_paths, types = "js") |>
-    htmlwidgets::onRender("handle_page_render")
+    add_base_maps(base_maps) |>
+    # Use leaflet.extras::addHash() + custom js
+    # to track map location/layers/basemap
+    track_map_state()
 
   if (!is.null(marker_data)) {
     map <- map |>
@@ -44,11 +35,22 @@ make_leaflet_map <- function(
         marker_size = marker_sizes$legend
       ) |>
       leaflet::addLayersControl(
-        baseGroups = c("Light Theme"),
+        baseGroups = names(base_maps),
         overlayGroups = levels(marker_data$network) |>
           pretty_text(),
       )
   }
 
+  return(map)
+}
+
+add_base_maps <- function(map, base_maps) {
+  for (name in names(base_maps)) {
+    map <- map |>
+      leaflet::addProviderTiles(
+        base_maps[[name]],
+        group = name
+      )
+  }
   return(map)
 }
