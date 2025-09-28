@@ -44,5 +44,5 @@ map <- leaflet() |>
 # Add a layer and include it in the exising layer control
 map  |>
   leaflet::addMarkers(lat = -37.8136, lng = 144.9631, group = "test") |>
-  append_to_layer_control(layer_groups = "test") 
+  append_to_layer_control(layer_groups = "test")
 }

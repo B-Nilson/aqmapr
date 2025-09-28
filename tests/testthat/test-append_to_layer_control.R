@@ -11,6 +11,6 @@ test_that("no error occurs", {
     leaflet::addMarkers(lat = -33.8136, lng = 144.9631, group = "test6") |>
     append_to_layer_control(layer_groups = c("test5", "test6")) |>
     expect_no_error() |>
-    expect_no_warning() |> 
+    expect_no_warning() |>
     expect_snapshot()
 })

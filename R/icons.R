@@ -131,6 +131,6 @@ make_safe_icon_text <- function(icon_values, for_legend = FALSE) {
     handyr::swap(1000, with = "+") |>
     handyr::swap(NA, with = "-")
   safe_text[for_legend] <- ""
-  
+
   return(safe_text)
 }

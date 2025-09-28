@@ -7,8 +7,8 @@
 #' @param js_dir The directory where custom js files are stored.
 #'   This should not need to be changed.
 #'   Default is the "js" directory in the `aqmapr` package.
-#' @param js_endpoint The endpoint where custom js files can be accessed by the client. 
-#'   Typically this is either a ambiorix/plumber endpoint or a static directory 
+#' @param js_endpoint The endpoint where custom js files can be accessed by the client.
+#'   Typically this is either a ambiorix/plumber endpoint or a static directory
 #'   (relative to the html file being served).
 #'
 #' @return A leaflet map object
@@ -16,7 +16,7 @@
 #' @examples
 #' library(leaflet)
 #' library(aqmapr)
-#' 
+#'
 #' leaflet() |>
 #'   add_base_maps(base_maps = "OpenStreetMap") |>
 #'   track_map_state()

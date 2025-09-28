@@ -19,15 +19,15 @@
 #' @examples
 #' library(leaflet)
 #' library(aqmapr)
-#' 
+#'
 #' # Create basic map with layer control
 #' map <- leaflet() |>
 #'   add_base_maps(base_maps = "OpenStreetMap")
-#' 
+#'
 #' # Add a layer and include it in the exising layer control
 #' map  |>
 #'   leaflet::addMarkers(lat = -37.8136, lng = 144.9631, group = "test") |>
-#'   append_to_layer_control(layer_groups = "test") 
+#'   append_to_layer_control(layer_groups = "test")
 append_to_layer_control <- function(
   map,
   base_groups = character(0),

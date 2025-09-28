@@ -18,7 +18,10 @@ test_that("make_marker_icon_path() works", {
     basename() |>
     expect_equal(
       networks |>
-        paste0("_icon_", pm25_1hr |> make_safe_icon_text(for_legend = for_legend)) |>
+        paste0(
+          "_icon_",
+          pm25_1hr |> make_safe_icon_text(for_legend = for_legend)
+        ) |>
         paste0(".svg")
     )
 })
@@ -48,5 +51,8 @@ test_that("make_icon_svg() works", {
 
 test_that("make_safe_icon_text() works", {
   expect_equal(make_safe_icon_text(1), "1")
-  expect_equal(make_safe_icon_text(c(1000, 50, NA), for_legend = c(FALSE, TRUE, FALSE)), c("+", "", "-"))
+  expect_equal(
+    make_safe_icon_text(c(1000, 50, NA), for_legend = c(FALSE, TRUE, FALSE)),
+    c("+", "", "-")
+  )
 })

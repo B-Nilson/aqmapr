@@ -10,17 +10,21 @@ start_server <- function() {
     host = .cst$server$host
   )
 
+  ## Serve icons and js
   app$static(.cst$icon_dir$local, .cst$icon_dir$server)
   app$static(.cst$js_dir$local, .cst$js_dir$server)
 
+  ## Serve data
   # i.e. /data/recent/json
   app$get("/data/:name/:type", get_data)
 
   # i.e. /data/plotting/agency/10102/json
   app$get("/data/:name/:network/:site_id/:type", get_data)
 
+  ## Serve map
   app$get("/", get_map)
 
+  ## Start server
   app$start()
 }
 
@@ -72,7 +76,7 @@ get_data <- function(req, res) {
   # Return response if valid request (404 if not)
   if (type %in% allowed_types) {
     res[[type]](out_data)
-  }else {
+  } else {
     res$not_found()
   }
 }
