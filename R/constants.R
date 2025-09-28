@@ -8,7 +8,11 @@ load_constants = function() {
     data_dir = tempdir(),
 
     image_dir = system.file("images", package = "aqmapr"),
-    js_dir = system.file("js", package = "aqmapr"),
+    
+    js_dir = list(
+      local = system.file("js", package = "aqmapr"),
+      server = "/js"
+    ),
 
     icon_dir = list(
       local = system.file("images/icons", package = "aqmapr"),

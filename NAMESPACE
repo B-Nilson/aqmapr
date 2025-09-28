@@ -3,4 +3,5 @@
 export(add_base_maps)
 export(include_scripts)
 export(start_server)
+export(track_map_state)
 importFrom(rlang,.data)

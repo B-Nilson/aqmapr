@@ -1,7 +1,20 @@
+
+// TODO: set this via R
+var _layers = {
+    "base": ["Light Theme", "Dark Theme"],
+    "data": ["Regulatory", "Low-cost"]
+};
+
+// TODO: set this via R
+var _default_layers = {
+    "data": [0, 1], // same order as data_layers
+    "base": 0 // same order as base_layers
+}
+
 function get_layers() {
     // Get layer names for default layers
-    let initial_layers = _default_layers.data.map(
-        idx => _layers.data[Object.keys(_layers.data)[idx]].layer);
+    let initial_layers = [];
+    _default_layers.data.forEach(idx => initial_layers.push(_layers.data[idx]));
     let base = _layers.base[_default_layers.base];
 
     // Loop through map layers and get pointers 
@@ -19,10 +32,9 @@ function get_layers() {
         // Push default layers to .defaults
         if (initial_layers.includes(layer.groupname)) default_layers.push(layer);
         // stop running if we got all the layers we need
-        let have_all_data_layers = data_layers.length === Object.keys(_layers.data).length;
-        let have_all_base_layers = base_layers.length === _layers.base.length;
-        let have_all_default_layers = default_layers.length === initial_layers.length;
-        if (have_all_data_layers & have_all_default_layers & have_all_base_layers) {
+        if (data_layers.length === _layers.data.length &
+            base_layers.length === _layers.base.length &
+            default_layers.length === initial_layers.length) {
             break
         }
     };
@@ -34,14 +46,14 @@ function get_layers() {
 }
 
 function get_base_layers(base_layer_names) {
-  var base_layers = [];
-  for (let [key, layer] of Object.entries(_map.layerManager._byStamp)){
-    if (base_layer_names.includes(layer.group)){
-      base_layers.push(layer);
-      if (base_layers.length == base_layer_names.length) break
-    }else continue;
-  }
-  return base_layers;
+    var base_layers = [];
+    for (let [key, layer] of Object.entries(_map.layerManager._byStamp)) {
+        if (base_layer_names.includes(layer.group)) {
+            base_layers.push(layer);
+            if (base_layers.length == base_layer_names.length) break
+        } else continue;
+    }
+    return base_layers;
 }
 
 function show_layers(layer_idxs) {

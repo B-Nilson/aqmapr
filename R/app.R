@@ -11,7 +11,7 @@ start_server <- function() {
   )
 
   app$static(.cst$icon_dir$local, .cst$icon_dir$server)
-  app$static(.cst$js_dir, "/js")
+  app$static(.cst$js_dir$local, .cst$js_dir$server)
 
   # i.e. /data/recent/json
   app$get("/data/:name/:type", get_data)
@@ -96,6 +96,7 @@ get_map <- function(req, res) {
     base_maps = .cst$base_maps,
     template_dir = .cst$image_dir,
     icon_dirs = .cst$icon_dir,
+    js_dirs = .cst$js_dir,
     font_sizes = .cst$font_sizes,
     marker_sizes = .cst$marker_sizes,
     pm25_units = .cst$units$pm25,

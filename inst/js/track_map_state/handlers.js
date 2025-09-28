@@ -1,23 +1,19 @@
-
-async function handle_page_render() {
-    _map = this;
-    _map.layers = get_layers();
-    wait_for_hash().then(async () => {
-        _map.args =  get_args();
-        // Hide all layers
-        let all_layer_idxs = Object.keys(_map.layers.data).map(Number);
-        hide_layers(all_layer_idxs);
-        // Display URL layers and set view (center/zoom)
-        apply_args(set_view = true);
-        // Make sure the URL arguments match displayed
-        update_url_args();
-    }).then(() => {
-        _map.on('overlayadd', handle_layer_change);
-        _map.on('overlayremove', handle_layer_change);
-        _map.on('baselayerchange', handle_layer_change);
-        _map.on('moveend', handle_map_move);
-    });
-}
+// TODO: wait_for(location.hash).then(...)
+wait_for_hash().then(async () => {
+    _map.args =  get_args();
+    // Hide all layers
+    let all_layer_idxs = Object.keys(_map.layers.data).map(Number);
+    hide_layers(all_layer_idxs);
+    // Display URL layers and set view (center/zoom)
+    apply_args(set_view = true);
+    // Make sure the URL arguments match displayed
+    update_url_args();
+}).then(() => {
+    _map.on('overlayadd', handle_layer_change);
+    _map.on('overlayremove', handle_layer_change);
+    _map.on('baselayerchange', handle_layer_change);
+    _map.on('moveend', handle_map_move);
+});
 
 async function handle_layer_change(el) {
     // Update _map.args object with layer change
