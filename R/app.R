@@ -5,8 +5,8 @@
 #' @param background (Optional).
 #'   Should the server be run in the background?
 #'   If `TRUE`, you must assign the output to a variable to maintain the connection (see [callr::r_bg]).
-#'   Default is `FALSE`. 
-#' 
+#'   Default is `FALSE`.
+#'
 #' @export
 start_server <- function(background = FALSE) {
   if (background) {

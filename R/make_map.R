@@ -26,7 +26,7 @@ make_aqmap <- function(
     track_map_state(
       js_dir = js_dirs$local,
       js_endpoint = js_dirs$server
-    ) |> 
+    ) |>
     # Cache provider tiles for faster reload times
     leaflet.extras::enableTileCaching()
 
