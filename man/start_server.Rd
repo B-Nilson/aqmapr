@@ -18,6 +18,7 @@ Default is 8000.}
 \description{
 Start the Ambiorix server and listen on the specified port and host.
 See \code{host}:\code{port} (i.e. 127.0.0.1:8000) in your browser to view app once started.
+Use \code{Ctrl+C} to stop the server.
 
 The following endpoints are available:
 \itemize{

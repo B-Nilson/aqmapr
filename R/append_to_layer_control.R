@@ -2,7 +2,7 @@
 #'
 #' Creates a layer control if non already exists on the map, however,
 #' if one exists, the base and layer groups will be appended to the existing control.
-#' 
+#'
 #' This allows for modularity when adding layers to the map without overwriting the existing layer control.
 #'
 #' @param map A leaflet map object

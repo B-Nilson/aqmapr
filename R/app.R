@@ -4,7 +4,7 @@
 #' Start the Ambiorix server and listen on the specified port and host.
 #' See `host`:`port` (i.e. 127.0.0.1:8000) in your browser to view app once started.
 #' Use `Ctrl+C` to stop the server.
-#' 
+#'
 #' The following endpoints are available:
 #' - `GET /`: AQmapr main page (see [aqmapr::make_aqmap])
 #' - `GET /data/recent/:type`: Recent AQmap data (see [aqmapr::load_recent_aqmap_data]) as type= json, csv, or tsv

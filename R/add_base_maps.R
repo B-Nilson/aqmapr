@@ -25,7 +25,11 @@
 #' map |> add_base_maps(base_maps)
 add_base_maps <- function(map, base_maps) {
   stopifnot("leaflet" %in% class(map))
-  stopifnot(is.character(base_maps), length(base_maps) > 0, all(base_maps %in% leaflet::providers))
+  stopifnot(
+    is.character(base_maps),
+    length(base_maps) > 0,
+    all(base_maps %in% leaflet::providers)
+  )
 
   # Handle case where names are not provided
   if (is.null(names(base_maps))) {

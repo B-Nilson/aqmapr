@@ -49,7 +49,7 @@ make_aqmap <- function(
       ) |>
       add_monitor_legend(
         networks = levels(marker_data$network),
-        legend_title = text$monitor_legend$title |> 
+        legend_title = text$monitor_legend$title |>
           stats::setNames(text$monitor_legend$hover),
         icon_dir = icon_endpoint,
         css_dir = css_dir,

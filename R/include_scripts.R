@@ -1,9 +1,9 @@
 #' Include a css/js file in a Leaflet map header
 #'
-#' Allows for including references to custom css/js in a Leaflet html widget 
+#' Allows for including references to custom css/js in a Leaflet html widget
 #' (see [leaflet::leaflet] and [htmlwidgets::prependContent]).
 #' `paths` must be relative to the html file containing the map and be accessible by the html file.
-#' 
+#'
 #' @param map A leaflet map object
 #' @param paths The path(s) to the script file(s), relative to the html file containing the map.
 #' @param types The type(s) of script file(s), either "css" or "js"
@@ -15,7 +15,7 @@
 #' @examples
 #' library(leaflet)
 #' library(aqmapr)
-#' 
+#'
 #' leaflet() |>
 #'   add_base_maps(base_maps = "OpenStreetMap") |>
 #'   include_scripts(

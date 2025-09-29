@@ -77,8 +77,8 @@ make_icon_svg <- function(
     )
 
   # Write out icon files
-  icons$path |> 
-    purrr::walk2(icons$svg, ~ writeLines(.y, .x)) |> 
+  icons$path |>
+    purrr::walk2(icons$svg, ~ writeLines(.y, .x)) |>
     invisible()
 }
 

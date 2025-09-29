@@ -36,7 +36,7 @@ test_that("add_monitor_legend() works", {
   map |>
     add_monitor_legend(
       networks = networks,
-      legend_title = .cst$text$monitor_legend$title |> 
+      legend_title = .cst$text$monitor_legend$title |>
         stats::setNames(.cst$text$monitor_legend$hover),
       icon_dir = .cst$icon_dir$server,
       css_dir = .cst$css_dir$local,
