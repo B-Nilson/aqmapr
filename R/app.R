@@ -10,12 +10,16 @@
 #' @export
 start_server <- function(background = FALSE) {
   if (background) {
-    rlang::check_installed("callr")
+    stop("Not yet implemented")
+    rlang::check_installed("mirai")
     rlang::check_installed("aqmapr")
-    return(callr::r_bg(\() {
-      library(aqmapr)
-      start_server(background = FALSE)
-    }))
+    mirai::daemons(1)
+    return(
+      mirai::mirai({
+        library(aqmapr)
+        start_server(background = FALSE)
+      })
+    )
   }
   .cst <- load_constants()
 
