@@ -9,6 +9,11 @@ load_constants = function() {
 
     image_dir = system.file("images", package = "aqmapr"),
 
+    css_dir = list(
+      local = system.file("css", package = "aqmapr"),
+      server = "/css"
+    ),
+
     js_dir = list(
       local = system.file("js", package = "aqmapr"),
       server = "/js"

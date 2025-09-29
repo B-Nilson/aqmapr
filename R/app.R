@@ -28,8 +28,9 @@ start_server <- function(background = FALSE) {
     host = .cst$server$host
   )
 
-  ## Serve icons and js
+  ## Serve icons css, and js
   app$static(.cst$icon_dir$local, .cst$icon_dir$server)
+  app$static(.cst$css_dir$local, .cst$css_dir$server)
   app$static(.cst$js_dir$local, .cst$js_dir$server)
 
   ## Serve data
@@ -119,6 +120,7 @@ get_map <- function(req, res) {
     template_dir = .cst$image_dir,
     icon_dirs = .cst$icon_dir,
     js_dirs = .cst$js_dir,
+    css_dirs = .cst$css_dir,
     font_sizes = .cst$font_sizes,
     marker_sizes = .cst$marker_sizes,
     pm25_units = .cst$units$pm25,

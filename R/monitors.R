@@ -106,74 +106,79 @@ add_obs_markers <- function(
 add_monitor_legend <- function(
   map,
   networks,
-  legend_details = list(
-    hover = "Hover text",
-    title = "Legend Title"
-  ),
+  legend_title,
   icon_dir,
-  marker_size,
+  css_dir,
+  css_endpoint = NULL,
   position = "bottomright"
 ) {
   stopifnot("leaflet" %in% class(map))
   stopifnot(is.character(networks), length(networks) > 0)
-  stopifnot(
-    is.list(legend_details),
-    length(legend_details) == 2,
-    all(c("hover", "title") %in% names(legend_details))
-  )
+  stopifnot(is.character(legend_title), length(legend_title) == 1)
   stopifnot(is.character(icon_dir), length(icon_dir) == 1)
-  stopifnot(is.numeric(marker_size), length(marker_size) == 1)
+  stopifnot(is.character(css_dir), length(css_dir) == 1)
+  stopifnot(
+    is.null(css_endpoint) |
+      (is.character(css_endpoint) & length(css_endpoint) == 1)
+  )
+  if (is.null(css_endpoint)) {
+    # Assume files available locally if no endpoint
+    css_endpoint <- css_dir
+  }
   stopifnot(
     is.character(position),
     length(position) == 1,
     position %in% c("bottomright", "bottomleft", "topleft", "topright")
   )
 
-  # Make icon paths
-  network_icons <- networks |>
-    make_marker_icon_path(
-      pm25_1hr = rep(-1, length(networks)),
-      icon_dir = icon_dir
-    ) |>
-    stats::setNames(networks)
+  # Ensure css file exists
+  css_file <- "monitor_legend.css"
+  css_local <- file.path(css_dir, css_file)
+  css_server <- file.path(css_endpoint, css_file)
+  stopifnot(file.exists(css_local))
 
   # Make legend title
-  title <- legend_details$title |>
+  title_tag <- legend_title |>
     htmltools::tags$strong() |>
-    htmltools::tags$span(title = legend_details$hover)
+    htmltools::tags$span(title = names(legend_title))
 
-  # Make icon references
-  style <- "vertical-align: middle; max-width: %spx; max-height: %spx;" |>
-    sprintf(marker_size, marker_size)
-  icons <- network_icons |>
+  # Make icon paths
+  icon_paths <- networks |>
+    make_marker_icon_path(
+      pm25_1hr = NA_real_,
+      icon_dir = icon_dir,
+      for_legend = TRUE
+    )
+
+  # Make icon img tags
+  icon_tags <- icon_paths |>
     lapply(
-      \(pth) htmltools::tags$img(src = pth, style = style)
+      \(pth) htmltools::tags$img(src = pth, class = "legend-icon")
     ) |>
     stats::setNames(networks)
 
   # Make text for beside each icon
-  style <- "vertical-align: middle;"
-  texts <- networks |>
-    pretty_text() |>
-    lapply(htmltools::tags$span, style = style) |>
+  text_tags <- pretty_text(networks) |>
+    lapply(htmltools::tags$span, class = "legend-labels") |>
     stats::setNames(networks)
 
-  # Combine tags
-  legend <- title |>
-    htmltools::tags$div(
-      htmltools::tags$br(),
-      icons$agency,
-      texts$agency,
-      htmltools::tags$br(),
-      icons$lcm,
-      texts$lcm,
-    )
+  # Combine each networks tags
+  legend_entries <- networks |>
+    lapply(\(network) {
+      icon_tags[[network]] |>
+        htmltools::tags$div(text_tags[[network]])
+    })
 
-  # Add to map
+  # Combine tags into legend
+  legend_tag <- title_tag |>
+    htmltools::tags$div(legend_entries)
+
+  # Add to map and include relevant css
   map |>
     leaflet::addControl(
-      html = legend,
-      layerId = "monitor_legend",
+      html = legend_tag,
+      layerId = "monitor-legend",
       position = position
-    )
+    ) |>
+    include_scripts(paths = css_server, types = "css")
 }

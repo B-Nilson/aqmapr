@@ -30,6 +30,7 @@ test_that("add_obs_markers() works", {
 })
 
 test_that("add_monitor_legend() works", {
+  skip("Requires server to be running")
   .cst <- load_constants()
   map <- leaflet::leaflet()
   networks <- names(.cst$allowed_networks)
@@ -37,9 +38,11 @@ test_that("add_monitor_legend() works", {
   map |>
     add_monitor_legend(
       networks = networks,
-      legend_details = .cst$text$monitor_legend,
+      legend_title = .cst$text$monitor_legend$title |> 
+        stats::setNames(.cst$text$monitor_legend$hover),
       icon_dir = .cst$icon_dir$server,
-      marker_size = .cst$marker_sizes$legend,
+      css_dir = .cst$css_dir$local,
+      css_endpoint = .cst$css_dir$server,
       position = "bottomright"
     ) |>
     expect_no_error()

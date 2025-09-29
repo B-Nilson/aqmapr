@@ -5,6 +5,7 @@ make_aqmap <- function(
   template_dir,
   icon_dirs,
   js_dirs,
+  css_dirs,
   font_sizes,
   marker_sizes,
   pm25_units,
@@ -45,9 +46,12 @@ make_aqmap <- function(
       ) |>
       add_monitor_legend(
         networks = levels(marker_data$network),
-        legend_details = text$monitor_legend,
+        legend_title = text$monitor_legend$title |> 
+          stats::setNames(text$monitor_legend$hover),
         icon_dir = icon_dirs$server,
-        marker_size = marker_sizes$legend
+        css_dir = css_dirs$local,
+        css_endpoint = css_dirs$server,
+        position = "bottomright"
       ) |>
       append_to_layer_control(
         layer_groups = levels(marker_data$network) |>
