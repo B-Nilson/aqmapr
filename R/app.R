@@ -2,9 +2,23 @@
 #'
 #' Start the Ambiorix server and listen on the specified port and host.
 #'
+#' @param background (Optional).
+#'   Should the server be run in the background?
+#'   If `TRUE`, you must assign the output to a variable to maintain the connection (see [callr::r_bg]).
+#'   Default is `FALSE`. 
+#' 
 #' @export
-start_server <- function() {
+start_server <- function(background = FALSE) {
+  if (background) {
+    rlang::check_installed("callr")
+    rlang::check_installed("aqmapr")
+    return(callr::r_bg(\() {
+      library(aqmapr)
+      start_server(background = FALSE)
+    }))
+  }
   .cst <- load_constants()
+
   app <- ambiorix::Ambiorix$new(
     port = .cst$server$port,
     host = .cst$server$host

@@ -4,7 +4,13 @@
 \alias{start_server}
 \title{Start the Ambiorix server}
 \usage{
-start_server()
+start_server(background = FALSE)
+}
+\arguments{
+\item{background}{(Optional).
+Should the server be run in the background?
+If \code{TRUE}, you must assign the output to a variable to maintain the connection (see \link[callr:r_bg]{callr::r_bg}).
+Default is \code{FALSE}.}
 }
 \description{
 Start the Ambiorix server and listen on the specified port and host.
