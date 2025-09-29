@@ -49,9 +49,9 @@ function get_url_args() {
 
 function get_default_args() {
     // Get leaflet id for default base layer and preprend "B"
-    let default_base = "B" + _map.layers.base[_layers.base.indexOf(_default_layers.base)].layer._leaflet_id;
+    let default_base = "B" + _map.layers.defaults.base._basemap_id;
     // Get leaflet ids for default data layers and preprend "L"
-    let default_layers = _map.layers.defaults.map(layer => "L" + layer._leaflet_id);
+    let default_layers = _map.layers.defaults.data.map(layer => "L" + layer._layer_id);
     // Combine and return
     return {
         "base": default_base,
@@ -68,12 +68,12 @@ function apply_args(set_view = true) {
     }
     // Set base layer
     let base_layer_idx = _map.layers.base.map(
-        (layer) => "B" + (layer.layer._leaflet_id + 1)).indexOf(_map.args.base);
+        (layer) => "B" + layer._basemap_id).indexOf(_map.args.base);
     set_base_layer(base_layer_idx);
     // Set data layers
     let data_layer_idxs = _map.args.data.map(
         (id) => _map.layers.data.map(
-            (layer) => "L" + layer._leaflet_id).indexOf(id));
+            (layer) => "L" + layer._layer_id).indexOf(id));
     show_layers(data_layer_idxs);
 }
 

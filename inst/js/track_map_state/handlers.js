@@ -19,15 +19,15 @@ async function handle_layer_change(el) {
     // Update _map.args object with layer change
     if (el.type === 'overlayadd') {
         // Add layer id if layer just added
-        _map.args.data.push("L" + el.layer._leaflet_id);
+        _map.args.data.push("L" + el.layer._layer_id);
     } else if (el.type === 'overlayremove') {
         // Remove layer id if layer just removed
         _map.args.data.splice(
-            _map.args.data.indexOf("L" + el.layer._leaflet_id), 1
+            _map.args.data.indexOf("L" + el.layer._layer_id), 1
         );
     } else if (el.type === 'baselayerchange') {
         // Update base layer id
-        _map.args.base = "B" + el.layer._leaflet_id;
+        _map.args.base = "B" + el.layer._basemap_id;
     }
     // Update URL to reflect _map.args
     update_url_args();
