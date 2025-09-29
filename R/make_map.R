@@ -5,7 +5,8 @@ make_aqmap <- function(
   font_sizes,
   marker_sizes,
   pm25_units,
-  text,
+  monitor_hover_text,
+  monitor_legend_title,
   template_dir = system.file("images", package = "aqmapr"),
   icon_dir = system.file("images/icons", package = "aqmapr"),
   icon_endpoint = "/icons",
@@ -44,13 +45,12 @@ make_aqmap <- function(
         font_sizes = font_sizes$markers,
         marker_sizes = marker_sizes,
         pm25_units = pm25_units,
-        marker_hover_text = text$monitor_hover,
+        marker_hover_text = monitor_hover_text,
         force_update_icons = force_update_icons
       ) |>
       add_monitor_legend(
         networks = levels(marker_data$network),
-        legend_title = text$monitor_legend$title |>
-          stats::setNames(text$monitor_legend$hover),
+        legend_title = monitor_legend,
         icon_dir = icon_endpoint,
         css_dir = css_dir,
         css_endpoint = css_endpoint,

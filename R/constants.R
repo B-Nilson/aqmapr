@@ -27,21 +27,6 @@ load_constants = function() {
       aqegg = c("aqegg", "egg", "eggs")
     ),
 
-    recent_data_cols = c(
-      site_id = "sensor_index",
-      name = "monitor",
-      "network",
-      "monitor_type", # (un-grouped network - i.e PA or EGG instead of lcm)
-      "lat",
-      "lng",
-      "prov_terr",
-      date_last_obs = "date",
-      pm25_10min = "pm25_recent",
-      "pm25_1hr",
-      "pm25_3hr",
-      "pm25_24hr"
-    ),
-
     base_maps = c(
       "Light Theme" = "OpenStreetMap",
       "Dark Theme" = "CartoDB.DarkMatter"
@@ -53,8 +38,6 @@ load_constants = function() {
     ),
 
     marker_sizes = list(missing = 17, obs = 33, legend = 22), # px
-
-    aqmap_url = "https://aqmap.ca/aqmap",
 
     units = list(
       pm25 = "&mu;g m <sup>-3</sup>"

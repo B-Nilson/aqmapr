@@ -3,12 +3,7 @@ test_that("add_obs_markers() works", {
   .cst <- load_constants()
   map <- leaflet::leaflet()
   networks <- names(.cst$allowed_networks)
-  marker_data <- load_recent_aqmap_data(
-    aqmap_url = .cst$aqmap_url,
-    data_dir = .cst$data_dir,
-    desired_cols = .cst$recent_data_cols,
-    allowed_networks = .cst$allowed_networks
-  ) |>
+  marker_data <- load_recent_aqmap_data() |>
     dplyr::filter(
       !is.na(pm25_1hr),
       date_last_obs >= Sys.time() - lubridate::hours(3)

@@ -7,7 +7,7 @@
 #'
 #' The following endpoints are available:
 #' - `GET /`: AQmapr main page (see [aqmapr::make_aqmap])
-#' - `GET /data/recent/:type`: Recent AQmap data (see [aqmapr::load_recent_aqmap_data]) as type= json, csv, or tsv
+#' - `GET /data/recent/:type`: Recent AQmap data (see [load_recent_aqmap_data]) as type= json, csv, or tsv
 #' - `GET /data/meta/:type`: A subset of the recent AQmap data with only metadata as type= json, csv, or tsv
 #' - `GET /data/plotting/:network/:site_id`: Historic site data (see [aqmapr::load_aqmap_plot_data]) as type= json, csv, or tsv
 #' - `GET /css`: AQmapr css
@@ -20,23 +20,26 @@
 #' @param port (Optional).
 #'   The port to listen on.
 #'   Default is 8000.
+#' @param icon_dir,css_dir,js_dir (Optional).
+#'   The directory where AQmapr icons/css/js are stored.
+#'   Default points to relevant directories in the `aqmapr` package installation.
+#'   These should not need to be changed.
 #'
 #' @export
 start_server <- function(
   host = "127.0.0.1",
-  port = 8000
+  port = 8000,
+  icon_dir = system.file("images/icons", package = "aqmapr"),
+  css_dir = system.file("css", package = "aqmapr"),
+  js_dir = system.file("js", package = "aqmapr")
 ) {
-  .cst <- load_constants()
-
-  app <- ambiorix::Ambiorix$new(
-    port = .cst$server$port,
-    host = .cst$server$host
-  )
+  # Initialize Ambiorix server object
+  app <- ambiorix::Ambiorix$new(port = port, host = host)
 
   ## Serve icons css, and js
-  app$static(.cst$icon_dir$local, .cst$icon_dir$server)
-  app$static(.cst$css_dir$local, .cst$css_dir$server)
-  app$static(.cst$js_dir$local, .cst$js_dir$server)
+  app$static(icon_dir, "/icons")
+  app$static(css_dir, "/css")
+  app$static(js_dir, "/js")
 
   ## Serve data
   # i.e. /data/recent/json
@@ -71,18 +74,12 @@ get_data <- function(req, res) {
 
   # Load requested data
   if (name %in% c("recent", "meta")) {
-    out_data <- load_recent_aqmap_data(
-      aqmap_url = .cst$aqmap_url,
-      data_dir = .cst$data_dir,
-      desired_cols = .cst$recent_data_cols,
-      allowed_networks = .cst$allowed_networks
-    ) |>
+    out_data <- load_recent_aqmap_data() |>
       handyr::on_error(.return = NULL)
   } else if (name == "plotting") {
     out_data <- load_aqmap_plot_data(
       network = network,
       site_id = site_id,
-      aqmap_url = .cst$aqmap_url,
       allowed_networks = .cst$allowed_networks
     ) |>
       handyr::on_error(.return = NULL)
@@ -111,12 +108,7 @@ get_map <- function(req, res) {
     .cst <- load_constants()
   }
 
-  recent_aqmap_data <- load_recent_aqmap_data(
-    aqmap_url = .cst$aqmap_url,
-    data_dir = .cst$data_dir,
-    desired_cols = .cst$recent_data_cols,
-    allowed_networks = .cst$allowed_networks
-  ) |>
+  recent_aqmap_data <- load_recent_aqmap_data() |>
     handyr::on_error(.return = NULL)
 
   map <- make_aqmap(
@@ -125,7 +117,9 @@ get_map <- function(req, res) {
     font_sizes = .cst$font_sizes,
     marker_sizes = .cst$marker_sizes,
     pm25_units = .cst$units$pm25,
-    text = .cst$text,
+    monitor_hover_text = .cst$text$monitor_hover,
+    monitor_legend_title = .cst$text$monitor_legend$title |> 
+      stats::setNames(.cst$text$monitor_legend$hover),
     force_update_icons = .cst$force_update_icons
   )
 

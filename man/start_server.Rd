@@ -4,7 +4,13 @@
 \alias{start_server}
 \title{Start a local Ambiorix server and serve the AQmapr app}
 \usage{
-start_server(host = "127.0.0.1", port = 8000)
+start_server(
+  host = "127.0.0.1",
+  port = 8000,
+  icon_dir = system.file("images/icons", package = "aqmapr"),
+  css_dir = system.file("css", package = "aqmapr"),
+  js_dir = system.file("js", package = "aqmapr")
+)
 }
 \arguments{
 \item{host}{(Optional).
@@ -14,6 +20,11 @@ Default is "127.0.0.1" (localhost).}
 \item{port}{(Optional).
 The port to listen on.
 Default is 8000.}
+
+\item{icon_dir, css_dir, js_dir}{(Optional).
+The directory where AQmapr icons/css/js are stored.
+Default points to relevant directories in the \code{aqmapr} package installation.
+These should not need to be changed.}
 }
 \description{
 Start the Ambiorix server and listen on the specified port and host.

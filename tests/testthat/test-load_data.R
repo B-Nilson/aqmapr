@@ -1,20 +1,26 @@
 test_that("load_recent_aqmap_data() works", {
   .cst <- load_constants()
   data_dir <- tempdir()
-  result <- load_recent_aqmap_data(
-    aqmap_url = .cst$aqmap_url,
-    data_dir = data_dir,
-    desired_cols = .cst$recent_data_cols,
-    allowed_networks = .cst$allowed_networks
-  )
+  result <- load_recent_aqmap_data(data_dir = data_dir)
 
   # Copy of data saved where expected
   expect_true(file.exists(file.path(data_dir, "aqmap_most_recent_obs.Rds")))
 
   # Returned data is correct
-  expected_cols <- names(.cst$recent_data_cols)
-  is_not_named <- expected_cols == ""
-  expected_cols[is_not_named] <- .cst$recent_data_cols[is_not_named]
+  expected_cols <- c(
+      "site_id",
+      "name",
+      "network",
+      "monitor_type", # (un-grouped network - i.e PA or EGG instead of lcm)
+      "lat",
+      "lng",
+      "prov_terr",
+      "date_last_obs",
+      "pm25_10min",
+      "pm25_1hr",
+      "pm25_3hr",
+      "pm25_24hr"
+    )
   expect_s3_class(result, "tbl_df")
   expect_equal(names(result), expected_cols)
   expect_true(nrow(result) > 0)
@@ -22,12 +28,7 @@ test_that("load_recent_aqmap_data() works", {
 
 test_that("load_aqmap_plot_data() works", {
   .cst <- load_constants()
-  meta <- load_recent_aqmap_data(
-    aqmap_url = .cst$aqmap_url,
-    data_dir = .cst$data_dir,
-    desired_cols = .cst$recent_data_cols,
-    allowed_networks = .cst$allowed_networks
-  ) |>
+  meta <- load_recent_aqmap_data() |>
     dplyr::filter(
       !is.na(pm25_1hr),
       date_last_obs >= Sys.time() - lubridate::hours(3)
@@ -35,12 +36,12 @@ test_that("load_aqmap_plot_data() works", {
     dplyr::distinct(monitor_type, .keep_all = TRUE)
 
   result <- meta$monitor_type |>
+    as.character() |> 
     purrr::map2(
       meta$site_id,
       ~ load_aqmap_plot_data(
         network = .x,
         site_id = .y,
-        aqmap_url = .cst$aqmap_url,
         allowed_networks = .cst$allowed_networks
       )
     ) |>
