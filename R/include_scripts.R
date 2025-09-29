@@ -1,13 +1,27 @@
-#' Include a css/js file in a leaflet map header
+#' Include a css/js file in a Leaflet map header
 #'
+#' Allows for including references to custom css/js in a Leaflet html widget 
+#' (see [leaflet::leaflet] and [htmlwidgets::prependContent]).
+#' `paths` must be relative to the html file containing the map and be accessible by the html file.
+#' 
 #' @param map A leaflet map object
-#' @param paths The path(s) to the script file(s)
+#' @param paths The path(s) to the script file(s), relative to the html file containing the map.
 #' @param types The type(s) of script file(s), either "css" or "js"
 #'   Must be a single character string or vector the same length as `paths`.
 #'   Default is "js".
 #'
-#' @return A leaflet map with the script file included in the page header
+#' @return A leaflet map with the script file(s) included in the page header
 #' @export
+#' @examples
+#' library(leaflet)
+#' library(aqmapr)
+#' 
+#' leaflet() |>
+#'   add_base_maps(base_maps = "OpenStreetMap") |>
+#'   include_scripts(
+#'     paths = system.file("/js/map_layers.js", package = "aqmapr"),
+#'     types = "js"
+#'   )
 include_scripts <- function(map, paths, types = "js") {
   stopifnot("leaflet" %in% class(map))
   stopifnot(

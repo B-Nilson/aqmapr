@@ -2,7 +2,7 @@
 % Please edit documentation in R/add_base_maps.R
 \name{add_base_maps}
 \alias{add_base_maps}
-\title{Add multiple basemaps to a leaflet map}
+\title{Add multiple basemap providers to a Leaflet map}
 \usage{
 add_base_maps(map, base_maps)
 }
@@ -10,7 +10,7 @@ add_base_maps(map, base_maps)
 \item{map}{A leaflet map object}
 
 \item{base_maps}{A character vector of base maps to add.
-Each element of the list should be found in \link[leaflet:providers]{leaflet::providers}.
+Each value must be found in \link[leaflet:providers]{leaflet::providers}.
 If names are provided, they will be used as the layer group names.
 If names are not provided, the values of \code{base_maps} will be used as the layer group names.}
 }
@@ -18,7 +18,7 @@ If names are not provided, the values of \code{base_maps} will be used as the la
 A leaflet map object with the base maps added.
 }
 \description{
-Loop through provided leaflet provider names (see \link[leaflet:providers]{leaflet::providers}) and add them to the map.
+Loop through desired Leaflet provider names (see \link[leaflet:providers]{leaflet::providers}) and add them to the map.
 The layer group will match the names of \code{base_maps}, or to the values of \code{base_maps} if names are not provided.
 The first element of \code{base_maps} will be used as the default basemap.
 }

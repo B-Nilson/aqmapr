@@ -2,7 +2,7 @@
 % Please edit documentation in R/track_map_state.R
 \name{track_map_state}
 \alias{track_map_state}
-\title{Track active map layers and view in the URL}
+\title{Track active map layers in Leaflet and view in the URL}
 \usage{
 track_map_state(
   map,
@@ -26,7 +26,7 @@ A leaflet map object
 }
 \description{
 Track map state (layers, center, zoom) and update URL accordingly.
-On page load, check URL for state and set map accordingly.
+On page load, check URL for state and apply to map.
 }
 \examples{
 library(leaflet)

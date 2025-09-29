@@ -2,7 +2,7 @@
 % Please edit documentation in R/append_to_layer_control.R
 \name{append_to_layer_control}
 \alias{append_to_layer_control}
-\title{Append a layer control to a leaflet map}
+\title{Create or append entries to a Leaflet layer control}
 \usage{
 append_to_layer_control(
   map,
@@ -14,24 +14,22 @@ append_to_layer_control(
 \arguments{
 \item{map}{A leaflet map object}
 
-\item{base_groups}{(Optional).
-A character vector of base layer group names which match the group names of base maps added with \code{\link[=add_base_maps]{add_base_maps()}} or \code{\link[leaflet:addProviderTiles]{leaflet::addProviderTiles()}}.
-These will be added to the layer control "baseGroups" list (see \code{\link[leaflet:addLayersControl]{leaflet::addLayersControl()}}).
-Default is an empty character vector.}
-
-\item{layer_groups}{(Optional).
-A character vector of layer group names which match the group names of layers added with \code{\link[leaflet:map-layers]{leaflet::addMarkers()}}, \code{\link[leaflet:map-layers]{leaflet::addPolygons()}}, etc.
-These will be added to the layer control "overlayGroups" list (see \code{\link[leaflet:addLayersControl]{leaflet::addLayersControl()}}).
+\item{base_groups, layer_groups}{(Optional).
+A character vector of basemap/layer group names which match the group names of basemaps/overlays added with \code{\link[=add_base_maps]{add_base_maps()}}, \code{\link[leaflet:addProviderTiles]{leaflet::addProviderTiles()}}, \code{\link[leaflet:map-layers]{leaflet::addMarkers()}}, \code{\link[leaflet:map-layers]{leaflet::addPolygons()}}, etc.
+These will be added to the layer control "baseGroups"/"overlayGroups" list(s) (see \code{\link[leaflet:addLayersControl]{leaflet::addLayersControl()}}).
 Default is an empty character vector.}
 
 \item{...}{Additional arguments passed to leaflet::addLayersControl()}
 }
 \value{
-A leaflet map object with the layer control appended
+A leaflet map object with a new/updated layer control
 }
 \description{
-Append a layer control to a leaflet map, allowing users to toggle
-layers on and off.
+Creates a layer control if non already exists on the map, however,
+if one exists, the base and layer groups will be appended to the existing control.
+}
+\details{
+This allows for modularity when adding layers to the map without overwriting the existing layer control.
 }
 \examples{
 library(leaflet)
@@ -39,10 +37,10 @@ library(aqmapr)
 
 # Create basic map with layer control
 map <- leaflet() |>
-  add_base_maps(base_maps = "OpenStreetMap")
+  add_base_maps(base_maps = c("test1" = "OpenStreetMap"))
 
 # Add a layer and include it in the exising layer control
 map  |>
-  leaflet::addMarkers(lat = -37.8136, lng = 144.9631, group = "test") |>
-  append_to_layer_control(layer_groups = "test")
+  leaflet::addMarkers(lat = -37.8136, lng = 144.9631, group = "test2") |>
+  append_to_layer_control(layer_groups = "test2")
 }

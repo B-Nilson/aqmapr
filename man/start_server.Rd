@@ -2,16 +2,31 @@
 % Please edit documentation in R/app.R
 \name{start_server}
 \alias{start_server}
-\title{Start the Ambiorix server}
+\title{Start a local Ambiorix server and serve the AQmapr app}
 \usage{
-start_server(background = FALSE)
+start_server(host = "127.0.0.1", port = 8000)
 }
 \arguments{
-\item{background}{(Optional).
-Should the server be run in the background?
-If \code{TRUE}, you must assign the output to a variable to maintain the connection (see \link[callr:r_bg]{callr::r_bg}).
-Default is \code{FALSE}.}
+\item{host}{(Optional).
+The host to listen on.
+Default is "127.0.0.1" (localhost).}
+
+\item{port}{(Optional).
+The port to listen on.
+Default is 8000.}
 }
 \description{
 Start the Ambiorix server and listen on the specified port and host.
+See \code{host}:\code{port} (i.e. 127.0.0.1:8000) in your browser to view app once started.
+
+The following endpoints are available:
+\itemize{
+\item \verb{GET /}: AQmapr main page (see \link{make_aqmap})
+\item \verb{GET /data/recent/:type}: Recent AQmap data (see \link{load_recent_aqmap_data}) as type= json, csv, or tsv
+\item \verb{GET /data/meta/:type}: A subset of the recent AQmap data with only metadata as type= json, csv, or tsv
+\item \verb{GET /data/plotting/:network/:site_id}: Historic site data (see \link{load_aqmap_plot_data}) as type= json, csv, or tsv
+\item \code{GET /css}: AQmapr css
+\item \code{GET /js}: AQmapr js
+\item \code{GET /icons}: AQmapr icons
+}
 }

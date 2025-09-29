@@ -1,26 +1,31 @@
-#' Start the Ambiorix server
+#' Start a local Ambiorix server and serve the AQmapr app
 #'
+#' @description
 #' Start the Ambiorix server and listen on the specified port and host.
+#' See `host`:`port` (i.e. 127.0.0.1:8000) in your browser to view app once started.
+#' Use `Ctrl+C` to stop the server.
+#' 
+#' The following endpoints are available:
+#' - `GET /`: AQmapr main page (see [aqmapr::make_aqmap])
+#' - `GET /data/recent/:type`: Recent AQmap data (see [aqmapr::load_recent_aqmap_data]) as type= json, csv, or tsv
+#' - `GET /data/meta/:type`: A subset of the recent AQmap data with only metadata as type= json, csv, or tsv
+#' - `GET /data/plotting/:network/:site_id`: Historic site data (see [aqmapr::load_aqmap_plot_data]) as type= json, csv, or tsv
+#' - `GET /css`: AQmapr css
+#' - `GET /js`: AQmapr js
+#' - `GET /icons`: AQmapr icons
 #'
-#' @param background (Optional).
-#'   Should the server be run in the background?
-#'   If `TRUE`, you must assign the output to a variable to maintain the connection (see [callr::r_bg]).
-#'   Default is `FALSE`.
+#' @param host (Optional).
+#'   The host to listen on.
+#'   Default is "127.0.0.1" (localhost).
+#' @param port (Optional).
+#'   The port to listen on.
+#'   Default is 8000.
 #'
 #' @export
-start_server <- function(background = FALSE) {
-  if (background) {
-    stop("Not yet implemented")
-    rlang::check_installed("mirai")
-    rlang::check_installed("aqmapr")
-    mirai::daemons(1)
-    return(
-      mirai::mirai({
-        library(aqmapr)
-        start_server(background = FALSE)
-      })
-    )
-  }
+start_server <- function(
+  host = "127.0.0.1",
+  port = 8000
+) {
   .cst <- load_constants()
 
   app <- ambiorix::Ambiorix$new(

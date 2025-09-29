@@ -72,7 +72,7 @@ make_icon_svg <- function(
   placeholder_cols <- c("value", "font_size", "size", "fill", "stroke")
   icons$svg <- template_dir |>
     icon_from_svg_template(
-      names = icons$group,
+      groups = icons$group,
       placeholders = icons[, placeholder_cols]
     )
 

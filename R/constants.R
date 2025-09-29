@@ -1,10 +1,5 @@
 load_constants = function() {
   list(
-    server = list(
-      host = "127.0.0.1",
-      port = 8000
-    ),
-
     data_dir = tempdir(),
 
     image_dir = system.file("images", package = "aqmapr"),

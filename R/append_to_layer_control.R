@@ -1,20 +1,18 @@
-#' Append a layer control to a leaflet map
+#' Create or append entries to a Leaflet layer control
 #'
-#' Append a layer control to a leaflet map, allowing users to toggle
-#' layers on and off.
+#' Creates a layer control if non already exists on the map, however,
+#' if one exists, the base and layer groups will be appended to the existing control.
+#' 
+#' This allows for modularity when adding layers to the map without overwriting the existing layer control.
 #'
 #' @param map A leaflet map object
-#' @param base_groups (Optional).
-#'   A character vector of base layer group names which match the group names of base maps added with [add_base_maps()] or [leaflet::addProviderTiles()].
-#'   These will be added to the layer control "baseGroups" list (see [leaflet::addLayersControl()]).
-#'   Default is an empty character vector.
-#' @param layer_groups (Optional).
-#'   A character vector of layer group names which match the group names of layers added with [leaflet::addMarkers()], [leaflet::addPolygons()], etc.
-#'   These will be added to the layer control "overlayGroups" list (see [leaflet::addLayersControl()]).
+#' @param base_groups,layer_groups (Optional).
+#'   A character vector of basemap/layer group names which match the group names of basemaps/overlays added with [add_base_maps()], [leaflet::addProviderTiles()], [leaflet::addMarkers()], [leaflet::addPolygons()], etc.
+#'   These will be added to the layer control "baseGroups"/"overlayGroups" list(s) (see [leaflet::addLayersControl()]).
 #'   Default is an empty character vector.
 #' @param ... Additional arguments passed to leaflet::addLayersControl()
 #'
-#' @return A leaflet map object with the layer control appended
+#' @return A leaflet map object with a new/updated layer control
 #' @export
 #' @examples
 #' library(leaflet)
@@ -22,12 +20,12 @@
 #'
 #' # Create basic map with layer control
 #' map <- leaflet() |>
-#'   add_base_maps(base_maps = "OpenStreetMap")
+#'   add_base_maps(base_maps = c("test1" = "OpenStreetMap"))
 #'
 #' # Add a layer and include it in the exising layer control
 #' map  |>
-#'   leaflet::addMarkers(lat = -37.8136, lng = 144.9631, group = "test") |>
-#'   append_to_layer_control(layer_groups = "test")
+#'   leaflet::addMarkers(lat = -37.8136, lng = 144.9631, group = "test2") |>
+#'   append_to_layer_control(layer_groups = "test2")
 append_to_layer_control <- function(
   map,
   base_groups = character(0),
