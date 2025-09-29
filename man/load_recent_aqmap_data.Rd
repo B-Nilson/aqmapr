@@ -21,7 +21,7 @@ Default groups "fem" monitors as "agency", and "pa" + "egg" monitors as "lcm".}
 \item{desired_cols}{(Optional).
 A vector of column names to load.
 Value names, where present, will be used to rename that column.
-Default loads all columns for use in \link{make_aqmap}.}
+Default loads all columns.}
 
 \item{id_columns}{(Optional).
 A vector of column names to use as unique identifiers.

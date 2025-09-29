@@ -6,10 +6,10 @@
 #' Use `Ctrl+C` to stop the server.
 #'
 #' The following endpoints are available:
-#' - `GET /`: AQmapr main page (see [aqmapr::make_aqmap])
+#' - `GET /`: AQmapr main page
 #' - `GET /data/recent/:type`: Recent AQmap data (see [load_recent_aqmap_data]) as type= json, csv, or tsv
 #' - `GET /data/meta/:type`: A subset of the recent AQmap data with only metadata as type= json, csv, or tsv
-#' - `GET /data/plotting/:network/:site_id`: Historic site data (see [aqmapr::load_aqmap_plot_data]) as type= json, csv, or tsv
+#' - `GET /data/plotting/:network/:site_id`: Historic site data as type= json, csv, or tsv
 #' - `GET /css`: AQmapr css
 #' - `GET /js`: AQmapr js
 #' - `GET /icons`: AQmapr icons

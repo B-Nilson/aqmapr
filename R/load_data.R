@@ -15,7 +15,7 @@
 #' @param desired_cols (Optional).
 #'   A vector of column names to load.
 #'   Value names, where present, will be used to rename that column.
-#'   Default loads all columns for use in [aqmapr::make_aqmap].
+#'   Default loads all columns.
 #' @param id_columns (Optional).
 #'   A vector of column names to use as unique identifiers.
 #'   Will drop any rows with missing values for these columns.

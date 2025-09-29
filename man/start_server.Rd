@@ -33,10 +33,10 @@ Use \code{Ctrl+C} to stop the server.
 
 The following endpoints are available:
 \itemize{
-\item \verb{GET /}: AQmapr main page (see \link{make_aqmap})
+\item \verb{GET /}: AQmapr main page
 \item \verb{GET /data/recent/:type}: Recent AQmap data (see \link{load_recent_aqmap_data}) as type= json, csv, or tsv
 \item \verb{GET /data/meta/:type}: A subset of the recent AQmap data with only metadata as type= json, csv, or tsv
-\item \verb{GET /data/plotting/:network/:site_id}: Historic site data (see \link{load_aqmap_plot_data}) as type= json, csv, or tsv
+\item \verb{GET /data/plotting/:network/:site_id}: Historic site data as type= json, csv, or tsv
 \item \code{GET /css}: AQmapr css
 \item \code{GET /js}: AQmapr js
 \item \code{GET /icons}: AQmapr icons

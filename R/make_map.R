@@ -18,7 +18,7 @@ make_aqmap <- function(
         no_data = "No Data."
       ),
   monitor_legend_title = c(
-    "Fine particulate matter monitor observations" = "PM<sub>2.5</sub> Monitors",
+    "Fine particulate matter monitor observations" = "PM<sub>2.5</sub> Monitors"
   ),
   template_dir = system.file("images", package = "aqmapr"),
   icon_dir = system.file("images/icons", package = "aqmapr"),
@@ -62,7 +62,7 @@ make_aqmap <- function(
       ) |>
       add_monitor_legend(
         networks = levels(marker_data$network),
-        legend_title = monitor_legend,
+        legend_title = monitor_legend_title,
         icon_dir = icon_endpoint,
         css_dir = css_dir,
         css_endpoint = css_endpoint,
