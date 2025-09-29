@@ -18,8 +18,6 @@ test_that("add_obs_markers() works", {
   map |>
     add_obs_markers(
       marker_data = marker_data,
-      template_dir = .cst$image_dir,
-      icon_dir = .cst$icon_dir$local,
       font_sizes = .cst$font_sizes$markers,
       marker_sizes = .cst$marker_sizes,
       pm25_units = .cst$units$pm25,

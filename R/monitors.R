@@ -1,12 +1,12 @@
 add_obs_markers <- function(
   map,
   marker_data,
-  template_dir,
-  icon_dir,
   font_sizes,
   marker_sizes,
   pm25_units,
   marker_hover_text,
+  template_dir = system.file("images", package = "aqmapr"),
+  icon_dir = system.file("images/icons", package = "aqmapr"),
   force_update_icons = FALSE
 ) {
   stopifnot("leaflet" %in% class(map))
@@ -33,11 +33,12 @@ add_obs_markers <- function(
     dplyr::summarise(pm25_1hr = mean(.data$pm25_1hr, na.rm = TRUE))
   levels(marker_data$network) |>
     make_icon_svg(
-      pm25_1hr = network_means$pm25_1hr,
+      values = network_means$pm25_1hr,
       template_dir = template_dir,
       icon_dir = icon_dir,
       font_sizes = font_sizes,
-      marker_sizes = marker_sizes,
+      marker_size = marker_sizes$obs,
+      marker_size_missing = marker_sizes$missing,
       for_legend = TRUE,
       force = TRUE
     )
@@ -46,11 +47,12 @@ add_obs_markers <- function(
   marker_data$network |>
     as.character() |>
     make_icon_svg(
-      pm25_1hr = marker_data$pm25_1hr,
+      values = marker_data$pm25_1hr,
       template_dir = template_dir,
       icon_dir = icon_dir,
       font_sizes = font_sizes,
-      marker_sizes = marker_sizes,
+      marker_size = marker_sizes$obs,
+      marker_size_missing = marker_sizes$missing,
       force = force_update_icons
     )
 
@@ -66,7 +68,7 @@ add_obs_markers <- function(
       # Build url to icon
       icon_url = .data$network |>
         as.character() |>
-        make_marker_icon_path(pm25_1hr = .data$pm25_1hr, icon_dir = icon_dir),
+        make_icon_path(values = .data$pm25_1hr, icon_dir = icon_dir),
       # Build hover label
       label = make_monitor_hover(
         name = .data$name,
@@ -144,8 +146,8 @@ add_monitor_legend <- function(
 
   # Make icon paths
   icon_paths <- networks |>
-    make_marker_icon_path(
-      pm25_1hr = NA_real_,
+    make_icon_path(
+      values = NA_real_,
       icon_dir = icon_dir,
       for_legend = TRUE
     )

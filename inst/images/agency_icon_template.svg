@@ -2,7 +2,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="{size}" height="{size}" viewBox="0 0 260 260">
   <polygon points="130,18 242,130 130,242 18,130" fill="{fill}" stroke="#010101" stroke-width="8" />
   <text x="130" y="130" text-anchor="middle" dominant-baseline="central"
-        font-size="{font-size}" fill="{stroke}" font-family="Inter, sans-serif">
+        font-size="{font_size}" fill="{stroke}" font-family="Inter, sans-serif">
     {value}
   </text>
 </svg>

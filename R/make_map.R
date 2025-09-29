@@ -2,19 +2,22 @@
 make_aqmap <- function(
   marker_data = NULL,
   base_maps = c("Light Theme" = "OpenStreetMap"),
-  template_dir,
-  icon_dirs,
-  js_dirs,
-  css_dirs,
   font_sizes,
   marker_sizes,
   pm25_units,
   text,
+  template_dir = system.file("images", package = "aqmapr"),
+  icon_dir = system.file("images/icons", package = "aqmapr"),
+  icon_endpoint = "/icons",
+  js_dir = system.file("js", package = "aqmapr"),
+  js_endpoint = "/js",
+  css_dir = system.file("css", package = "aqmapr"),
+  css_endpoint = "/css",
   force_update_icons = FALSE
 ) {
   # General javascript files
   js_files <- c("map_layers.js", "on_render.js")
-  js_paths <- file.path(js_dirs$server, js_files)
+  js_paths <- file.path(js_endpoint, js_files)
 
   # Build basemap
   map <- leaflet::leaflet() |>
@@ -25,8 +28,8 @@ make_aqmap <- function(
     # Use leaflet.extras::addHash() + custom js
     # to track map location/layers/basemap
     track_map_state(
-      js_dir = js_dirs$local,
-      js_endpoint = js_dirs$server
+      js_dir = js_dir,
+      js_endpoint = js_endpoint
     ) |>
     # Cache provider tiles for faster reload times
     leaflet.extras::enableTileCaching()
@@ -37,7 +40,7 @@ make_aqmap <- function(
       add_obs_markers(
         marker_data = marker_data,
         template_dir = template_dir,
-        icon_dir = icon_dirs$local,
+        icon_dir = icon_dir,
         font_sizes = font_sizes$markers,
         marker_sizes = marker_sizes,
         pm25_units = pm25_units,
@@ -48,9 +51,9 @@ make_aqmap <- function(
         networks = levels(marker_data$network),
         legend_title = text$monitor_legend$title |> 
           stats::setNames(text$monitor_legend$hover),
-        icon_dir = icon_dirs$server,
-        css_dir = css_dirs$local,
-        css_endpoint = css_dirs$server,
+        icon_dir = icon_endpoint,
+        css_dir = css_dir,
+        css_endpoint = css_endpoint,
         position = "bottomright"
       ) |>
       append_to_layer_control(
