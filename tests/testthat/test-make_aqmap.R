@@ -1,4 +1,5 @@
 test_that("output map has not changed", {
+  skip("Requires server to be running")
   .cst <- load_constants()
   test_aqmap_data <- dplyr::tibble(
     network = c("agency", "agency", "lcm", "lcm") |>
