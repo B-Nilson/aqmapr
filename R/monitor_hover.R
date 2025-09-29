@@ -6,8 +6,16 @@ make_monitor_hover = function(
   pm25_1hr,
   pm25_3hr,
   pm25_24hr,
-  pm25_units,
-  text
+  text = list(
+    type = "Type: ",
+    time = "Time: ",
+    pm_title = "PM<sub>2.5</sub> averages:",
+    pm_10min = "10 min.:",
+    pm_1hr = "1 hr.:",
+    pm_3hr = "3 hr.:",
+    pm_24hr = "24 hr.:",
+    no_data = "No Data."
+  )
 ) {
   stopifnot(is.character(name), length(name) > 0, all(!is.na(name)))
   stopifnot(is.factor(network), length(network) > 0, all(!is.na(network)))
@@ -25,7 +33,6 @@ make_monitor_hover = function(
       pm25_1hr = pm25_1hr,
       pm25_3hr = pm25_3hr,
       pm25_24hr = pm25_24hr,
-      pm25_units = pm25_units,
       text = text
     )
   )
@@ -37,8 +44,16 @@ make_pm_summary_table <- function(
   pm25_1hr,
   pm25_3hr,
   pm25_24hr,
-  pm25_units,
-  text
+  text = list(
+    type = "Type: ",
+    time = "Time: ",
+    pm_title = "PM<sub>2.5</sub> averages:",
+    pm_10min = "10 min.:",
+    pm_1hr = "1 hr.:",
+    pm_3hr = "3 hr.:",
+    pm_24hr = "24 hr.:",
+    no_data = "No Data."
+  )
 ) {
   stopifnot(is.factor(network), length(network) > 0, all(!is.na(network)))
   stopifnot(is.list(text), length(text) > 0, "pm_title" %in% names(text))
@@ -48,7 +63,7 @@ make_pm_summary_table <- function(
     length(network) == length(pm25_3hr),
     length(network) == length(pm25_24hr)
   )
-
+  pm25_units <- "&mu;g m <sup>-3</sup>"
   # Hide 10 min. average for agency
   recent_row <- text$pm_10min |>
     make_obs_table_row(

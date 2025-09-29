@@ -1,7 +1,7 @@
 make_icon_svg <- function(
   groups,
   values,
-  font_sizes,
+  font_sizes = c(119, 99, 90),
   marker_size,
   marker_size_missing = NULL,
   for_legend = FALSE,

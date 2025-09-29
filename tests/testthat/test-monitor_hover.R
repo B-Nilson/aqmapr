@@ -1,5 +1,4 @@
 test_that("make_monitor_hover() works", {
-  .cst <- load_constants()
   result <- make_monitor_hover(
     name = "name",
     network = factor("agency", levels = c("agency", "lcm")),
@@ -7,9 +6,7 @@ test_that("make_monitor_hover() works", {
     pm25_10min = 1,
     pm25_1hr = 2,
     pm25_3hr = 3,
-    pm25_24hr = 4,
-    pm25_units = .cst$units$pm25,
-    text = .cst$text$monitor_hover
+    pm25_24hr = 4
   )
   expected <- paste0(
     "<big><b>name</b></big><br>",
@@ -26,15 +23,12 @@ test_that("make_monitor_hover() works", {
 })
 
 test_that("make_pm_summary_table() works", {
-  .cst <- load_constants()
   result <- make_pm_summary_table(
     network = factor("agency", levels = c("agency", "lcm")),
     pm25_10min = 1,
     pm25_1hr = 2,
     pm25_3hr = 3,
-    pm25_24hr = 4,
-    pm25_units = .cst$units$pm25,
-    text = .cst$text$monitor_hover
+    pm25_24hr = 4
   )
   expected <- paste0(
     "<table>",

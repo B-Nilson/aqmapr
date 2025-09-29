@@ -2,8 +2,7 @@ add_obs_markers <- function(
   map,
   marker_data,
   font_sizes,
-  marker_sizes,
-  pm25_units,
+  marker_sizes = list(missing = 17, obs = 33),
   marker_hover_text,
   template_dir = system.file("images", package = "aqmapr"),
   icon_dir = system.file("images/icons", package = "aqmapr"),
@@ -13,10 +12,9 @@ add_obs_markers <- function(
   stopifnot(is.data.frame(marker_data))
   stopifnot(
     is.list(marker_sizes),
-    length(marker_sizes) == 3,
-    all(c("missing", "obs", "legend") %in% names(marker_sizes))
+    length(marker_sizes) == 2,
+    all(c("missing", "obs") %in% names(marker_sizes))
   )
-  stopifnot(is.character(pm25_units), length(pm25_units) == 1)
   stopifnot(is.list(marker_hover_text), length(marker_hover_text) > 0)
   stopifnot(is.logical(force_update_icons), length(force_update_icons) == 1)
 
@@ -60,8 +58,7 @@ add_obs_markers <- function(
   marker_data <- marker_data |>
     dplyr::mutate(
       # Determine pane to use based on pm25_1hr missing or not
-      pane = is.na(.data$pm25_1hr) |>
-        ifelse(names(marker_sizes)[1], names(marker_sizes)[2]),
+      pane = names(marker_sizes)[is.na(.data$pm25_1hr) + 1],
       # Select icon size similarily - smaller for missing obs
       icon_width = unname(unlist(marker_sizes[.data$pane])),
       icon_height = .data$icon_width,
@@ -78,7 +75,6 @@ add_obs_markers <- function(
         pm25_1hr = .data$pm25_1hr,
         pm25_3hr = .data$pm25_3hr,
         pm25_24hr = .data$pm25_24hr,
-        pm25_units = pm25_units,
         text = marker_hover_text
       )
     )
@@ -109,9 +105,9 @@ add_monitor_legend <- function(
   map,
   networks,
   legend_title,
-  icon_dir,
-  css_dir,
-  css_endpoint = NULL,
+  icon_dir = system.file("images/icons", package = "aqmapr"),
+  css_dir = system.file("css", package = "aqmapr"),
+  css_endpoint = "/css",
   position = "bottomright"
 ) {
   stopifnot("leaflet" %in% class(map))

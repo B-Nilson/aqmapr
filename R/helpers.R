@@ -13,7 +13,12 @@ get_file_age <- function(local_path, since = Sys.time()) {
 # Standardize varieties of network inputs
 translate_network <- function(
   networks,
-  allowed_networks,
+  allowed_networks = list(
+    agency = c("fem", "naps", "agency", "fems"),
+    lcm = c("lcm", "lcms"),
+    purpleair = c("pa", "purpleair", "pas", "purpleairs"),
+    aqegg = c("aqegg", "egg", "eggs")
+  ),
   group_lcms = TRUE,
   as_factor = FALSE
 ) {
@@ -58,18 +63,27 @@ translate_network <- function(
 
 # Translate from code names to pretty names for display
 pretty_text <- function(text) {
-  if (!".cst" %in% ls()) {
-    .cst <- load_constants()
-  }
+  allowed_networks = list(
+    agency = c("fem", "naps", "agency", "fems"),
+    lcm = c("lcm", "lcms"),
+    purpleair = c("pa", "purpleair", "pas", "purpleairs"),
+    aqegg = c("aqegg", "egg", "eggs")
+  )
+  networks_pretty = list(
+    agency = "Regulatory",
+    lcm = "Low-cost",
+    purpleair = "PurpleAir",
+    aqegg = "AQegg"
+  )
 
   if (lubridate::is.POSIXct(text)) {
     text |>
       format("%Y-%m-%dT%H:%M:%SZ")
-  } else if (all(text %in% names(.cst$allowed_networks))) {
+  } else if (all(text %in% names(allowed_networks))) {
     text |>
       factor(
-        levels = names(.cst$allowed_networks),
-        labels = unname(.cst$text$networks[names(.cst$allowed_networks)])
+        levels = names(allowed_networks),
+        labels = unname(networks_pretty[names(allowed_networks)])
       ) |>
       as.character()
   } else {

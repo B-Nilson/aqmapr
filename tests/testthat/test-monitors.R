@@ -1,8 +1,7 @@
 test_that("add_obs_markers() works", {
   skip("Requires server to be running")
-  .cst <- load_constants()
   map <- leaflet::leaflet()
-  networks <- names(.cst$allowed_networks)
+  networks <- c("agency", "lcm", "purpleair", "aqegg")
   marker_data <- load_recent_aqmap_data() |>
     dplyr::filter(
       !is.na(pm25_1hr),
@@ -11,31 +10,19 @@ test_that("add_obs_markers() works", {
     dplyr::distinct(monitor_type, .keep_all = TRUE)
 
   map |>
-    add_obs_markers(
-      marker_data = marker_data,
-      font_sizes = .cst$font_sizes$markers,
-      marker_sizes = .cst$marker_sizes,
-      pm25_units = .cst$units$pm25,
-      marker_hover_text = .cst$text$monitor_hover,
-      force_update_icons = .cst$force_update_icons
-    ) |>
+    add_obs_markers(marker_data = marker_data) |>
     expect_no_error()
 })
 
 test_that("add_monitor_legend() works", {
   skip("Requires server to be running")
-  .cst <- load_constants()
   map <- leaflet::leaflet()
-  networks <- names(.cst$allowed_networks)
+  networks <- c("agency", "lcm", "purpleair", "aqegg")
 
   map |>
     add_monitor_legend(
       networks = networks,
-      legend_title = .cst$text$monitor_legend$title |>
-        stats::setNames(.cst$text$monitor_legend$hover),
-      icon_dir = .cst$icon_dir$server,
-      css_dir = .cst$css_dir$local,
-      css_endpoint = .cst$css_dir$server,
+      legend_title = c("test" = "test"),
       position = "bottomright"
     ) |>
     expect_no_error()

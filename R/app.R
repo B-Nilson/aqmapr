@@ -63,10 +63,6 @@ get_data <- function(req, res) {
   network <- req$params$network # for name == "plotting"
   site_id <- req$params$site_id # for name == "plotting"
 
-  if (!".cst" %in% ls()) {
-    .cst <- load_constants()
-  }
-
   # Set default type if not specified
   if (is.null(type)) {
     type <- allowed_types[1]
@@ -80,7 +76,6 @@ get_data <- function(req, res) {
     out_data <- load_aqmap_plot_data(
       network = network,
       site_id = site_id,
-      allowed_networks = .cst$allowed_networks
     ) |>
       handyr::on_error(.return = NULL)
   } else {
@@ -104,23 +99,12 @@ get_data <- function(req, res) {
 
 # Ambiorix map GET handler (for /)
 get_map <- function(req, res) {
-  if (!".cst" %in% ls()) {
-    .cst <- load_constants()
-  }
-
   recent_aqmap_data <- load_recent_aqmap_data() |>
     handyr::on_error(.return = NULL)
 
   map <- make_aqmap(
     marker_data = recent_aqmap_data,
-    base_maps = .cst$base_maps,
-    font_sizes = .cst$font_sizes,
-    marker_sizes = .cst$marker_sizes,
-    pm25_units = .cst$units$pm25,
-    monitor_hover_text = .cst$text$monitor_hover,
-    monitor_legend_title = .cst$text$monitor_legend$title |> 
-      stats::setNames(.cst$text$monitor_legend$hover),
-    force_update_icons = .cst$force_update_icons
+    force_update_icons = FALSE
   )
 
   res$htmlwidget(map)

@@ -14,6 +14,10 @@ load_recent_aqmap_data(
 )
 }
 \arguments{
+\item{network_monitors}{(Optional).
+A list of allowed network names to assing each monitor type ("fem", "pa", "egg") to.
+Default groups "fem" monitors as "agency", and "pa" + "egg" monitors as "lcm".}
+
 \item{desired_cols}{(Optional).
 A vector of column names to load.
 Value names, where present, will be used to rename that column.
@@ -27,10 +31,6 @@ Default is c("site_id", "network", "lat", "lng", "date_last_obs").}
 \item{data_dir}{(Optional).
 The directory to write the downloaded data file to (acts as a cache).
 Default is a temporary directory [see \link{tempdir}].}
-
-\item{allowed_networks}{(Optional).
-A list of allowed network names to assing each monitor type ("fem", "pa", "egg") to.
-Default groups "fem" monitors as "agency", and "pa" + "egg" monitors as "lcm".}
 }
 \description{
 Load the most recent AQmap observation data from

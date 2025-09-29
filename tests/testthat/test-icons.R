@@ -1,18 +1,17 @@
 test_that("make_icon_path() works", {
-  .cst <- load_constants()
-  networks <- names(.cst$allowed_networks)
+  networks <- c("agency", "lcm", "purpleair", "aqegg")
   pm25_1hr <- c(50, NA, 1000, rep(1, length(networks) - 3))
   for_legend <- c(TRUE, rep(FALSE, length(pm25_1hr) - 1))
   result <- make_icon_path(
     groups = networks,
     values = pm25_1hr,
-    icon_dir = .cst$icon_dir$local,
+    icon_dir = system.file("images/icons", package = "aqmapr"),
     for_legend = for_legend
   )
 
   # check length
   length(result) |>
-    expect_equal(length(.cst$allowed_networks))
+    expect_equal(length(networks))
   # check right name (order of pieces etc)
   result |>
     basename() |>
@@ -27,24 +26,22 @@ test_that("make_icon_path() works", {
 })
 
 test_that("make_icon_svg() works", {
-  .cst <- load_constants()
   temp_dir <- tempdir()
-  networks <- names(.cst$allowed_networks)
+  networks <- c("agency", "lcm", "purpleair", "aqegg")
   result <- networks |>
     make_icon_svg(
       values = c(10, NA, 1, 1000),
       for_legend = c(TRUE, FALSE, FALSE, FALSE),
       icon_dir = temp_dir,
-      font_sizes = .cst$font_sizes$markers,
-      marker_size = .cst$marker_sizes$obs,
-      marker_size_missing = .cst$marker_sizes$missing,
+      marker_size = 33,
+      marker_size_missing = 19,
       force = TRUE
     )
   files_created <- temp_dir |>
     list.files(pattern = "*_icon_[-,1,+]?.svg", full.names = TRUE)
 
   length(files_created) |>
-    expect_equal(length(.cst$allowed_networks))
+    expect_equal(length(networks))
 
   file.remove(files_created)
 })

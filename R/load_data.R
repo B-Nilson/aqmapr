@@ -9,7 +9,7 @@
 #' which exposes the results of this function (by default) at 127.0.0.1:8000/data/recent/:type
 #' where :type is one of "json", "csv", or "tsv".
 #'
-#' @param allowed_networks (Optional).
+#' @param network_monitors (Optional).
 #'   A list of allowed network names to assing each monitor type ("fem", "pa", "egg") to.
 #'   Default groups "fem" monitors as "agency", and "pa" + "egg" monitors as "lcm".
 #' @param desired_cols (Optional).
@@ -137,7 +137,11 @@ format_recent_aqmap_data <- function(
 load_aqmap_plot_data <- function(
   network,
   site_id,
-  allowed_networks
+  network_monitors = list(
+    agency = "fem",
+    purpleair = "pa", 
+    aqegg = "egg"
+  )
 ) {
   stopifnot(length(network) == 1, is.character(network))
   stopifnot(length(site_id) == 1, is.character(site_id) | is.numeric(site_id))
@@ -149,7 +153,7 @@ load_aqmap_plot_data <- function(
   # Handle aliases for network
   network <- network |>
     translate_network(
-      allowed_networks = allowed_networks,
+      allowed_networks = network_monitors,
       group_lcms = FALSE
     )
 

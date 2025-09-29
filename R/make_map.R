@@ -1,12 +1,25 @@
 # Create leaflet map similiar to AQmap
 make_aqmap <- function(
   marker_data = NULL,
-  base_maps = c("Light Theme" = "OpenStreetMap"),
-  font_sizes,
-  marker_sizes,
-  pm25_units,
-  monitor_hover_text,
-  monitor_legend_title,
+  base_maps = c(
+    "Light Theme" = "OpenStreetMap",
+    "Dark Theme" = "CartoDB.DarkMatter"
+  ),
+  font_sizes = c(119, 99, 90),
+  marker_sizes = list(missing = 17, obs = 33),
+  monitor_hover_text = list(
+        type = "Type: ",
+        time = "Time: ",
+        pm_title = "PM<sub>2.5</sub> averages:",
+        pm_10min = "10 min.:",
+        pm_1hr = "1 hr.:",
+        pm_3hr = "3 hr.:",
+        pm_24hr = "24 hr.:",
+        no_data = "No Data."
+      ),
+  monitor_legend_title = c(
+    "Fine particulate matter monitor observations" = "PM<sub>2.5</sub> Monitors",
+  ),
   template_dir = system.file("images", package = "aqmapr"),
   icon_dir = system.file("images/icons", package = "aqmapr"),
   icon_endpoint = "/icons",
@@ -42,9 +55,8 @@ make_aqmap <- function(
         marker_data = marker_data,
         template_dir = template_dir,
         icon_dir = icon_dir,
-        font_sizes = font_sizes$markers,
+        font_sizes = font_sizes,
         marker_sizes = marker_sizes,
-        pm25_units = pm25_units,
         marker_hover_text = monitor_hover_text,
         force_update_icons = force_update_icons
       ) |>
