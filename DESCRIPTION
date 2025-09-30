@@ -29,5 +29,6 @@ Remotes:
     github::B-Nilson/handyr
 Suggests: 
     callr,
+    sf,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
