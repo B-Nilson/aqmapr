@@ -4,20 +4,29 @@
 \alias{include_scripts}
 \title{Include a css/js file in a Leaflet map header}
 \usage{
-include_scripts(map, paths, types = "js", as_reference = FALSE)
+include_scripts(
+  map,
+  texts = NULL,
+  paths = NULL,
+  types = NULL,
+  as_reference = FALSE
+)
 }
 \arguments{
 \item{map}{A leaflet map object}
 
-\item{paths}{The path(s) to the script file(s), relative to the html file containing the map.}
+\item{texts, paths}{The individual script contents to be included (texts)
+or the path(s) to the script file(s) relative to the html file containing the map.
+One of \code{texts} or \code{paths} must be provided, but not both.
+If \code{texts} is provided, \code{types} must also be provided.}
 
 \item{types}{The type(s) of script file(s), either "css" or "js"
 Must be a single character string or vector the same length as \code{paths}.
-Default is "js".}
+Default is NULL, in which case the type will be inferred from the file extension.}
 
 \item{as_reference}{(Optional).
 If TRUE, the path will be included in the src attribute of the script tag (js) or href attribute of the link tag (css).
-If FALSE, the file will be read in and included in the tags directly.
+If FALSE, \code{texts} will be used, or the paths will be read in, and that will be included in the tags directly.
 Default is FALSE.}
 }
 \value{
