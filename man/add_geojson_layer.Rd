@@ -2,7 +2,7 @@
 % Please edit documentation in R/add_json_layer.R
 \name{add_geojson_layer}
 \alias{add_geojson_layer}
-\title{Add a fetched GeoJSON layer to a Leaflet map}
+\title{Add a fetched or embeded GeoJSON layer to a Leaflet map}
 \usage{
 add_geojson_layer(
   map,
@@ -19,13 +19,29 @@ add_geojson_layer(
 
 \item{json_url}{A character string pointing to the URL of the GeoJSON data}
 
-\item{layer_id}{(Optional). A character string of the layer id to add the layer to}
+\item{layer_id, group}{(Optional).
+A character string of the layer id or group name to add to the layer.
+Default is NULL (no ID/group).}
 
-\item{options}{(Optional). A list of options to pass to the L.geoJSON() method}
+\item{options}{(Optional).
+A list of options to pass to the L.geoJSON() method (see \url{https://leafletjs.com/reference.html#geojson}).
+List names must match the names of the L.geoJSON() options.
+Useful options:
+\itemize{
+\item Line styles: stroke (FALSE/TRUE), color, weight (pixels), opacity (0-1), \href{https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/stroke-dasharray}{dashArray}
+\item Fill styles: fill (FALSE/TRUE), fillColor, fillOpacity (0-1)
+\item Other: bubblingMouseEvents (FALSE/TRUE), className
+Default is an empty list.
+}}
 
 \item{as_reference}{(Optional).
 If TRUE, the GeoJSON data will be fetched from the url and added to the map on page load.
-If FALSE, the GeoJSON data will be added as embeded data to the map.}
+If FALSE, the GeoJSON data will be added as embeded data to the map.
+Default is TRUE.}
+
+\item{add_to_layer_control}{(Optional).
+If TRUE, \code{group} must be provided and the layer will be added to the map's layer control under the group.
+Default is TRUE if \code{group} is provided, FALSE otherwise.}
 }
 \description{
 Adds a GeoJSON layer to a Leaflet map either as a reference to the file or embeded data.
@@ -36,7 +52,15 @@ If \code{as_reference} is TRUE, a reference to the GeoJSON file is added to the 
 library(leaflet)
 library(aqmapr)
 
+geojson_url <- "https://raw.githubusercontent.com/B-Nilson/aqmapr/refs/heads/main/inst/extdata/canadian_provinces.geojson"
+
+# Add as embeded data (normal R leaflet method)
 leaflet() |>
   add_base_maps(base_maps = "OpenStreetMap") |>
-  add_geojson_layer(json_url = "https://raw.githubusercontent.com/B-Nilson/aqmapr/refs/heads/main/inst/extdata/canadian_provinces.geojson")
+  add_geojson_layer(json_url = geojson_url, as_reference = FALSE)
+
+# Add as reference (fetch on page load)
+leaflet() |>
+  add_base_maps(base_maps = "OpenStreetMap") |>
+  add_geojson_layer(json_url = geojson_url, as_reference = TRUE)
 }
