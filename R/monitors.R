@@ -58,7 +58,7 @@ add_obs_markers <- function(
   marker_data <- marker_data |>
     dplyr::mutate(
       # Determine pane to use based on pm25_1hr missing or not
-      pane = names(marker_sizes)[is.na(.data$pm25_1hr) + 1],
+      pane = names(marker_sizes)[(!is.na(.data$pm25_1hr)) + 1],
       # Select icon size similarily - smaller for missing obs
       icon_width = unname(unlist(marker_sizes[.data$pane])),
       icon_height = .data$icon_width,
