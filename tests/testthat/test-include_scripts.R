@@ -1,7 +1,7 @@
 test_that("non-referenced works", {
   leaflet::leaflet() |>
     include_scripts(
-      paths = "./inst/js/on_render.js",
+      paths = system.file("js/on_render.js", package = "aqmapr"),
       as_reference = FALSE
     ) |>
     include_scripts(
