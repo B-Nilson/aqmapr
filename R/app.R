@@ -57,7 +57,7 @@ start_server <- function(
 
 # Ambiorix data GET handler (for /data/:name/:type...)
 get_data <- function(req, res) {
-  allowed_types <- c("json", "csv", "tsv") # first is default
+  allowed_types <- c("json", "csv", "tsv", "geojson") # first is default
   name <- req$params$name
   type <- req$params$type
   network <- req$params$network # for name == "plotting"
@@ -67,6 +67,8 @@ get_data <- function(req, res) {
   if (is.null(type)) {
     type <- allowed_types[1]
   }
+
+  stopifnot(type %in% allowed_types)
 
   # Load requested data
   if (name %in% c("recent", "meta")) {
@@ -89,12 +91,21 @@ get_data <- function(req, res) {
       handyr::on_error(.return = NULL)
   }
 
-  # Return response if valid request (404 if not)
-  if (type %in% allowed_types) {
-    res[[type]](out_data)
-  } else {
-    res$not_found()
+  if (type == "geojson") {
+    rlang::check_installed("geojson")
+    rlang::check_installed("sf")
+    out_data <- out_data |>
+      dplyr::select(-dplyr::any_of("prov_terr")) |> 
+      dplyr::rename(id = "site_id", date = "date_last_obs") |>
+      sf::st_as_sf(coords = c("lng","lat")) |> 
+      geojson::as.geojson() |> 
+      as.character() |> 
+      handyr::on_error(.return = NULL)
+    type = "text"
   }
+
+  # Return data
+  res[[type]](out_data)
 }
 
 # Ambiorix map GET handler (for /)
