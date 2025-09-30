@@ -9,6 +9,10 @@
 #' @param types The type(s) of script file(s), either "css" or "js"
 #'   Must be a single character string or vector the same length as `paths`.
 #'   Default is "js".
+#' @param as_reference (Optional).
+#'   If TRUE, the path will be included in the src attribute of the script tag (js) or href attribute of the link tag (css).
+#'   If FALSE, the file will be read in and included in the tags directly.
+#'   Default is FALSE.
 #'
 #' @return A leaflet map with the script file(s) included in the page header
 #' @export
@@ -19,10 +23,11 @@
 #' leaflet() |>
 #'   add_base_maps(base_maps = "OpenStreetMap") |>
 #'   include_scripts(
-#'     paths = system.file("/js/map_layers.js", package = "aqmapr"),
-#'     types = "js"
+#'     paths = system.file("js/map_layers.js", package = "aqmapr"),
+#'     types = "js",
+#'     as_reference = FALSE
 #'   )
-include_scripts <- function(map, paths, types = "js") {
+include_scripts <- function(map, paths, types = "js", as_reference = FALSE) {
   stopifnot("leaflet" %in% class(map))
   stopifnot(
     is.character(paths),
@@ -30,6 +35,7 @@ include_scripts <- function(map, paths, types = "js") {
     length(paths) == length(types) | length(types) == 1
   )
   stopifnot(is.character(types), all(types %in% c("css", "js")))
+  stopifnot(is.logical(as_reference), length(as_reference) == 1)
 
   if (length(types) == 1) {
     types <- rep(types, length(paths))
@@ -40,10 +46,24 @@ include_scripts <- function(map, paths, types = "js") {
     type <- types[i]
 
     # Build html for inserting script into header
-    if (type == "css") {
-      script_tag <- htmltools::tags$link(href = path, rel = "stylesheet")
+    if (!as_reference) {
+      script_lines <- path |>
+        readLines() |>
+        paste(collapse = "\n") |>
+        htmltools::HTML()
+      if (type == "css") {
+        script_tag <- script_lines |>
+          htmltools::tags$style(type = "text/css")
+      } else {
+        script_tag <- script_lines |>
+          htmltools::tags$script(type = "text/javascript")
+      }
     } else {
-      script_tag <- htmltools::tags$script(src = path)
+      if (type == "css") {
+        script_tag <- htmltools::tags$link(href = path, rel = "stylesheet")
+      } else {
+        script_tag <- htmltools::tags$script(src = path)
+      }
     }
 
     # Add to map

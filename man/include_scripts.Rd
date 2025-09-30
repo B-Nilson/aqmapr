@@ -4,7 +4,7 @@
 \alias{include_scripts}
 \title{Include a css/js file in a Leaflet map header}
 \usage{
-include_scripts(map, paths, types = "js")
+include_scripts(map, paths, types = "js", as_reference = FALSE)
 }
 \arguments{
 \item{map}{A leaflet map object}
@@ -14,6 +14,11 @@ include_scripts(map, paths, types = "js")
 \item{types}{The type(s) of script file(s), either "css" or "js"
 Must be a single character string or vector the same length as \code{paths}.
 Default is "js".}
+
+\item{as_reference}{(Optional).
+If TRUE, the path will be included in the src attribute of the script tag (js) or href attribute of the link tag (css).
+If FALSE, the file will be read in and included in the tags directly.
+Default is FALSE.}
 }
 \value{
 A leaflet map with the script file(s) included in the page header
@@ -30,7 +35,8 @@ library(aqmapr)
 leaflet() |>
   add_base_maps(base_maps = "OpenStreetMap") |>
   include_scripts(
-    paths = system.file("/js/map_layers.js", package = "aqmapr"),
-    types = "js"
+    paths = system.file("js/map_layers.js", package = "aqmapr"),
+    types = "js",
+    as_reference = FALSE
   )
 }
