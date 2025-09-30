@@ -76,6 +76,12 @@ pretty_text <- function(text) {
     aqegg = "AQegg"
   )
 
+  monitors_pretty = list(
+    FEM = "Federal Equivelant Method (FEM)",
+    PA = "PurpleAir (PA)",
+    EGG = "AQegg (EGG)"
+  )
+
   if (lubridate::is.POSIXct(text)) {
     text |>
       format("%Y-%m-%dT%H:%M:%SZ")
@@ -86,6 +92,12 @@ pretty_text <- function(text) {
         labels = unname(networks_pretty[names(allowed_networks)])
       ) |>
       as.character()
+  } else if (all(text %in% names(monitors_pretty))) {
+    text |>
+      factor(
+        levels = names(monitors_pretty),
+        labels = unname(monitors_pretty[names(monitors_pretty)])
+      )
   } else {
     stop("This type of text is not supported")
   }

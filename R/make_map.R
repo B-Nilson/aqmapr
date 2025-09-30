@@ -8,15 +8,16 @@ make_aqmap <- function(
   font_sizes = c(119, 99, 90),
   marker_sizes = list(missing = 17, obs = 33),
   monitor_hover_text = list(
-        type = "Type: ",
-        time = "Time: ",
-        pm_title = "PM<sub>2.5</sub> averages:",
-        pm_10min = "10 min.:",
-        pm_1hr = "1 hr.:",
-        pm_3hr = "3 hr.:",
-        pm_24hr = "24 hr.:",
-        no_data = "No Data."
-      ),
+    type = "Type: ",
+    time = "Time: ",
+    monitor = "Monitor: ",
+    pm_title = "PM<sub>2.5</sub> averages:",
+    pm_10min = "10 min.:",
+    pm_1hr = "1 hr.:",
+    pm_3hr = "3 hr.:",
+    pm_24hr = "24 hr.:",
+    no_data = "No Data."
+  ),
   monitor_legend_title = c(
     "Fine particulate matter monitor observations" = "PM<sub>2.5</sub> Monitors"
   ),

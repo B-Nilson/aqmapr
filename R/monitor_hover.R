@@ -1,6 +1,7 @@
 make_monitor_hover = function(
   name,
   network,
+  monitor_type,
   date_last_obs,
   pm25_10min,
   pm25_1hr,
@@ -8,6 +9,7 @@ make_monitor_hover = function(
   pm25_24hr,
   text = list(
     type = "Type: ",
+    monitor = "Monitor: ",
     time = "Time: ",
     pm_title = "PM<sub>2.5</sub> averages:",
     pm_10min = "10 min.:",
@@ -26,6 +28,7 @@ make_monitor_hover = function(
   paste0(
     paste0("<big><b>", name |> stringr::str_sub(end = 20), "</b></big><br>"),
     paste0(text$type, "<b>", pretty_text(network), "</b><br>"),
+    paste0(text$monitor, "<b>", pretty_text(monitor_type), "</b><br>"),
     paste0(text$time, "<b>", pretty_text(date_last_obs), "</b><br>"),
     make_pm_summary_table(
       network = network,

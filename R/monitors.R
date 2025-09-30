@@ -3,7 +3,17 @@ add_obs_markers <- function(
   marker_data,
   font_sizes,
   marker_sizes = list(missing = 17, obs = 33),
-  marker_hover_text,
+  marker_hover_text = list(
+    type = "Type: ",
+    time = "Time: ",
+    monitor = "Monitor: ",
+    pm_title = "PM<sub>2.5</sub> averages:",
+    pm_10min = "10 min.:",
+    pm_1hr = "1 hr.:",
+    pm_3hr = "3 hr.:",
+    pm_24hr = "24 hr.:",
+    no_data = "No Data."
+  ),
   template_dir = system.file("images", package = "aqmapr"),
   icon_dir = system.file("images/icons", package = "aqmapr"),
   force_update_icons = FALSE
@@ -70,6 +80,7 @@ add_obs_markers <- function(
       label = make_monitor_hover(
         name = .data$name,
         network = .data$network,
+        monitor_type = .data$monitor_type,
         date_last_obs = .data$date_last_obs,
         pm25_10min = .data$pm25_10min,
         pm25_1hr = .data$pm25_1hr,

@@ -2,6 +2,7 @@ test_that("make_monitor_hover() works", {
   result <- make_monitor_hover(
     name = "name",
     network = factor("agency", levels = c("agency", "lcm")),
+    monitor_type = factor("FEM", levels = c("FEM", "PA", "EGG")),
     date_last_obs = lubridate::ymd_h("2020-01-01 01"),
     pm25_10min = 1,
     pm25_1hr = 2,
@@ -11,6 +12,7 @@ test_that("make_monitor_hover() works", {
   expected <- paste0(
     "<big><b>name</b></big><br>",
     "Type: <b>Regulatory</b><br>",
+    "Monitor: <b>Federal Equivelant Method (FEM)</b><br>",
     "Time: <b>2020-01-01T01:00:00Z</b><br>",
     "<table>",
     "<tr><th>PM<sub>2.5</sub> averages:</th></tr>",
