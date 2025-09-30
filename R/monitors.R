@@ -137,6 +137,7 @@ add_monitor_legend <- function(
 
   # Make legend title
   title_tag <- legend_title |>
+    htmltools::HTML() |>
     htmltools::tags$strong() |>
     htmltools::tags$span(title = names(legend_title))
 
