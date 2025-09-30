@@ -38,13 +38,14 @@ make_aqmap <- function(
   map <- leaflet::leaflet() |>
     add_base_maps(base_maps = base_maps) |>
     # Include custom js used by various parts of the map
-    include_scripts(paths = js_paths, types = "js") |>
+    include_scripts(paths = js_paths, types = "js", as_reference = TRUE) |>
     htmlwidgets::onRender("handle_page_render") |>
     # Use leaflet.extras::addHash() + custom js
     # to track map location/layers/basemap
     track_map_state(
       js_dir = js_dir,
-      js_endpoint = js_endpoint
+      js_endpoint = js_endpoint,
+      as_reference = TRUE
     ) |>
     # Cache provider tiles for faster reload times
     leaflet.extras::enableTileCaching()
@@ -66,7 +67,6 @@ make_aqmap <- function(
         legend_title = monitor_legend_title,
         icon_dir = icon_endpoint,
         css_dir = css_dir,
-        css_endpoint = css_endpoint,
         position = "bottomright"
       ) |>
       append_to_layer_control(

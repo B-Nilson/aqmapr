@@ -10,6 +10,10 @@
 #' @param js_endpoint The endpoint where custom js files can be accessed by the client.
 #'   Typically this is either a ambiorix/plumber endpoint or a static directory
 #'   (relative to the html file being served).
+#' @param as_reference (Optional).
+#'   If TRUE, the paths will be included in the src attribute of the script tag.
+#'   If FALSE, the paths will be read in and embeded directly.
+#'   Default is FALSE.
 #'
 #' @return A leaflet map object
 #' @export
@@ -23,7 +27,8 @@
 track_map_state <- function(
   map,
   js_dir = system.file("js", package = "aqmapr"),
-  js_endpoint = "/js"
+  js_endpoint = "/js",
+  as_reference = FALSE
 ) {
   stopifnot("leaflet" %in% class(map))
   stopifnot(length(js_dir) == 1, is.character(js_dir), dir.exists(js_dir))
@@ -32,9 +37,11 @@ track_map_state <- function(
     is.character(js_endpoint),
     startsWith(js_endpoint, "/")
   )
+  stopifnot(is.logical(as_reference), length(as_reference) == 1)
 
   # Specify required js files
   js_files <- c(
+    # TODO: check if these are already loaded before including
     "on_render.js", # # in case not already loaded
     "map_layers.js", # # in case not already loaded
     "track_map_state/url_args.js",
@@ -42,6 +49,7 @@ track_map_state <- function(
   )
   js_local <- file.path(js_dir, js_files)
   js_server <- file.path(js_endpoint, js_files)
+  js_paths <- if (as_reference) js_server else js_local
 
   # Make sure the js files exist
   stopifnot(all(file.exists(js_local)))
@@ -50,7 +58,7 @@ track_map_state <- function(
     # Track zoom/lat/lng in URL
     leaflet.extras::addHash() |>
     # Include js files to track active layers and base map
-    include_scripts(paths = js_server, types = "js") |>
+    include_scripts(paths = js_paths, as_reference = as_reference) |>
     # Start js on page render (incase not already done)
     htmlwidgets::onRender("handle_page_render")
 }

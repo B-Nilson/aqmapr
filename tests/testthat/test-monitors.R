@@ -15,7 +15,6 @@ test_that("add_obs_markers() works", {
 })
 
 test_that("add_monitor_legend() works", {
-  skip("Requires server to be running")
   map <- leaflet::leaflet()
   networks <- c("agency", "lcm", "purpleair", "aqegg")
 

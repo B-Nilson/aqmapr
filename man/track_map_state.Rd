@@ -7,7 +7,8 @@
 track_map_state(
   map,
   js_dir = system.file("js", package = "aqmapr"),
-  js_endpoint = "/js"
+  js_endpoint = "/js",
+  as_reference = FALSE
 )
 }
 \arguments{
@@ -20,6 +21,11 @@ Default is the "js" directory in the \code{aqmapr} package.}
 \item{js_endpoint}{The endpoint where custom js files can be accessed by the client.
 Typically this is either a ambiorix/plumber endpoint or a static directory
 (relative to the html file being served).}
+
+\item{as_reference}{(Optional).
+If TRUE, the paths will be included in the src attribute of the script tag.
+If FALSE, the paths will be read in and embeded directly.
+Default is FALSE.}
 }
 \value{
 A leaflet map object

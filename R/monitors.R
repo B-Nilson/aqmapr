@@ -118,7 +118,6 @@ add_monitor_legend <- function(
   legend_title,
   icon_dir = system.file("images/icons", package = "aqmapr"),
   css_dir = system.file("css", package = "aqmapr"),
-  css_endpoint = "/css",
   position = "bottomright"
 ) {
   stopifnot("leaflet" %in% class(map))
@@ -127,24 +126,14 @@ add_monitor_legend <- function(
   stopifnot(is.character(icon_dir), length(icon_dir) == 1)
   stopifnot(is.character(css_dir), length(css_dir) == 1)
   stopifnot(
-    is.null(css_endpoint) |
-      (is.character(css_endpoint) & length(css_endpoint) == 1)
-  )
-  if (is.null(css_endpoint)) {
-    # Assume files available locally if no endpoint
-    css_endpoint <- css_dir
-  }
-  stopifnot(
     is.character(position),
     length(position) == 1,
     position %in% c("bottomright", "bottomleft", "topleft", "topright")
   )
 
   # Ensure css file exists
-  css_file <- "monitor_legend.css"
-  css_local <- file.path(css_dir, css_file)
-  css_server <- file.path(css_endpoint, css_file)
-  stopifnot(file.exists(css_local))
+  css_path <- css_dir |> file.path("monitor_legend.css")
+  stopifnot(file.exists(css_path))
 
   # Make legend title
   title_tag <- legend_title |>
@@ -190,5 +179,5 @@ add_monitor_legend <- function(
       layerId = "monitor-legend",
       position = position
     ) |>
-    include_scripts(paths = css_server, types = "css")
+    include_scripts(paths = css_path, as_reference = FALSE)
 }
