@@ -1,122 +1,41 @@
 add_obs_markers <- function(
   map,
-  marker_data,
-  font_sizes,
-  marker_sizes = list(missing = 17, obs = 33),
-  marker_hover_text = list(
-    type = "Type: ",
-    time = "Time: ",
-    monitor = "Monitor: ",
-    pm_title = "PM<sub>2.5</sub> averages:",
-    pm_10min = "10 min.:",
-    pm_1hr = "1 hr.:",
-    pm_3hr = "3 hr.:",
-    pm_24hr = "24 hr.:",
-    no_data = "No Data."
-  ),
-  template_dir = system.file("images", package = "aqmapr"),
-  icon_dir = system.file("images/icons", package = "aqmapr"),
-  force_update_icons = FALSE
+  networks,
+  json_url = "/data/recent/%s/geojson", # %s -> network
+  as_reference = FALSE
 ) {
   stopifnot("leaflet" %in% class(map))
-  stopifnot(is.data.frame(marker_data))
-  stopifnot(
-    is.list(marker_sizes),
-    length(marker_sizes) == 2,
-    all(c("missing", "obs") %in% names(marker_sizes))
-  )
-  stopifnot(is.list(marker_hover_text), length(marker_hover_text) > 0)
-  stopifnot(is.logical(force_update_icons), length(force_update_icons) == 1)
+  stopifnot(is.character(networks), length(networks) > 0)
+  stopifnot(is.character(json_url), length(json_url) == 1)
 
-  hover_options <- leaflet::labelOptions(
-    sticky = FALSE,
-    textOnly = FALSE,
-    opacity = 0.9,
-    offset = c(15, 0),
-    direction = "right"
-  )
-  # Make monitor icons based on that networks mean
-  network_means <- marker_data |>
-    dplyr::group_by(.data$network) |>
-    dplyr::summarise(pm25_1hr = mean(.data$pm25_1hr, na.rm = TRUE))
-  levels(marker_data$network) |>
-    make_icon_svg(
-      values = network_means$pm25_1hr,
-      template_dir = template_dir,
-      icon_dir = icon_dir,
-      font_sizes = font_sizes,
-      marker_size = marker_sizes$obs,
-      marker_size_missing = marker_sizes$missing,
-      for_legend = TRUE,
-      force = TRUE
-    )
-
-  # Ensure icons exist
-  marker_data$network |>
-    as.character() |>
-    make_icon_svg(
-      values = marker_data$pm25_1hr,
-      template_dir = template_dir,
-      icon_dir = icon_dir,
-      font_sizes = font_sizes,
-      marker_size = marker_sizes$obs,
-      marker_size_missing = marker_sizes$missing,
-      force = force_update_icons
-    )
-
-  # Add helper columns
-  marker_data <- marker_data |>
-    dplyr::mutate(
-      # Determine pane to use based on pm25_1hr missing or not
-      pane = names(marker_sizes)[(!is.na(.data$pm25_1hr)) + 1],
-      # Select icon size similarily - smaller for missing obs
-      icon_width = unname(unlist(marker_sizes[.data$pane])),
-      icon_height = .data$icon_width,
-      # Build url to icon
-      icon_url = .data$network |>
-        as.character() |>
-        make_icon_path(values = .data$pm25_1hr, icon_dir = icon_dir),
-      # Build hover label
-      label = make_monitor_hover(
-        name = .data$name,
-        network = .data$network,
-        monitor_type = .data$monitor_type,
-        date_last_obs = .data$date_last_obs,
-        pm25_10min = .data$pm25_10min,
-        pm25_1hr = .data$pm25_1hr,
-        pm25_3hr = .data$pm25_3hr,
-        pm25_24hr = .data$pm25_24hr,
-        text = marker_hover_text
+  # Add geojson references for each network
+  # (styles controled by properties in geojson - see format_for_geojson())
+  for (network in networks) {
+    map <- map |>
+      leaflet::addMapPane("offline", zIndex = 415) |>
+      leaflet::addMapPane("online", zIndex = 420) |>
+      add_geojson_layer(
+        json_url = "/data/recent/%s/geojson" |> sprintf(network),
+        group = pretty_text(network),
+        add_to_layer_control = TRUE,
+        as_reference = as_reference
       )
-    )
-
-  # Add markers to map - 1 pane for missing, 1 for not
+  }
+  # Add a network legend
   map |>
-    leaflet::addMapPane(names(marker_sizes)[1], zIndex = 415) |>
-    leaflet::addMapPane(names(marker_sizes)[2], zIndex = 420) |>
-    leaflet::addMarkers(
-      data = marker_data,
-      group = ~ as.character(network) |>
-        pretty_text(),
-      options = ~ leaflet::pathOptions(pane = pane) |>
-        c(leaflet::markerOptions(zIndexOffset = round(pm25_1hr * 10))),
-      lng = ~lng,
-      lat = ~lat,
-      icon = ~ leaflet::icons(
-        iconUrl = icon_url,
-        iconWidth = icon_width,
-        iconHeight = icon_height
-      ),
-      label = ~ label |> lapply(htmltools::HTML),
-      labelOptions = hover_options
+    add_monitor_legend(
+      networks = networks,
+      position = "bottomright"
     )
 }
 
+# TODO: add as_reference arg so able to embed icons directly
 add_monitor_legend <- function(
   map,
   networks,
-  legend_title,
+  legend_title = "PM<sub>2.5</sub> Monitors",
   icon_dir = system.file("images/icons", package = "aqmapr"),
+  icon_endpoint = "/icons",
   css_dir = system.file("css", package = "aqmapr"),
   position = "bottomright"
 ) {
@@ -135,6 +54,15 @@ add_monitor_legend <- function(
   css_path <- css_dir |> file.path("monitor_legend.css")
   stopifnot(file.exists(css_path))
 
+  # Create icons if needed
+  networks |>
+    make_icon_svg(
+      values = rep(0, length(networks)),
+      icon_dir = icon_dir,
+      for_legend = TRUE,
+      force = FALSE
+    )
+
   # Make legend title
   title_tag <- legend_title |>
     htmltools::HTML() |>
@@ -145,7 +73,7 @@ add_monitor_legend <- function(
   icon_paths <- networks |>
     make_icon_path(
       values = NA_real_,
-      icon_dir = icon_dir,
+      icon_dir = icon_endpoint,
       for_legend = TRUE
     )
 

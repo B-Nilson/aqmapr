@@ -1,34 +1,13 @@
 # Create leaflet map similiar to AQmap
 make_aqmap <- function(
-  marker_data = NULL,
+  networks = c("agency", "lcm"),
   base_maps = c(
     "Light Theme" = "OpenStreetMap",
     "Dark Theme" = "CartoDB.DarkMatter"
   ),
-  font_sizes = c(119, 99, 90),
-  marker_sizes = list(missing = 17, obs = 33),
-  monitor_hover_text = list(
-    type = "Type: ",
-    time = "Time: ",
-    monitor = "Monitor: ",
-    pm_title = "PM<sub>2.5</sub> averages:",
-    pm_10min = "10 min.:",
-    pm_1hr = "1 hr.:",
-    pm_3hr = "3 hr.:",
-    pm_24hr = "24 hr.:",
-    no_data = "No Data."
-  ),
-  monitor_legend_title = c(
-    "Fine particulate matter monitor observations" = "PM<sub>2.5</sub> Monitors"
-  ),
-  template_dir = system.file("images", package = "aqmapr"),
-  icon_dir = system.file("images/icons", package = "aqmapr"),
-  icon_endpoint = "/icons",
   js_dir = system.file("js", package = "aqmapr"),
   js_endpoint = "/js",
-  css_dir = system.file("css", package = "aqmapr"),
-  css_endpoint = "/css",
-  force_update_icons = FALSE
+  use_references = TRUE
 ) {
   # General javascript files
   js_files <- c("map_layers.js", "on_render.js")
@@ -38,42 +17,84 @@ make_aqmap <- function(
   map <- leaflet::leaflet() |>
     add_base_maps(base_maps = base_maps) |>
     # Include custom js used by various parts of the map
-    include_scripts(paths = js_paths, types = "js", as_reference = TRUE) |>
+    include_scripts(paths = js_paths, as_reference = use_references) |>
     htmlwidgets::onRender("handle_page_render") |>
     # Use leaflet.extras::addHash() + custom js
     # to track map location/layers/basemap
     track_map_state(
       js_dir = js_dir,
       js_endpoint = js_endpoint,
-      as_reference = TRUE
+      as_reference = use_references
     ) |>
     # Cache provider tiles for faster reload times
     leaflet.extras::enableTileCaching()
 
   # Add observation markers
-  if (!is.null(marker_data)) {
+  if (length(networks)) {
     map <- map |>
       add_obs_markers(
-        marker_data = marker_data,
-        template_dir = template_dir,
-        icon_dir = icon_dir,
-        font_sizes = font_sizes,
-        marker_sizes = marker_sizes,
-        marker_hover_text = monitor_hover_text,
-        force_update_icons = force_update_icons
-      ) |>
-      add_monitor_legend(
-        networks = levels(marker_data$network),
-        legend_title = monitor_legend_title,
-        icon_dir = icon_endpoint,
-        css_dir = css_dir,
-        position = "bottomright"
-      ) |>
-      append_to_layer_control(
-        layer_groups = levels(marker_data$network) |>
-          pretty_text()
+        networks = networks,
+        as_reference = use_references
       )
   }
 
   return(map)
+}
+
+format_for_geojson <- function(out_data) {
+    rlang::check_installed("sf")
+    desired_cols <- c("id", "lng", "lat", "pane", "zIndexOffset", "iconUrl", "iconSize", "label")
+  
+    # Define visible text for hovers
+    marker_hover_text <- list(
+      type = "Type: ",
+      time = "Time: ",
+      monitor = "Monitor: ",
+      pm_title = "PM<sub>2.5</sub> averages:",
+      pm_10min = "10 min.:",
+      pm_1hr = "1 hr.:",
+      pm_3hr = "3 hr.:",
+      pm_24hr = "24 hr.:",
+      no_data = "No Data."
+    )
+  
+    # Ensure icons exist
+    out_data$network |>
+      as.character() |>
+      make_icon_svg(
+        values = out_data$pm25_1hr,
+        icon_dir = system.file("images/icons", package = "aqmapr"),
+        marker_size_missing = 17,
+        for_legend = FALSE,
+        force = FALSE
+      )
+
+    # Reformat to geojson for populating map markers
+    out_data |>
+      dplyr::rename(id = "site_id", date = "date_last_obs") |>
+      dplyr::mutate(
+        pane = ifelse(is.na(.data$pm25_1hr), "offline", "online"),
+        zIndexOffset = ifelse(is.na(.data$pm25_1hr), 0, round(.data$pm25_1hr * 10)),
+        iconUrl = network |>
+          as.character() |>
+          make_icon_path(
+            values = .data$pm25_1hr,
+            icon_dir = "/icons",
+            for_legend = FALSE
+          ),
+        iconSize = ifelse(is.na(.data$pm25_1hr), 18, 32),
+        label = make_monitor_hover(
+          name = .data$name,
+          network = .data$network,
+          monitor_type = .data$monitor_type,
+          date_last_obs = .data$date,
+          pm25_10min = .data$pm25_10min,
+          pm25_1hr = .data$pm25_1hr,
+          pm25_3hr = .data$pm25_3hr,
+          pm25_24hr = .data$pm25_24hr,
+          text = marker_hover_text
+        )
+      ) |>
+      dplyr::select(dplyr::all_of(desired_cols)) |>
+      sf::st_as_sf(coords = c("lng", "lat"))
 }

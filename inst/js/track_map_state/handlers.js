@@ -1,20 +1,3 @@
-// TODO: wait_for(location.hash).then(...)
-wait_for_hash().then(async () => {
-    _map.args =  get_args();
-    // Hide all layers
-    let all_layer_idxs = Object.keys(_map.layers.data).map(Number);
-    hide_layers(all_layer_idxs);
-    // Display URL layers and set view (center/zoom)
-    apply_args(set_view = true);
-    // Make sure the URL arguments match displayed
-    update_url_args();
-}).then(() => {
-    _map.on('overlayadd', handle_layer_change);
-    _map.on('overlayremove', handle_layer_change);
-    _map.on('baselayerchange', handle_layer_change);
-    _map.on('moveend', handle_map_move);
-});
-
 async function handle_layer_change(el) {
     // Update _map.args object with layer change
     if (el.type === 'overlayadd') {
@@ -36,4 +19,34 @@ async function handle_layer_change(el) {
 async function handle_map_move() {
     // Update URL to reflect _map.args
     update_url_args();
+}
+
+// TODO: wait_for(location.hash).then(...)
+wait_for_hash().then(async () => {
+    _map.args =  get_args();
+    // Make sure all layers finished loading
+    await wait_for_layers();
+    // Hide all layers
+    let all_layer_idxs = Object.keys(_map.layers.data).map(Number);
+    hide_layers(all_layer_idxs);
+    // Display URL layers and set view (center/zoom)
+    apply_args(set_view = true);
+    // Make sure the URL arguments match displayed
+    update_url_args();
+}).then(() => {
+    _map.on('overlayadd', handle_layer_change);
+    _map.on('overlayremove', handle_layer_change);
+    _map.on('baselayerchange', handle_layer_change);
+    _map.on('moveend', handle_map_move);
+});
+
+async function wait_for_layers() {
+    return new Promise((resolve) => {
+        const interval = setInterval(() => {
+            if (_map.layers) {
+                clearInterval(interval);
+                resolve();
+            }
+        }, 10);
+    });
 }

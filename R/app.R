@@ -45,6 +45,9 @@ start_server <- function(
   # i.e. /data/recent/json
   app$get("/data/:name/:type", get_data)
 
+  # i.e. /data/recent/lcm/geojson
+  app$get("/data/:name/:network/:type", get_data)
+
   # i.e. /data/plotting/agency/10102/json
   app$get("/data/:name/:network/:site_id/:type", get_data)
 
@@ -60,7 +63,7 @@ get_data <- function(req, res) {
   allowed_types <- c("json", "csv", "tsv", "geojson") # first is default
   name <- req$params$name
   type <- req$params$type
-  network <- req$params$network # for name == "plotting"
+  network <- req$params$network
   site_id <- req$params$site_id # for name == "plotting"
 
   # Set default type if not specified
@@ -85,6 +88,11 @@ get_data <- function(req, res) {
   }
 
   # Create secondary looks if needed
+  if (!is.null(network) && name == "recent") {
+    out_data <- out_data |>
+      dplyr::filter(.data$network == !!network)
+  }
+
   if (name == "meta") {
     out_data <- out_data |>
       dplyr::select(-dplyr::starts_with(c("pm25_", "date"))) |>
@@ -93,13 +101,11 @@ get_data <- function(req, res) {
 
   if (type == "geojson") {
     rlang::check_installed("geojson")
-    rlang::check_installed("sf")
+    # Create geojson for populating map markers
     out_data <- out_data |>
-      dplyr::select(-dplyr::any_of("prov_terr")) |> 
-      dplyr::rename(id = "site_id", date = "date_last_obs") |>
-      sf::st_as_sf(coords = c("lng","lat")) |> 
-      geojson::as.geojson() |> 
-      as.character() |> 
+      format_for_geojson() |>
+      geojson::as.geojson() |>
+      as.character() |>
       handyr::on_error(.return = NULL)
     type = "text"
   }
@@ -110,13 +116,7 @@ get_data <- function(req, res) {
 
 # Ambiorix map GET handler (for /)
 get_map <- function(req, res) {
-  recent_aqmap_data <- load_recent_aqmap_data() |>
-    handyr::on_error(.return = NULL)
-
-  map <- make_aqmap(
-    marker_data = recent_aqmap_data,
-    force_update_icons = FALSE
-  )
+  map <- make_aqmap(networks = c("agency", "lcm"))
 
   res$htmlwidget(map)
 }

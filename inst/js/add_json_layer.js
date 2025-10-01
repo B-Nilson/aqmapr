@@ -1,11 +1,41 @@
-LeafletWidget.methods.addJsonPointerLayer = function (json_url, layer_id, group, options) {
+LeafletWidget.methods.addJsonPointerLayer = function (json_url, layer_id, group, options, _add_to_map = false) {
     fetch(json_url)
         .then(response => response.json())
         .then(data => {
-            const layer = L.geoJSON(data, options);
+            const layer = L.geoJSON(data, {
+                ...options,
+                pointToLayer: function (feature, latlng) {
+                    const iconUrl = feature.properties.iconUrl;
+                    const pane = feature.properties.pane ?? "markerPane";
+                    const zIndexOffset = feature.properties.zIndexOffset ?? 0;
+                    if (iconUrl) {
+                        const iconSize = feature.properties.iconSize ?? 32;
+                        const icon = L.icon({
+                            iconUrl: iconUrl,
+                            iconSize: [iconSize, iconSize]
+                        });
+                        return L.marker(latlng, { icon: icon, pane: pane, zIndexOffset: zIndexOffset });
+                    } else {
+                        // Use default Leaflet marker
+                        return L.marker(latlng, { pane: pane, zIndexOffset: zIndexOffset });
+                    }
+                },
+                // Optional: add custom tooltip using .label property
+                onEachFeature: function (feature, layer) {
+                    if (feature.properties && feature.properties.label) {
+                        const iconSize = feature.properties.iconSize ?? 32;
+                        layer.bindTooltip(feature.properties.label, {
+                            permanent: false,
+                            direction: "right",
+                            offset: [Math.round(iconSize / 2), 0]
+                        });
+                    }
+                }
+
+            });
             if (layer_id || group) {
                 _map.layerManager.addLayer(layer, "geojson", layer_id, group);
             }
-            layer.addTo(_map);
+            if (_add_to_map) layer.addTo(_map);
         });
 };
