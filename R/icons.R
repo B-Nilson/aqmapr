@@ -2,7 +2,7 @@ make_icon_svg <- function(
   groups,
   values,
   font_sizes = c(119, 99, 90),
-  marker_size,
+  marker_size = 33,
   marker_size_missing = NULL,
   for_legend = FALSE,
   force = FALSE,
@@ -22,6 +22,10 @@ make_icon_svg <- function(
       (is.numeric(marker_size_missing) & length(marker_size_missing) == 1)
   )
   stopifnot(is.logical(force), length(force) == 1)
+
+  if (is.null(marker_size_missing)) {
+    marker_size_missing <- marker_size
+  }
 
   # Combine inputs
   icons <- data.frame(group = groups, values) |>
