@@ -10,7 +10,7 @@ add_geojson_layer(
   layer_id = NULL,
   group = NULL,
   options = list(),
-  as_reference = TRUE,
+  as_reference = FALSE,
   add_to_layer_control = !is.null(group)
 )
 }
@@ -37,7 +37,7 @@ Default is an empty list.
 \item{as_reference}{(Optional).
 If TRUE, the GeoJSON data will be fetched from the url and added to the map on page load.
 If FALSE, the GeoJSON data will be added as embeded data to the map.
-Default is TRUE.}
+Default is FALSE.}
 
 \item{add_to_layer_control}{(Optional).
 If TRUE, \code{group} must be provided and the layer will be added to the map's layer control under the group.
