@@ -1,8 +1,8 @@
 
-# braydennilson_ambiorix
+# aqmapr
 
 <!-- badges: start -->
 <!-- badges: end -->
 
-A personal webpage to tryout `ambiorix`
+An R package which leverages `ambiorix` to serve a full stack implementation of [AQmap](https://aqmap.ca/aqmap)
 
