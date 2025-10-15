@@ -14,20 +14,11 @@ make_aqmap <- function(
   js_paths <- file.path(js_endpoint, js_files)
 
   # Build basemap
-  map <- leaflet::leaflet() |>
-    add_base_maps(base_maps = base_maps) |>
+  map <- base_maps |> 
+    make_leaflet_map(track_map_state = TRUE) |>
     # Include custom js used by various parts of the map
     include_scripts(paths = js_paths, as_reference = use_references) |>
-    htmlwidgets::onRender("handle_page_render") |>
-    # Use leaflet.extras::addHash() + custom js
-    # to track map location/layers/basemap
-    track_map_state(
-      js_dir = js_dir,
-      js_endpoint = js_endpoint,
-      as_reference = use_references
-    ) |>
-    # Cache provider tiles for faster reload times
-    leaflet.extras::enableTileCaching()
+    htmlwidgets::onRender("handle_page_render")
 
   # Add observation markers
   if (length(networks)) {
