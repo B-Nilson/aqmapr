@@ -42,7 +42,10 @@ canadian_provinces <- osm_results |>
 
 row.names(canadian_provinces) <- NULL
 
-usethis::use_data(canadian_provinces, overwrite = TRUE, compress = "xz")
+# This creates too large of a file - instead save to .rds and load using a function
+# usethis::use_data(canadian_provinces, overwrite = TRUE, compress = "xz")
+canadian_provinces |> 
+  saveRDS("inst/extdata/canadian_provinces.rds")
 
 # write out example to geojson as well
 geojson_path <- "inst/extdata/example.geojson"

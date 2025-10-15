@@ -9,6 +9,9 @@ make_leaflet_map(
   point_data = list(),
   point_options = list(radius = 3, weight = 1, color = "black", fillColor = "#808080",
     fillOpacity = 0.8, opacity = 1),
+  polygon_data = list(),
+  polygon_options = list(weight = 1, color = "black", fillColor = "#808080", fillOpacity
+    = 0.8, opacity = 1),
   track_map_state = TRUE,
   as_reference = FALSE
 )
