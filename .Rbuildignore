@@ -7,3 +7,4 @@ inst/images/icons
 inst/extdata
 ^[.]?air[.]toml$
 ^\.vscode$
+^data-raw$
