@@ -45,6 +45,12 @@ canadian_provinces <- osm_results |>
 
 row.names(canadian_provinces) <- NULL
 
+# Union all provinces
+for(i in 1:nrow(canadian_provinces)) {
+ canadian_provinces$geometry[i] <- canadian_provinces$geometry[i] |> 
+    sf::st_union()
+}
+
 # This creates too large of a file - instead save to .rds and load using a function
 # usethis::use_data(canadian_provinces, overwrite = TRUE, compress = "xz")
 canadian_provinces |>

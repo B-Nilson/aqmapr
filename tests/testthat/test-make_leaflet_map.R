@@ -27,6 +27,24 @@ test_that("basic case with points data works", {
     expect_snapshot()
 })
 
+test_that("basic case with polygons data works", {
+  canadian_provinces <- load_canadian_provinces()
+  make_leaflet_map(
+    polygon_data = list("Provinces" = canadian_provinces),
+    polygon_options = list(
+      weight = 1,
+      color = "black",
+      fillColor = "black",
+      fillOpacity = 0.1,
+      opacity = 1,
+      label = ~name
+    )
+  ) |>
+    expect_no_error() |>
+    expect_no_warning() |>
+    expect_snapshot()
+})
+
 test_that("advanced case with points data works", {
   colour_pal <- leaflet::colorFactor(
     "viridis",
