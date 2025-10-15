@@ -2,26 +2,66 @@
 % Please edit documentation in R/make_leaflet_map.R
 \name{make_leaflet_map}
 \alias{make_leaflet_map}
-\title{Make a leaflet map with a base map and optional point data}
+\title{Simplify making a leaflet map}
 \usage{
 make_leaflet_map(
   base_maps = c(`Light Theme` = "OpenStreetMap", `Dark Theme` = "CartoDB.DarkMatter"),
-  point_data = NULL,
-  point_options = list(radius = 5, weight = 1, color = "black", fillColor = "#3388ff",
+  point_data = list(),
+  point_options = list(radius = 3, weight = 1, color = "black", fillColor = "#808080",
     fillOpacity = 0.8, opacity = 1),
-  track_map_state = TRUE
+  track_map_state = TRUE,
+  as_reference = FALSE
 )
 }
 \arguments{
-\item{base_maps}{A character vector of length 2, the first element is the light theme and the second element is the dark theme.}
+\item{base_maps}{(Optional).
+A character vector named basemaps from \link[leaflet:providers]{leaflet::providers} to add to the map.
+Names will be used in the control menu for the basemaps.
+Default is a nice light and dark open data theme.}
 
-\item{point_data}{A data frame of points to be added to the map.}
+\item{point_data}{(Optional).
+A named list of 1 or more \code{sf} data frames of points to be added to the map.
+Names will be used in the control menu for the layers.
+Default is an empty list (no point layers added).}
 
-\item{point_options}{A list of options for the points, see \code{\link{addMarkers}} for details.}
+\item{point_options}{(Optional). A list of options for the points, names must be present in arguments of \code{\link[leaflet:map-layers]{leaflet::addCircleMarkers()}} OR
+must all be in \code{names(point_data)} if individual options for each layer are desired.
+You can use \code{~column_name} to pass a column from \code{point_data} as an option (i.e. \code{label = ~name}).
+Default is objectivley better options for point data, applied to all layers.}
+
+\item{track_map_state}{(Optional). If TRUE, the map state will be tracked and saved in the URL when the map is saved to an HTML file.
+Default is TRUE.}
+
+\item{as_reference}{(Optional). If TRUE, js/css will be referenced in the map header. If FALSE, the js/css will be embeded directly in the map.
+Requires local server to be running (see \code{\link[=start_server]{start_server()}}), or the js and css files need to be hosted in "/js" and "/css" respectively relative to the html file.
+Run \code{system.file("js", package = "aqmapr")}/\code{system.file("css", package = "aqmapr")} to find the location of the js/css files respectively.
+Default is FALSE.}
 }
 \value{
 A leaflet map object.
 }
 \description{
-Make a leaflet map with a base map and optional point data
+Simplify making a leaflet map
+}
+\examples{
+
+colour_pal <- "viridis" |> 
+  leaflet::colorFactor(domain = canada_communities$type, ordered = TRUE)
+make_leaflet_map(
+  point_data = list("Communities" = canada_communities),
+  point_options = list(
+    radius = 3,
+    weight = 1,
+    color = "black",
+    fillColor = ~colour_pal(name),
+    fillOpacity = 0.8,
+    opacity = 1,
+    label = ~paste("Name: ", name, "<br/>", "Type: ", type) |> lapply(htmltools::HTML)
+  )
+) |> 
+  leaflet::addLegend(
+    pal = colour_pal, 
+    values = levels(canada_communities$type) |> 
+        factor(levels = levels(canada_communities$type))
+  )
 }

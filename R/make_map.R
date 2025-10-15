@@ -15,7 +15,7 @@ make_aqmap <- function(
 
   # Build basemap
   map <- base_maps |> 
-    make_leaflet_map(track_map_state = TRUE) |>
+    make_leaflet_map(track_map_state = TRUE, as_reference = use_references) |>
     # Include custom js used by various parts of the map
     include_scripts(paths = js_paths, as_reference = use_references) |>
     htmlwidgets::onRender("handle_page_render")
