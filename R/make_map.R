@@ -66,7 +66,7 @@ format_for_geojson <- function(out_data) {
       dplyr::mutate(
         pane = ifelse(is.na(.data$pm25_1hr), "offline", "online"),
         zIndexOffset = ifelse(is.na(.data$pm25_1hr), 0, round(.data$pm25_1hr * 10)),
-        iconUrl = network |>
+        iconUrl = .data$network |>
           as.character() |>
           make_icon_path(
             values = .data$pm25_1hr,
