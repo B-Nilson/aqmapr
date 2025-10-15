@@ -6,10 +6,10 @@
 #' If `as_reference` is TRUE, a reference to the GeoJSON file is added to the page, such that the data can be fetched and added to the map on page load.
 #' @param map A Leaflet map object
 #' @param json_url A character string pointing to the URL of the GeoJSON data
-#' @param layer_id,group (Optional). 
+#' @param layer_id,group (Optional).
 #'   A character string of the layer id or group name to add to the layer.
 #'   Default is NULL (no ID/group).
-#' @param options (Optional). 
+#' @param options (Optional).
 #'   A list of options to pass to the L.geoJSON() method (see \url{https://leafletjs.com/reference.html#geojson}).
 #'   List names must match the names of the L.geoJSON() options.
 #'   Useful options:
@@ -23,19 +23,19 @@
 #'   Default is FALSE.
 #' @param add_to_layer_control (Optional).
 #'   If TRUE, `group` must be provided and the layer will be added to the map's layer control under the group.
-#'   Default is TRUE if `group` is provided, FALSE otherwise. 
+#'   Default is TRUE if `group` is provided, FALSE otherwise.
 #' @export
 #' @examples
 #' library(leaflet)
 #' library(aqmapr)
 #'
 #' geojson_url <- "https://raw.githubusercontent.com/B-Nilson/aqmapr/refs/heads/main/inst/extdata/example.geojson"
-#' 
+#'
 #' # Add as embeded data (normal R leaflet method)
 #' leaflet() |>
 #'   add_base_maps(base_maps = "OpenStreetMap") |>
 #'   add_geojson_layer(json_url = geojson_url, as_reference = FALSE)
-#' 
+#'
 #' # Add as reference (fetch on page load)
 #' leaflet() |>
 #'   add_base_maps(base_maps = "OpenStreetMap") |>
@@ -65,7 +65,7 @@ add_geojson_layer <- function(
     file.path("add_json_layer.js")
 
   if (!as_reference) {
-    json_data <- readLines(url(json_url), warn = FALSE) |> 
+    json_data <- readLines(url(json_url), warn = FALSE) |>
       paste(collapse = "\n")
     map <- map |>
       leaflet::addGeoJSON(

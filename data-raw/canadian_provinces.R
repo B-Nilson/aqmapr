@@ -20,7 +20,7 @@ osm_results <- osmdata::opq(bbox = bbox, timeout = 600) |>
   osmdata::add_osm_feature(key = "type", value = "boundary") |>
   osmdata::add_osm_feature(key = "boundary", value = "administrative") |>
   osmdata::add_osm_feature(key = "border_type", value = "province") |>
-  osmdata::add_osm_feature(key = "admin_level", value = "4") |> 
+  osmdata::add_osm_feature(key = "admin_level", value = "4") |>
   osmdata::osmdata_sf() |>
   osmdata::unique_osmdata()
 osm_results <- osm_results$osm_multipolygons
@@ -29,22 +29,25 @@ canadian_provinces <- osm_results |>
   dplyr::select("osm_id", "name", "geometry") |>
   dplyr::mutate(
     name = .data$name |>
-      handyr::swap("New Brunswick / Nouveau-Brunswick", with = "New Brunswick") |> 
-      handyr::swap("ᓄᓇᕗᑦ Nunavut", with = "Nunavut") |> 
+      handyr::swap(
+        "New Brunswick / Nouveau-Brunswick",
+        with = "New Brunswick"
+      ) |>
+      handyr::swap("ᓄᓇᕗᑦ Nunavut", with = "Nunavut") |>
       factor(levels = prov_order),
     abbr = .data$name |>
       factor(levels = prov_order, labels = names(prov_order)),
-    type = ifelse(.data$name %in% prov_order[1:10], "province", "territory") |> 
+    type = ifelse(.data$name %in% prov_order[1:10], "province", "territory") |>
       factor(levels = c("province", "territory"))
   ) |>
-  dplyr::arrange(.data$name) |> 
+  dplyr::arrange(.data$name) |>
   withr::with_package(package = "sf")
 
 row.names(canadian_provinces) <- NULL
 
 # This creates too large of a file - instead save to .rds and load using a function
 # usethis::use_data(canadian_provinces, overwrite = TRUE, compress = "xz")
-canadian_provinces |> 
+canadian_provinces |>
   saveRDS("inst/extdata/canadian_provinces.rds")
 
 # write out example to geojson as well

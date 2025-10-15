@@ -48,7 +48,7 @@ Simplify making a leaflet map
 }
 \examples{
 
-colour_pal <- "viridis" |> 
+colour_pal <- "viridis" |>
   leaflet::colorFactor(domain = canada_communities$type, ordered = TRUE)
 make_leaflet_map(
   point_data = list("Communities" = canada_communities),
@@ -61,10 +61,10 @@ make_leaflet_map(
     opacity = 1,
     label = ~paste("Name: ", name, "<br/>", "Type: ", type) |> lapply(htmltools::HTML)
   )
-) |> 
+) |>
   leaflet::addLegend(
-    pal = colour_pal, 
-    values = levels(canada_communities$type) |> 
+    pal = colour_pal,
+    values = levels(canada_communities$type) |>
         factor(levels = levels(canada_communities$type))
   )
 }

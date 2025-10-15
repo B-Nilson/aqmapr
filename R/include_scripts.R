@@ -63,13 +63,13 @@ include_scripts <- function(
       lapply(\(path) {
         path |>
           readLines() |>
-          paste(collapse = "\n") |> 
+          paste(collapse = "\n") |>
           htmltools::HTML()
       })
-  } else if (!is.null(paths)){
+  } else if (!is.null(paths)) {
     inputs <- paths
   } else {
-    inputs <- texts |> 
+    inputs <- texts |>
       lapply(htmltools::HTML)
   }
 

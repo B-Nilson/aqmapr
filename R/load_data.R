@@ -2,9 +2,9 @@
 #'
 #' @description
 #' Load the most recent AQmap observation data from
-#' https://aqmap.ca/aqmap/aqmap_most_recent_obs.Rds 
+#' https://aqmap.ca/aqmap/aqmap_most_recent_obs.Rds
 #' which is updated every 10 minutes alongside AQmap.
-#' 
+#'
 #' Alternativley, you can run [start_server] to host an AQmapr app locally,
 #' which exposes the results of this function (by default) at 127.0.0.1:8000/data/recent/:type
 #' where :type is one of "json", "csv", or "tsv".
@@ -139,7 +139,7 @@ load_aqmap_plot_data <- function(
   site_id,
   network_monitors = list(
     agency = "fem",
-    purpleair = "pa", 
+    purpleair = "pa",
     aqegg = "egg"
   )
 ) {

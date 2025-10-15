@@ -14,7 +14,7 @@
 #' @source <https://openstreetmap.org>
 #' @export
 load_canadian_provinces <- function() {
-  "extdata/canadian_provinces.rds" |> 
-    system.file(package = "aqmapr") |> 
+  "extdata/canadian_provinces.rds" |>
+    system.file(package = "aqmapr") |>
     readRDS()
 }

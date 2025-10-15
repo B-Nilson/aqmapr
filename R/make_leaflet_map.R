@@ -22,8 +22,8 @@
 #' @return A leaflet map object.
 #' @importFrom rlang exec !!!
 #' @examples
-#' 
-#' colour_pal <- "viridis" |> 
+#'
+#' colour_pal <- "viridis" |>
 #'   leaflet::colorFactor(domain = canada_communities$type, ordered = TRUE)
 #' make_leaflet_map(
 #'   point_data = list("Communities" = canada_communities),
@@ -36,10 +36,10 @@
 #'     opacity = 1,
 #'     label = ~paste("Name: ", name, "<br/>", "Type: ", type) |> lapply(htmltools::HTML)
 #'   )
-#' ) |> 
+#' ) |>
 #'   leaflet::addLegend(
-#'     pal = colour_pal, 
-#'     values = levels(canada_communities$type) |> 
+#'     pal = colour_pal,
+#'     values = levels(canada_communities$type) |>
 #'         factor(levels = levels(canada_communities$type))
 #'   )
 make_leaflet_map <- function(
@@ -59,7 +59,10 @@ make_leaflet_map <- function(
   track_map_state = TRUE,
   as_reference = FALSE
 ) {
-  stopifnot(is.character(base_maps), length(names(base_maps)) == length(base_maps))
+  stopifnot(
+    is.character(base_maps),
+    length(names(base_maps)) == length(base_maps)
+  )
   stopifnot(identical("list", class(point_data)))
   stopifnot(identical("list", class(point_options)))
   stopifnot(is.logical(track_map_state), length(track_map_state) == 1)
