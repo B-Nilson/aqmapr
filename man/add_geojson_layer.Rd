@@ -52,7 +52,7 @@ If \code{as_reference} is TRUE, a reference to the GeoJSON file is added to the 
 library(leaflet)
 library(aqmapr)
 
-geojson_url <- "https://raw.githubusercontent.com/B-Nilson/aqmapr/refs/heads/main/inst/extdata/canadian_provinces.geojson"
+geojson_url <- "https://raw.githubusercontent.com/B-Nilson/aqmapr/refs/heads/main/inst/extdata/example.geojson"
 
 # Add as embeded data (normal R leaflet method)
 leaflet() |>

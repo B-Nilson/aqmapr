@@ -29,7 +29,7 @@
 #' library(leaflet)
 #' library(aqmapr)
 #'
-#' geojson_url <- "https://raw.githubusercontent.com/B-Nilson/aqmapr/refs/heads/main/inst/extdata/canadian_provinces.geojson"
+#' geojson_url <- "https://raw.githubusercontent.com/B-Nilson/aqmapr/refs/heads/main/inst/extdata/example.geojson"
 #' 
 #' # Add as embeded data (normal R leaflet method)
 #' leaflet() |>

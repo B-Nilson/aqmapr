@@ -1,5 +1,5 @@
 test_that("no error occurs", {
-  geojson_path <- "https://raw.githubusercontent.com/B-Nilson/aqmapr/refs/heads/main/inst/extdata/canadian_provinces.geojson"
+  geojson_path <- "https://raw.githubusercontent.com/B-Nilson/aqmapr/refs/heads/main/inst/extdata/example.geojson"
 
   leaflet::leaflet() |>
     add_base_maps(base_maps = "OpenStreetMap") |>
