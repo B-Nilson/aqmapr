@@ -46,8 +46,8 @@ canadian_provinces <- osm_results |>
 row.names(canadian_provinces) <- NULL
 
 # Union all provinces
-for(i in 1:nrow(canadian_provinces)) {
- canadian_provinces$geometry[i] <- canadian_provinces$geometry[i] |> 
+for (i in 1:nrow(canadian_provinces)) {
+  canadian_provinces$geometry[i] <- canadian_provinces$geometry[i] |>
     sf::st_union()
 }
 

@@ -78,8 +78,10 @@ test_that("include_timestamp works", {
   make_leaflet_map(include_timestamp = TRUE) |>
     expect_no_error() |>
     expect_no_warning()
-  
-  make_leaflet_map(include_timestamp = as.POSIXct("2022-01-01 00:00:00", tz = "UTC")) |>
+
+  make_leaflet_map(
+    include_timestamp = as.POSIXct("2022-01-01 00:00:00", tz = "UTC")
+  ) |>
     expect_no_error() |>
     expect_no_warning() |>
     expect_snapshot()

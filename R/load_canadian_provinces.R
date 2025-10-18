@@ -16,6 +16,6 @@
 load_canadian_provinces <- function() {
   "extdata/canadian_provinces.rds" |>
     system.file(package = "aqmapr") |>
-    readRDS() |> 
+    readRDS() |>
     withr::with_package(package = "sf")
 }

@@ -16,8 +16,8 @@
 #'   Default is objectivley better options for point/polygon data, applied to all layers.
 #' @param track_map_state (Optional). If TRUE, the map state will be tracked and saved in the URL when the map is saved to an HTML file.
 #'   Default is TRUE.
-#' @param include_timestamp (Optional). 
-#'   If TRUE, the current timestamp (browser time) will be included in a bottom left leaflet control. 
+#' @param include_timestamp (Optional).
+#'   If TRUE, the current timestamp (browser time) will be included in a bottom left leaflet control.
 #'   If a single POSIXct object is passed, it will be used as the timestamp instead of the current time.
 #'   Default is FALSE (no timestamp added).
 #' @param as_reference (Optional). If TRUE, js/css will be referenced in the map header. If FALSE, the js/css will be embeded directly in the map.

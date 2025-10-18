@@ -25,7 +25,7 @@
 #'   Default is "bottomleft".
 #' @param remove_transparency If TRUE, the timestamp control will be displayed without transparency.
 #'   Otherwise, the default leaflet control transparency of 80% will be used.
-#'   Default is TRUE. 
+#'   Default is TRUE.
 #' @param as_reference If TRUE, the path to the script file will be included in the src attribute of the script tag.
 #'   If FALSE, the script will be embedded directly.
 #'   Default is FALSE.
@@ -72,8 +72,8 @@ add_map_timestamp <- function(
   prefix <- gsub("'", "\\'", prefix) # Escape single quotes
   hover_text <- gsub("'", "\\'", hover_text) # Escape single quotes
   ts_placeholder <- timestamp |>
-        lubridate::with_tz(tzone = "UTC") |>
-        format("%Y-%m-%dT%H:%M:%SZ")
+    lubridate::with_tz(tzone = "UTC") |>
+    format("%Y-%m-%dT%H:%M:%SZ")
 
   map |>
     # Add the timestamp control - UTC placeholder will be replaced by JS
@@ -93,7 +93,8 @@ add_map_timestamp <- function(
           hover_text,
           tolower(remove_transparency),
           date_format,
-          use_browser_timezone |> ifelse(yes = "browser", no = format(timestamp, "%Z")),
+          use_browser_timezone |>
+            ifelse(yes = "browser", no = format(timestamp, "%Z")),
           tolower(en_francais)
         )
     )
