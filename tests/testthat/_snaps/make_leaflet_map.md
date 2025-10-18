@@ -25,3 +25,9 @@
             "Name: ", name, "<br/>", "Type: ", type), htmltools::HTML))), pal = colour_pal,
       values = sort(unique(canada_communities$type)))))
 
+# include_timestamp works
+
+    Code
+      expect_no_warning(expect_no_error(make_leaflet_map(include_timestamp = as.POSIXct(
+        "2022-01-01 00:00:00", tz = "UTC"))))
+

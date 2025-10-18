@@ -9,13 +9,17 @@
 #'   A named list of 1 or more `sf` data frames of points/polygons to be added to the map.
 #'   Names will be used in the control menu for the layers.
 #'   Default is an empty list (no points/polygons added).
-#' @param point_options,polygon_options (Optional). 
+#' @param point_options,polygon_options (Optional).
 #'   A list of options for the points/polygons, names must be present in arguments of [leaflet::addCircleMarkers()]/[leaflet::addPolygons()] OR
 #'   must all be in `names(point_data)`/`names(polygon_data)` if individual options for each layer are desired.
 #'   You can use `~column_name` to pass a column from `point_data`/`polygon_data` as an option (i.e. `label = ~name`).
 #'   Default is objectivley better options for point/polygon data, applied to all layers.
 #' @param track_map_state (Optional). If TRUE, the map state will be tracked and saved in the URL when the map is saved to an HTML file.
 #'   Default is TRUE.
+#' @param include_timestamp (Optional). 
+#'   If TRUE, the current timestamp (browser time) will be included in a bottom left leaflet control. 
+#'   If a single POSIXct object is passed, it will be used as the timestamp instead of the current time.
+#'   Default is FALSE (no timestamp added).
 #' @param as_reference (Optional). If TRUE, js/css will be referenced in the map header. If FALSE, the js/css will be embeded directly in the map.
 #'   Requires local server to be running (see [start_server()]), or the js and css files need to be hosted in "/js" and "/css" respectively relative to the html file.
 #'   Run `system.file("js", package = "aqmapr")`/`system.file("css", package = "aqmapr")` to find the location of the js/css files respectively.
@@ -47,7 +51,7 @@
 #'     pal = colour_pal,
 #'     values = unique(canada_communities$type) |> sort()
 #'   )
-#' 
+#'
 #' canadian_provinces <- load_canadian_provinces()
 #'   make_leaflet_map(
 #'     polygon_data = list("Provinces" = canadian_provinces),
@@ -83,6 +87,7 @@ make_leaflet_map <- function(
     opacity = 1
   ),
   track_map_state = TRUE,
+  include_timestamp = FALSE,
   as_reference = FALSE
 ) {
   stopifnot(
@@ -95,6 +100,10 @@ make_leaflet_map <- function(
   stopifnot(identical("list", class(polygon_options)))
   stopifnot(is.logical(track_map_state), length(track_map_state) == 1)
   stopifnot(is.logical(as_reference), length(as_reference) == 1)
+  stopifnot(
+    is.logical(include_timestamp) | lubridate::is.POSIXct(include_timestamp),
+    length(include_timestamp) == 1
+  )
 
   # Check if each layer has its own options
   use_indiv_options <- list(
@@ -143,7 +152,7 @@ make_leaflet_map <- function(
         data = polygon_data[[group]],
         group = group,
         !!!p_options
-      ) |> 
+      ) |>
         withr::with_package(package = "sf")
     }
     base_map <- base_map |>
@@ -158,5 +167,18 @@ make_leaflet_map <- function(
     base_map <- base_map |>
       track_map_state(as_reference = as_reference)
   }
+
+  # Add a timestamp to bottom left if desired
+  if (include_timestamp) {
+    if (is.logical(include_timestamp)) {
+      include_timestamp <- Sys.time()
+    }
+    base_map <- base_map |>
+      add_map_timestamp(
+        timestamp = include_timestamp,
+        as_reference = as_reference
+      )
+  }
+
   return(base_map)
 }

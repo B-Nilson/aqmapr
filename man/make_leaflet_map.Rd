@@ -13,6 +13,7 @@ make_leaflet_map(
   polygon_options = list(weight = 2, color = "black", fillColor = "#808080", fillOpacity
     = 0.8, opacity = 1),
   track_map_state = TRUE,
+  include_timestamp = FALSE,
   as_reference = FALSE
 )
 }
@@ -35,6 +36,11 @@ Default is objectivley better options for point/polygon data, applied to all lay
 
 \item{track_map_state}{(Optional). If TRUE, the map state will be tracked and saved in the URL when the map is saved to an HTML file.
 Default is TRUE.}
+
+\item{include_timestamp}{(Optional).
+If TRUE, the current timestamp (browser time) will be included in a bottom left leaflet control.
+If a single POSIXct object is passed, it will be used as the timestamp instead of the current time.
+Default is FALSE (no timestamp added).}
 
 \item{as_reference}{(Optional). If TRUE, js/css will be referenced in the map header. If FALSE, the js/css will be embeded directly in the map.
 Requires local server to be running (see \code{\link[=start_server]{start_server()}}), or the js and css files need to be hosted in "/js" and "/css" respectively relative to the html file.
