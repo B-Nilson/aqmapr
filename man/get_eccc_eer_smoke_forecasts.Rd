@@ -34,7 +34,8 @@ make_leaflet_map(
     weight = 2,
     color = "black",
     fillOpacity = 0.8,
-    opacity = 1
+    opacity = 1,
+    palette = eer_smoke_pal()
   )
 )
 }

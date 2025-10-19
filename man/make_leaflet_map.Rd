@@ -8,10 +8,10 @@ make_leaflet_map(
   base_maps = c(`Light Theme` = "OpenStreetMap", `Dark Theme` = "CartoDB.DarkMatter"),
   point_data = list(),
   point_options = list(radius = 3, weight = 1, color = "black", fillColor = "#808080",
-    fillOpacity = 0.8, opacity = 1),
+    fillOpacity = 0.8, opacity = 1, palette = NULL, position = "bottomleft"),
   polygon_data = list(),
   polygon_options = list(weight = 2, color = "black", fillColor = "#808080", fillOpacity
-    = 0.8, opacity = 1),
+    = 0.8, opacity = 1, palette = NULL, position = "bottomleft"),
   track_map_state = TRUE,
   include_timestamp = FALSE,
   as_reference = FALSE
@@ -31,7 +31,9 @@ Default is an empty list (no points/polygons added).}
 \item{point_options, polygon_options}{(Optional).
 A list of options for the points/polygons, names must be present in arguments of \code{\link[leaflet:map-layers]{leaflet::addCircleMarkers()}}/\code{\link[leaflet:map-layers]{leaflet::addPolygons()}} OR
 must all be in \code{names(point_data)}/\code{names(polygon_data)} if individual options for each layer are desired.
-You can use \code{~column_name} to pass a column from \code{point_data}/\code{polygon_data} as an option (i.e. \code{label = ~name}).
+Addition options \code{palette} (a leaflet palette function) and \code{position} (default is "bottomleft")
+can be passed to include a legend for the layer if the data column is passed to \code{fillColor} as a formula (i.e. \code{fillColor = ~column_name}).
+In fact, you can use \code{~column_name} to pass a column from \code{point_data}/\code{polygon_data} as most options (i.e. \code{label = ~name}).
 Default is objectivley better options for point/polygon data, applied to all layers.}
 
 \item{track_map_state}{(Optional). If TRUE, the map state will be tracked and saved in the URL when the map is saved to an HTML file.

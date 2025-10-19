@@ -12,7 +12,9 @@
 #' @param point_options,polygon_options (Optional).
 #'   A list of options for the points/polygons, names must be present in arguments of [leaflet::addCircleMarkers()]/[leaflet::addPolygons()] OR
 #'   must all be in `names(point_data)`/`names(polygon_data)` if individual options for each layer are desired.
-#'   You can use `~column_name` to pass a column from `point_data`/`polygon_data` as an option (i.e. `label = ~name`).
+#'   Addition options `palette` (a leaflet palette function) and `position` (default is "bottomleft")
+#'   can be passed to include a legend for the layer if the data column is passed to `fillColor` as a formula (i.e. `fillColor = ~column_name`).
+#'   In fact, you can use `~column_name` to pass a column from `point_data`/`polygon_data` as most options (i.e. `label = ~name`).
 #'   Default is objectivley better options for point/polygon data, applied to all layers.
 #' @param track_map_state (Optional). If TRUE, the map state will be tracked and saved in the URL when the map is saved to an HTML file.
 #'   Default is TRUE.
@@ -76,7 +78,9 @@ make_leaflet_map <- function(
     color = "black",
     fillColor = "#808080",
     fillOpacity = 0.8,
-    opacity = 1
+    opacity = 1,
+    palette = NULL,
+    position = "bottomleft"
   ),
   polygon_data = list(),
   polygon_options = list(
@@ -84,7 +88,9 @@ make_leaflet_map <- function(
     color = "black",
     fillColor = "#808080",
     fillOpacity = 0.8,
-    opacity = 1
+    opacity = 1,
+    palette = NULL,
+    position = "bottomleft"
   ),
   track_map_state = TRUE,
   include_timestamp = FALSE,
@@ -124,6 +130,26 @@ make_leaflet_map <- function(
       } else {
         p_options <- point_options
       }
+      if ("palette" %in% names(p_options)) {
+        base_map <- base_map |>
+          add_fill_legend(
+            data = point_data[[group]],
+            group = group,
+            fillColor = p_options$fillColor,
+            opacity = p_options$fillOpacity,
+            palette = p_options$palette,
+            position = p_options$position,
+            na_label = "No Data"
+          )
+        p_options$fillColor <- point_data[[group]] |>
+          dplyr::pull(!!rlang::as_quosure(p_options$fillColor)) |>
+          p_options$palette()
+      }
+      if (any(names(p_options) %in% c("palette", "position"))) {
+        p_options <- p_options[
+          -which(names(p_options) %in% c("palette", "position"))
+        ]
+      }
       base_map <- rlang::exec(
         .fn = leaflet::addCircleMarkers,
         map = base_map,
@@ -145,6 +171,27 @@ make_leaflet_map <- function(
         p_options <- polygon_options[[group]]
       } else {
         p_options <- polygon_options
+      }
+      if ("palette" %in% names(p_options)) {
+        stopifnot("formula" %in% class(p_options$fillColor))
+        base_map <- base_map |>
+          add_fill_legend(
+            data = polygon_data[[group]],
+            group = group,
+            fillColor = p_options$fillColor,
+            opacity = p_options$fillOpacity,
+            palette = p_options$palette,
+            position = p_options$position,
+            na_label = "No Data"
+          )
+        p_options$fillColor <- polygon_data[[group]] |>
+          dplyr::pull(!!rlang::as_quosure(p_options$fillColor)) |>
+          p_options$palette()
+      }
+      if (any(names(p_options) %in% c("palette", "position"))) {
+        p_options <- p_options[
+          -which(names(p_options) %in% c("palette", "position"))
+        ]
       }
       base_map <- rlang::exec(
         .fn = leaflet::addPolygons,
@@ -181,4 +228,38 @@ make_leaflet_map <- function(
   }
 
   return(base_map)
+}
+
+add_fill_legend <- function(
+  map,
+  data,
+  fillColor,
+  palette,
+  group = NULL,
+  title = group,
+  opacity = 0.5,
+  position = "bottomleft",
+  na_label = "No Data"
+) {
+  # Handle NULL values
+  if (is.null(position)) {
+    position <- "bottomleft"
+  }
+  if (is.null(opacity)) {
+    opacity <- 0.5
+  }
+
+  fill_values <- data |>
+    dplyr::pull(!!rlang::as_quosure(fillColor))
+
+  map |>
+    leaflet::addLegend(
+      title = title,
+      group = group,
+      pal = palette,
+      values = fill_values,
+      position = position,
+      opacity = opacity,
+      na.label = "No Data"
+    )
 }

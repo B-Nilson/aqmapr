@@ -3,8 +3,8 @@
     Code
       expect_no_warning(expect_no_error(leaflet::addLegend(make_leaflet_map(
         point_data = list(Communities = canada_communities), point_options = list(
-          radius = 3, weight = 1, color = "black", fillColor = ~ colour_pal(type),
-          fillOpacity = 0.8, opacity = 1, label = ~ lapply(paste("Name: ", name,
+          radius = 3, weight = 1, color = "black", fillColor = ~type, fillOpacity = 0.8,
+          palette = colour_pal, opacity = 1, label = ~ lapply(paste("Name: ", name,
             "<br/>", "Type: ", type), htmltools::HTML))), pal = colour_pal, values = sort(
         unique(canada_communities$type)))))
 

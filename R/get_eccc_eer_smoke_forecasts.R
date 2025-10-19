@@ -19,7 +19,8 @@
 #'     weight = 2,
 #'     color = "black",
 #'     fillOpacity = 0.8,
-#'     opacity = 1
+#'     opacity = 1,
+#'     palette = eer_smoke_pal()
 #'   )
 #' )
 get_eccc_eer_smoke_forecasts <- function(
@@ -132,11 +133,13 @@ get_eccc_eer_smoke_forecasts <- function(
 #' Colour palette for EER smoke forecasts
 #'
 #' Matches the colour scheme provided \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/latest/Canada/latest/img/Canada/anim.html}{here}.
-#' @param eer_pm25_ugm3 Numeric vector of PM2.5 concentrations from EER smoke forecasts
-#' @return Character vector of hex colours corresponding to values in `x`
+#' @param eer_pm25_ugm3 (Optional).
+#'   Either NULL (the default), which returns the leaflet palette function, 
+#'   or a numeric vector of PM2.5 concentrations from EER smoke forecasts.
+#' @return A leaflet palette function or a character vector of hex colours corresponding to values in `x`
 #' @source \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/latest/Canada/latest/img/Canada/anim.html}{EER smoke forecasts}
 #' @export
-eer_smoke_pal <- function(eer_pm25_ugm3) {
+eer_smoke_pal <- function(eer_pm25_ugm3 = NULL) {
   colours <- c(
     "#DEDEDE" = 5,
     "#BBBBBB" = 10,
@@ -149,10 +152,14 @@ eer_smoke_pal <- function(eer_pm25_ugm3) {
     "#C48F5A" = 300,
     "#FFA7FF" = 500
   )
-  leaflet::colorBin(
+  pal <- leaflet::colorBin(
     bins = unname(colours) |> c(Inf),
     palette = names(colours)
-  )(eer_pm25_ugm3)
+  )
+  if (is.null(eer_pm25_ugm3)) {
+    return(pal)
+  }
+  pal(eer_pm25_ugm3)
 }
 
 get_eer_zip <- function(

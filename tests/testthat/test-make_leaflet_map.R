@@ -11,8 +11,9 @@ test_that("basic case with points data works", {
       radius = 3,
       weight = 1,
       color = "black",
-      fillColor = ~ colour_pal(type),
+      fillColor = ~ type,
       fillOpacity = 0.8,
+      palette = colour_pal,
       opacity = 1,
       label = ~ paste("Name: ", name, "<br/>", "Type: ", type) |>
         lapply(htmltools::HTML)

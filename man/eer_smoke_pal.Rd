@@ -7,13 +7,15 @@
 \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/latest/Canada/latest/img/Canada/anim.html}{EER smoke forecasts}
 }
 \usage{
-eer_smoke_pal(x)
+eer_smoke_pal(eer_pm25_ugm3 = NULL)
 }
 \arguments{
-\item{x}{Numeric vector of PM2.5 concentrations from EER smoke forecasts}
+\item{eer_pm25_ugm3}{(Optional).
+Either NULL (the default), which returns the leaflet palette function,
+or a numeric vector of PM2.5 concentrations from EER smoke forecasts.}
 }
 \value{
-Character vector of hex colours corresponding to values in \code{x}
+A leaflet palette function or a character vector of hex colours corresponding to values in \code{x}
 }
 \description{
 Matches the colour scheme provided \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/latest/Canada/latest/img/Canada/anim.html}{here}.
