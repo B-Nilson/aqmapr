@@ -79,7 +79,7 @@ get_eccc_eer_smoke_forecasts <- function(
     unique()
 
   # Download and unzip new runs as needed
-  select_times |> get_eer_zip(data_dir = data_dir, quiet = quiet)
+  select_times |> get_eer_zip(data_dir = data_dir, region = region, quiet = quiet)
 
   # Build shp file name path
   shape_names <- "shp_%s_%s" |>
@@ -164,6 +164,7 @@ eer_smoke_pal <- function(eer_pm25_ugm3 = NULL) {
 
 get_eer_zip <- function(
   select_times,
+  region = "Canada",
   data_dir = tempdir(),
   unzip = TRUE,
   quiet = FALSE
@@ -177,7 +178,7 @@ get_eer_zip <- function(
   # Build url to this runs zip file
   zip_urls <- model_runs |>
     make_eer_zip_dir() |>
-    paste0("shp_Canada.zip")
+    paste0("shp_", region, ".zip")
 
   # Download and unzip new runs as needed
   run_zips <- data_dir |>
