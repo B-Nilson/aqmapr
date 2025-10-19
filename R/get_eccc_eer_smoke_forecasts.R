@@ -136,7 +136,7 @@ get_eccc_eer_smoke_forecasts <- function(
 #' @param eer_pm25_ugm3 (Optional).
 #'   Either NULL (the default), which returns the leaflet palette function, 
 #'   or a numeric vector of PM2.5 concentrations from EER smoke forecasts.
-#' @return A leaflet palette function or a character vector of hex colours corresponding to values in `x`
+#' @return A leaflet palette function or a character vector of hex colours corresponding to values in `eer_pm25_ugm3`
 #' @source \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/latest/Canada/latest/img/Canada/anim.html}{EER smoke forecasts}
 #' @export
 eer_smoke_pal <- function(eer_pm25_ugm3 = NULL) {

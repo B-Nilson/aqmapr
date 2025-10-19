@@ -15,7 +15,7 @@ Either NULL (the default), which returns the leaflet palette function,
 or a numeric vector of PM2.5 concentrations from EER smoke forecasts.}
 }
 \value{
-A leaflet palette function or a character vector of hex colours corresponding to values in \code{x}
+A leaflet palette function or a character vector of hex colours corresponding to values in \code{eer_pm25_ugm3}
 }
 \description{
 Matches the colour scheme provided \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/latest/Canada/latest/img/Canada/anim.html}{here}.
