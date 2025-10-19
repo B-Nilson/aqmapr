@@ -15,9 +15,7 @@
 #' make_leaflet_map(
 #'   polygon_data = list("EER Smoke" = eer),
 #'   polygon_options = list(
-#'     fillColor = ~ leaflet::colorFactor(palette = "viridis", unique(min_pm25))(
-#'       min_pm25
-#'     ),
+#'     fillColor = ~ eer_smoke_pal(min_pm25),
 #'     weight = 2,
 #'     color = "black",
 #'     fillOpacity = 0.8,
@@ -131,7 +129,38 @@ get_eccc_eer_smoke_forecasts <- function(
     )
 }
 
-get_eer_zip <- function(select_times, data_dir = tempdir(), unzip = TRUE, quiet = FALSE) {
+#' Colour palette for EER smoke forecasts
+#'
+#' Matches the colour scheme provided \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/latest/Canada/latest/img/Canada/anim.html}{here}.
+#' @param eer_pm25_ugm3 Numeric vector of PM2.5 concentrations from EER smoke forecasts
+#' @return Character vector of hex colours corresponding to values in `x`
+#' @source \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/latest/Canada/latest/img/Canada/anim.html}{EER smoke forecasts}
+#' @export
+eer_smoke_pal <- function(eer_pm25_ugm3) {
+  colours <- c(
+    "#DEDEDE" = 5,
+    "#BBBBBB" = 10,
+    "#B1E7FF" = 25,
+    "#5AB0FF" = 35,
+    "#BDFF7B" = 50,
+    "#5ADE5A" = 75,
+    "#FFFF5A" = 100,
+    "#FFAC5A" = 200,
+    "#C48F5A" = 300,
+    "#FFA7FF" = 500
+  )
+  leaflet::colorBin(
+    bins = unname(colours) |> c(Inf),
+    palette = names(colours)
+  )(eer_pm25_ugm3)
+}
+
+get_eer_zip <- function(
+  select_times,
+  data_dir = tempdir(),
+  unzip = TRUE,
+  quiet = FALSE
+) {
   # Model runs are updated every 6 hours
   model_runs <- select_times |>
     lubridate::floor_date("6 hours") |>
@@ -151,7 +180,8 @@ get_eer_zip <- function(select_times, data_dir = tempdir(), unzip = TRUE, quiet 
   zip_urls |>
     handyr::for_each(.enumerate = TRUE, \(zip_url, i) {
       if (is_todays[i] || !file.exists(run_zips[i])) {
-        zip_url |> download.file(destfile = run_zips[i], mode = "wb", quiet = quiet)
+        zip_url |>
+          download.file(destfile = run_zips[i], mode = "wb", quiet = quiet)
         if (unzip) unzip(run_zips[i], exdir = data_dir)
       }
     })

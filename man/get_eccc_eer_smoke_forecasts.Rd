@@ -7,7 +7,8 @@
 get_eccc_eer_smoke_forecasts(
   select_times = Sys.time(),
   region = "Canada",
-  data_dir = tempdir()
+  data_dir = tempdir(),
+  quiet = FALSE
 )
 }
 \arguments{
@@ -16,6 +17,8 @@ get_eccc_eer_smoke_forecasts(
 \item{region}{String specifying the region to download data for. Currently only "Canada" is supported.}
 
 \item{data_dir}{Directory to store downloaded data in. Defaults to tempdir().}
+
+\item{quiet}{Logical. Should output from \code{download.file} be suppressed?}
 }
 \description{
 The Environmental Emergency Response group at Environment and Climate Change Canada (ECCC) provides smoke forecasts for Canada.
@@ -27,9 +30,7 @@ eer <- get_eccc_eer_smoke_forecasts()
 make_leaflet_map(
   polygon_data = list("EER Smoke" = eer),
   polygon_options = list(
-    fillColor = ~ leaflet::colorFactor(palette = "viridis", unique(min_pm25))(
-      min_pm25
-    ),
+    fillColor = ~ eer_smoke_pal(min_pm25),
     weight = 2,
     color = "black",
     fillOpacity = 0.8,
