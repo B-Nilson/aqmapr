@@ -189,7 +189,8 @@ get_eer_zip <- function(
     handyr::for_each(.enumerate = TRUE, \(zip_url, i) {
       if (is_todays[i] || !file.exists(run_zips[i])) {
         zip_url |>
-          download.file(destfile = run_zips[i], mode = "wb", quiet = quiet)
+          download.file(destfile = run_zips[i], mode = "wb", quiet = quiet) |> 
+          handyr::on_error(.return = NULL) # Fails near 24 UTC when latest transitions to next day
         if (unzip) unzip(run_zips[i], exdir = data_dir)
       }
     })
@@ -198,8 +199,10 @@ get_eer_zip <- function(
 make_eer_zip_dir <- function(model_runs) {
   is_todays <- model_runs >= lubridate::with_tz(Sys.Date(), "UTC")
   source_template <- "https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/%s/Canada/%s/shp/"
-  timestamps <- is_todays |>
-    ifelse("latest", format(model_runs, "%Y%m%d.%H00"))
+  timestamps <- format(model_runs, "%Y%m%d.%H00")
+  if (any (is_todays)) {
+    timestamps <- c(timestamps, "latest")
+  }
   source_template |>
     sprintf(format(model_runs, "%HUTC"), timestamps) |>
     unique()
