@@ -30,8 +30,8 @@ eer <- get_eccc_eer_smoke_forecasts()
 make_leaflet_map(
   polygon_data = list("EER Smoke" = eer),
   polygon_options = list(
-    fillColor = ~ eer_smoke_pal(min_pm25),
-    weight = 2,
+    fillColor = ~ min_pm25,
+    weight = 1,
     color = "black",
     fillOpacity = 0.8,
     opacity = 1,
