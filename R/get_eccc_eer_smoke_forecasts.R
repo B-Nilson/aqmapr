@@ -188,10 +188,11 @@ get_eer_zip <- function(
   zip_urls |>
     handyr::for_each(.enumerate = TRUE, \(zip_url, i) {
       if (is_todays[i] || !file.exists(run_zips[i])) {
-        zip_url |>
-          download.file(destfile = run_zips[i], mode = "wb", quiet = quiet) |> 
+        success <- zip_url |>
+          download.file(destfile = run_zips[i], mode = "wb", quiet = quiet) |>
+          suppressWarnings() |> 
           handyr::on_error(.return = NULL) # Fails near 24 UTC when latest transitions to next day
-        if (unzip) unzip(run_zips[i], exdir = data_dir)
+        if (unzip & !is.null(success)) unzip(run_zips[i], exdir = data_dir)
       }
     })
 }
