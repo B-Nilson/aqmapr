@@ -132,7 +132,7 @@ get_hms_zip <- function(
   quiet = FALSE
 ) {
   # Build url to desired zip file(s)
-  select_times <- select_times |> lubridate::with_tz("UTC")
+  select_times <- select_times |> lubridate::with_tz("America/New_York")
   is_todays <- select_times >= lubridate::with_tz(Sys.Date(), "UTC")
   source_template <- "https://satepsanone.nesdis.noaa.gov/pub/FIRE/web/HMS/Smoke_Polygons/Shapefile/%s/%s/%s.zip"
   shape_names <- paste0("hms_smoke", format(select_times, "%Y%m%d"))
