@@ -122,6 +122,18 @@ make_leaflet_map <- function(
     # Cache provider tiles for faster reload times
     leaflet.extras::enableTileCaching()
 
+  # Add a timestamp to bottom left if desired
+  if (include_timestamp) {
+    if (is.logical(include_timestamp)) {
+      include_timestamp <- Sys.time()
+    }
+    base_map <- base_map |>
+      add_map_timestamp(
+        timestamp = include_timestamp,
+        as_reference = as_reference
+      )
+  }
+
   # Add point layers as needed
   if (length(point_data) > 0) {
     for (group in names(point_data)) {
@@ -213,18 +225,6 @@ make_leaflet_map <- function(
   if (track_map_state) {
     base_map <- base_map |>
       track_map_state(as_reference = as_reference)
-  }
-
-  # Add a timestamp to bottom left if desired
-  if (include_timestamp) {
-    if (is.logical(include_timestamp)) {
-      include_timestamp <- Sys.time()
-    }
-    base_map <- base_map |>
-      add_map_timestamp(
-        timestamp = include_timestamp,
-        as_reference = as_reference
-      )
   }
 
   return(base_map)
