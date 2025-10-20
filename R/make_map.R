@@ -13,9 +13,41 @@ make_aqmap <- function(
   js_files <- c("map_layers.js", "on_render.js")
   js_paths <- file.path(js_endpoint, js_files)
 
+  # Get extra layers
+  polygon_layers <- list(
+    "Modelled Smoke" = get_eccc_eer_smoke_forecasts() |>
+      handyr::on_error(.return = NULL),
+    "Visible Smoke" = get_noaa_hms_smoke_polygons() |>
+      handyr::on_error(.return = NULL)
+  )
+  polygon_options <- list(
+    "Modelled Smoke" = list(
+      fillColor = ~min_pm25,
+      weight = 1,
+      color = "black",
+      fillOpacity = 0.8,
+      opacity = 1,
+      palette = eer_smoke_pal()
+    ),
+    "Visible Smoke" = list(
+      fillColor = ~density,
+      weight = 1,
+      color = "black",
+      fillOpacity = 0.8,
+      opacity = 1,
+      palette = hms_smoke_pal()
+    )
+  )
+
   # Build basemap
   map <- base_maps |>
-    make_leaflet_map(track_map_state = TRUE, as_reference = use_references, include_timestamp = TRUE) |>
+    make_leaflet_map(
+      track_map_state = TRUE,
+      as_reference = use_references,
+      include_timestamp = TRUE,
+      polygon_data = polygon_layers,
+      polygon_options = polygon_options
+    ) |>
     # Include custom js used by various parts of the map
     include_scripts(paths = js_paths, as_reference = use_references) |>
     htmlwidgets::onRender("handle_page_render")
