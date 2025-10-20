@@ -79,7 +79,8 @@ get_eccc_eer_smoke_forecasts <- function(
     unique()
 
   # Download and unzip new runs as needed
-  select_times |> get_eer_zip(data_dir = data_dir, region = region, quiet = quiet)
+  select_times |>
+    get_eer_zip(data_dir = data_dir, region = region, quiet = quiet)
 
   # Build shp file name path
   shape_names <- "shp_%s_%s" |>
@@ -134,7 +135,7 @@ get_eccc_eer_smoke_forecasts <- function(
 #'
 #' Matches the colour scheme provided \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/latest/Canada/latest/img/Canada/anim.html}{here}.
 #' @param eer_pm25_ugm3 (Optional).
-#'   Either NULL (the default), which returns the leaflet palette function, 
+#'   Either NULL (the default), which returns the leaflet palette function,
 #'   or a numeric vector of PM2.5 concentrations from EER smoke forecasts.
 #' @return A leaflet palette function or a character vector of hex colours corresponding to values in `eer_pm25_ugm3`
 #' @source \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/latest/Canada/latest/img/Canada/anim.html}{EER smoke forecasts}
@@ -190,7 +191,7 @@ get_eer_zip <- function(
       if (is_todays[i] || !file.exists(run_zips[i])) {
         success <- zip_url |>
           download.file(destfile = run_zips[i], mode = "wb", quiet = quiet) |>
-          suppressWarnings() |> 
+          suppressWarnings() |>
           handyr::on_error(.return = NULL) # Fails near 24 UTC when latest transitions to next day
         if (unzip & !is.null(success)) unzip(run_zips[i], exdir = data_dir)
       }
@@ -201,7 +202,7 @@ make_eer_zip_dir <- function(model_runs) {
   is_todays <- model_runs >= lubridate::with_tz(Sys.Date(), "UTC")
   source_template <- "https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/%s/Canada/%s/shp/"
   timestamps <- format(model_runs, "%Y%m%d.%H00")
-  if (any (is_todays)) {
+  if (any(is_todays)) {
     timestamps <- c(timestamps, "latest")
   }
   source_template |>

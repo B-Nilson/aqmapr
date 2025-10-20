@@ -117,6 +117,7 @@ make_leaflet_map <- function(
     polygons = all(names(polygon_options) %in% names(polygon_data))
   )
 
+  # Make basemap
   base_map <- leaflet::leaflet() |>
     add_base_maps(base_maps = base_maps) |>
     # Cache provider tiles for faster reload times
