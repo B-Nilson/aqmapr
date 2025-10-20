@@ -12,7 +12,8 @@ hms_smoke_pal(hms_smoke_density = NULL)
 \arguments{
 \item{hms_smoke_density}{(Optional).
 Either NULL (the default), which returns the leaflet palette function,
-or a character/factor vector of smoke densities from HMS smoke polygons.}
+or a character/factor vector of smoke densities from HMS smoke polygons.
+Allowed densities (English/French) are "Light"/"Faible", "Medium"/"Moyen", and "Heavy"/"Haute".}
 }
 \value{
 A leaflet palette function or a character vector of hex colours corresponding to values in \code{hms_smoke_density}

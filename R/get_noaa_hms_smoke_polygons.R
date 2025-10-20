@@ -105,14 +105,18 @@ get_noaa_hms_smoke_polygons <- function(
 #' @param hms_smoke_density (Optional).
 #'   Either NULL (the default), which returns the leaflet palette function,
 #'   or a character/factor vector of smoke densities from HMS smoke polygons.
+#'   Allowed densities (English/French) are "Light"/"Faible", "Medium"/"Moyen", and "Heavy"/"Haute".
 #' @return A leaflet palette function or a character vector of hex colours corresponding to values in `hms_smoke_density`
 #' @source \href{https://www.ospo.noaa.gov/products/land/hms.html#maps}{HMS smoke polygons}
 #' @export
 hms_smoke_pal <- function(hms_smoke_density = NULL) {
   colours <- c(
     "Light" = "#8CF183",
+    "Faible" = "#8CF183",
     "Medium" = "#D7FC6B",
-    "Heavy" = "#E19651"
+    "Moyen" = "#D7FC6B",
+    "Heavy" = "#E19651",
+    "Haute" = "#E19651"
   )
   pal <- leaflet::colorFactor(
     palette = unname(colours),
