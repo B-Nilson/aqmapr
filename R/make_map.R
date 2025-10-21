@@ -11,7 +11,12 @@ make_aqmap <- function(
 ) {
   # General javascript files
   js_files <- c("map_layers.js", "on_render.js")
-  js_paths <- file.path(js_endpoint, js_files)
+  if (!use_references) {
+    js_paths <- file.path(js_dir, js_files)
+  } else {
+    js_paths <- file.path(js_endpoint, js_files)
+  }
+  
   # Define WMS layers to display
   wms_layers <- make_aqmap_wms_layers()
 
@@ -40,6 +45,8 @@ make_aqmap <- function(
       palette = hms_smoke_pal()
     )
   )
+  polygon_options <- polygon_options[which(!sapply(polygon_layers, is.null))]
+  polygon_layers <- polygon_layers[which(!sapply(polygon_layers, is.null))]
 
   # Build basemap
   map <- base_maps |>
