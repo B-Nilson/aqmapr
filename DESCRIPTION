@@ -24,6 +24,7 @@ Imports:
     prismatic,
     purrr,
     rlang,
+    S7,
     stringr
 Remotes: 
     github::B-Nilson/handyr

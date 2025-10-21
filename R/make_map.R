@@ -12,6 +12,8 @@ make_aqmap <- function(
   # General javascript files
   js_files <- c("map_layers.js", "on_render.js")
   js_paths <- file.path(js_endpoint, js_files)
+  # Define WMS layers to display
+  wms_layers <- make_aqmap_wms_layers()
 
   # Get extra layers
   polygon_layers <- list(
@@ -61,7 +63,46 @@ make_aqmap <- function(
       )
   }
 
+  # Add wms layers
+  if (length(wms_layers)) {
+    map <- map |>
+      add_wms_layers(wms_layers = wms_layers)
+  }
+
   return(map)
+}
+
+make_aqmap_wms_layers <- function() {
+  make_wms_layers(
+    urls = "https://geo.weather.gc.ca/geomet",
+    layers = c(
+      "Surface Winds" = "HRDPS.CONTINENTAL_UU",
+      "Modelled PM2.5" = "RAQDPS.SFC_PM2.5"
+    ),
+    styles = c("WindBarbs_Sfc", "RAQDPS-SFC-PM_UGM3_BCAQHI"),
+    # TODO: remove \once v3.6 is released
+    legend_urls = "https://aqmap.ca/aqmap/dev/icons/windbarbs_legend.jpg" |>
+      c(NA),
+    positions = "bottomleft",
+    formats = "image/png",
+    opacities = 0.6
+  ) |>
+    c(make_wms_layers(
+      url = "https://cwfis.cfs.nrcan.gc.ca/geoserver/ows",
+      layers = c(
+        "Active Fires" = "public:activefires_current",
+        "Fire Perimeters" = "m3_polygons_current",
+        "Fire Danger" = "public:fdr_current"
+      ),
+      styles = c(
+        "public:cwfis_activefires",
+        "cwfis_m3_polygons",
+        "public:cffdrs_fdr"
+      ),
+      formats = "image/png",
+      positions = "bottomright",
+      opacities = 0.6
+    ))
 }
 
 format_for_geojson <- function(out_data) {
