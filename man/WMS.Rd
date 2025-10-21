@@ -5,14 +5,14 @@
 \title{WMS S7 class}
 \usage{
 WMS(
+  group = character(0),
+  legend_position = "bottomleft",
+  opacity = 0.8,
   url = character(0),
   layer = character(0),
   style = character(0),
-  group = character(0),
   legend_url = character(0),
-  position = "bottomleft",
   format = "image/png",
-  opacity = 0.8,
   version = "1.1.1",
   crs = character(0)
 )

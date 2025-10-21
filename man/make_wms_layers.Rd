@@ -10,13 +10,13 @@ make_wms_layers(
   styles,
   opacities = 0.8,
   legend_urls = NA,
-  positions = "bottomleft",
+  legend_positions = "bottomleft",
   formats = "image/png",
   versions = "1.1.1"
 )
 }
 \arguments{
-\item{urls, layers, styles, opacities, legend_urls, positions, formats, versions}{1 or more character (or numeric for \code{opacities}) values of the URL(s) of the WMS service,
+\item{urls, layers, styles, opacities, legend_urls, legend_positions, formats, versions}{1 or more character (or numeric for \code{opacities}) values of the URL(s) of the WMS service,
 layer name(s) and style(s) to display at set opacities, legend URL(s) and position(s), layer format(s), and WMS version(s).
 Inputs will be recycled to a common length - single values will be repeated as needed.
 The names of \code{layers} will be used as the layer group names if present.}

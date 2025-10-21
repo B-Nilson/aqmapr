@@ -90,7 +90,7 @@ make_aqmap_wms_layers <- function() {
     # TODO: remove \once v3.6 is released
     legend_urls = "https://aqmap.ca/aqmap/dev/icons/windbarbs_legend.jpg" |>
       c(NA),
-    positions = "bottomleft",
+    legend_positions = "bottomleft",
     formats = "image/png",
     opacities = 0.6
   ) |>
@@ -107,7 +107,7 @@ make_aqmap_wms_layers <- function() {
         "public:cffdrs_fdr"
       ),
       formats = "image/png",
-      positions = "bottomright",
+      legend_positions = "bottomright",
       opacities = 0.6
     ))
 }

@@ -16,7 +16,7 @@ add_wms_layers <- function(map, wms_layers) {
 
 #' Build WMS layer objects for adding to a map
 #'
-#' @param urls,layers,styles,opacities,legend_urls,positions,formats,versions
+#' @param urls,layers,styles,opacities,legend_urls,legend_positions,formats,versions
 #'   1 or more character (or numeric for `opacities`) values of the URL(s) of the WMS service,
 #'   layer name(s) and style(s) to display at set opacities, legend URL(s) and position(s), layer format(s), and WMS version(s).
 #'   Inputs will be recycled to a common length - single values will be repeated as needed.
@@ -29,7 +29,7 @@ make_wms_layers <- function(
   styles,
   opacities = 0.8,
   legend_urls = NA,
-  positions = "bottomleft",
+  legend_positions = "bottomleft",
   formats = "image/png",
   versions = "1.1.1"
 ) {
@@ -45,7 +45,7 @@ make_wms_layers <- function(
       style = styles,
       opacity = opacities,
       legend_url = legend_urls,
-      position = positions,
+      legend_position = legend_positions,
       format = formats,
       version = versions
     )
@@ -60,7 +60,7 @@ make_wms_layers <- function(
         WMS(
           url = inputs$url[i],
           legend_url = inputs$legend_url[i],
-          position = inputs$position[i],
+          legend_position = inputs$legend_position[i],
           layer = inputs$layer[i],
           group = group,
           format = inputs$format[i],
@@ -72,10 +72,6 @@ make_wms_layers <- function(
     )
 }
 
-validator_len_1 <- function(value) {
-  if (length(value) != 1) "must be length 1"
-}
-
 #' WMS S7 class
 #'
 #' Represent a single Web Map Service (WMS) layer to be added to the map via add_wms_layers
@@ -84,6 +80,7 @@ validator_len_1 <- function(value) {
 #' @import S7
 WMS <- new_class(
   "WMS",
+  parent = LeafletLayer,
   properties = list(
     url = class_character |>
       new_property(validator = validator_len_1),
@@ -120,36 +117,9 @@ WMS <- new_class(
           return(self)
         }
       ),
-    position = class_character |>
-      new_property(
-        default = "bottomleft",
-        validator = \(value) {
-          if (
-            !value %in%
-              c("topleft", "topright", "bottomleft", "bottomright")
-          ) {
-            "must be one of topleft, topright, bottomleft, bottomright"
-          } else if (length(value) != 1) {
-            "must be length 1"
-          }
-        }
-      ),
     format = class_character |>
       new_property(
         default = "image/png",
-        validator = validator_len_1
-      ),
-    transparent = class_logical |>
-      new_property(
-        default = FALSE,
-        validator = validator_len_1,
-        getter = \(self) {
-          self@opacity < 1
-        }
-      ),
-    opacity = class_double |>
-      new_property(
-        default = 0.8,
         validator = validator_len_1
       ),
     version = class_character |>
@@ -198,7 +168,7 @@ S7::method(add_to_map, WMS) <- function(layer, map) {
         stringr::str_replace_all(" |\\.", "_"),
       html = legend_template |>
         sprintf(layer@group, layer@legend_url),
-      position = layer@position
+      position = layer@legend_position
     ) |>
     # Link legend to layer control
     include_scripts(
