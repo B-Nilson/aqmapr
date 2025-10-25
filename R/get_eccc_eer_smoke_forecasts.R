@@ -179,18 +179,21 @@ get_eer_zip <- function(
     paste0("shp_", region, ".zip")
 
   # Download and unzip new runs as needed
-  run_zips <- data_dir |>
-    file.path(
-      paste0("eer_", format(model_runs, "%Y%m%d_%H00"), "_shp_Canada.zip")
+  unzip_details <- zip_urls |>
+    stringr::str_extract(
+      paste0(region, "/(.+?)/shp/(shp_.+?)\\.zip"),
+      group = 1:2
     )
+  local_paths <- data_dir |>
+    file.path(unzip_details[, 1] |> paste0("_", unzip_details[, 2], ".zip"))
   zip_urls |>
     handyr::for_each(.enumerate = TRUE, \(zip_url, i) {
-      if (is_todays[i] || !file.exists(run_zips[i])) {
+      if (is_todays[i] || !file.exists(local_paths[i])) {
         success <- zip_url |>
-          download.file(destfile = run_zips[i], mode = "wb", quiet = quiet) |>
+          download.file(destfile = local_paths[i], mode = "wb", quiet = quiet) |>
           suppressWarnings() |>
           handyr::on_error(.return = NULL) # Fails near 24 UTC when latest transitions to next day
-        if (unzip & !is.null(success)) unzip(run_zips[i], exdir = data_dir)
+        if (unzip & !is.null(success)) unzip(local_paths[i], exdir = data_dir)
       }
     })
 }
