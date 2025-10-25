@@ -80,6 +80,7 @@ get_eccc_eer_smoke_forecasts <- function(
 
   # Download and unzip new runs as needed
   select_times |>
+    lubridate::floor_date("6 hours") |>
     get_eer_zip(data_dir = data_dir, region = region, quiet = quiet)
 
   # Build shp file name path
@@ -164,16 +165,12 @@ eer_smoke_pal <- function(eer_pm25_ugm3 = NULL) {
 }
 
 get_eer_zip <- function(
-  select_times,
+  model_runs,
   region = "Canada",
   data_dir = tempdir(),
   unzip = TRUE,
   quiet = FALSE
 ) {
-  # Model runs are updated every 6 hours
-  model_runs <- select_times |>
-    lubridate::floor_date("6 hours") |>
-    unique()
   is_todays <- model_runs >= lubridate::with_tz(Sys.Date(), "UTC")
 
   # Build url to this runs zip file
