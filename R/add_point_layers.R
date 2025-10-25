@@ -14,6 +14,30 @@ LeafletLayer <- new_class(
   properties = list(
     group = class_character |>
       new_property(validator = validator_len_1),
+    layer_id = class_character,
+    class_name = class_character,
+    pane = class_character |>
+      new_property(
+        validator = \(value) {
+          if (length(value) != 1) {
+            "must be length 1"
+          } else if (
+            !value %in%
+              c(
+                "overlayPane",
+                "shadowPane",
+                "markerPane",
+                "tooltipPane",
+                "mapPane",
+                "popupPane",
+                "tilePane"
+              )
+          ) {
+            "must be one of overlayPane, shadowPane, markerPane, tooltipPane, mapPane, popupPane, tilePane"
+          }
+        },
+        default = "overlayPane"
+      ),
     legend_position = class_character |>
       new_property(
         default = "bottomleft",
@@ -28,6 +52,11 @@ LeafletLayer <- new_class(
           }
         }
       ),
+    opacity = class_double |>
+      new_property(
+        default = 0.8,
+        validator = validator_len_1
+      ),
     transparent = class_logical |>
       new_property(
         default = FALSE,
@@ -36,9 +65,14 @@ LeafletLayer <- new_class(
           self@opacity < 1
         }
       ),
-    opacity = class_double |>
+    interactive = class_logical |>
       new_property(
-        default = 0.8,
+        default = TRUE,
+        validator = validator_len_1
+      ),
+    bubbling_mouse_events = class_logical |>
+      new_property(
+        default = TRUE,
         validator = validator_len_1
       )
   )
