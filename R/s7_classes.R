@@ -163,6 +163,7 @@ LeafletLayer <- new_class(
     class_name = class_character,
     pane = class_leaflet_pane,
     legend_position = class_leaflet_position,
+    display_by_default = class_flag_on,
     opacity = class_double |>
       new_property(
         default = 0.8,
@@ -245,6 +246,12 @@ add_to_map <- "add_to_map" |>
         append_to_layer_control(
           layer_groups = layer@group
         )
+    }
+
+    # Hide layer if desired
+    if (!layer@display_by_default) {
+      map <- map |>
+        leaflet::hideGroup(group = layer@group)
     }
 
     S7::S7_dispatch()

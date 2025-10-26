@@ -16,7 +16,7 @@ add_wms_layers <- function(map, wms_layers) {
 
 #' Build WMS layer objects for adding to a map
 #'
-#' @param urls,layers,styles,opacities,legend_urls,legend_positions,formats,versions
+#' @param urls,layers,styles,opacities,legend_urls,legend_positions,formats,versions,display_by_defaults
 #'   1 or more character (or numeric for `opacities`) values of the URL(s) of the WMS service,
 #'   layer name(s) and style(s) to display at set opacities, legend URL(s) and position(s), layer format(s), and WMS version(s).
 #'   Inputs will be recycled to a common length - single values will be repeated as needed.
@@ -31,7 +31,8 @@ make_wms_layers <- function(
   legend_urls = NA,
   legend_positions = "bottomleft",
   formats = "image/png",
-  versions = "1.1.1"
+  versions = "1.1.1",
+  display_by_defaults = FALSE
 ) {
   if (is.null(names(layers))) {
     names(layers) <- layers
@@ -47,7 +48,8 @@ make_wms_layers <- function(
       legend_url = legend_urls,
       legend_position = legend_positions,
       format = formats,
-      version = versions
+      version = versions,
+      display_by_default = display_by_defaults
     )
 
   inputs$group |>
@@ -66,7 +68,8 @@ make_wms_layers <- function(
           format = inputs$format[i],
           style = inputs$style[i],
           opacity = inputs$opacity[i],
-          version = inputs$version[i]
+          version = inputs$version[i],
+          display_by_default = inputs$display_by_default[i]
         )
       }
     )
@@ -142,6 +145,7 @@ S7::method(add_to_map, WMSLayer) <- function(layer, map) {
   # TODO: add subtitle using <small></small>
   legend_template <- "<strong>%s</strong><br/><img src = '%s'/>"
   on_render_template <- "function(el, x) {
+    toggleLegend('%s', %s);
     this.on('overlayadd', (e) => {if (e.name === '%s') toggleLegend('%s', true)});
     this.on('overlayremove', (e) => {if (e.name === '%s') toggleLegend('%s', false);});
   }"
@@ -178,6 +182,8 @@ S7::method(add_to_map, WMSLayer) <- function(layer, map) {
     htmlwidgets::onRender(
       on_render_template |>
         sprintf(
+          layer@group,
+          tolower(layer@display_by_default),
           layer@group,
           layer@group,
           layer@group,

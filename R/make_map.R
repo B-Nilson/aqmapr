@@ -27,7 +27,8 @@ make_aqmap <- function(
         group = "Modelled Smoke",
         data = _,
         fill = ~min_pm25,
-        fill_palette = eer_smoke_pal()
+        fill_palette = eer_smoke_pal(),
+        display_by_default = FALSE
       ) |>
       handyr::on_error(.return = NULL),
     get_noaa_hms_smoke_polygons() |>
@@ -35,7 +36,8 @@ make_aqmap <- function(
         group = "Visible Smoke",
         data = _,
         fill = ~density,
-        fill_palette = hms_smoke_pal()
+        fill_palette = hms_smoke_pal(),
+        display_by_default = FALSE
       ) |>
       handyr::on_error(.return = NULL)
   )
