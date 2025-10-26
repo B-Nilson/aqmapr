@@ -30,7 +30,7 @@ make_aqmap <- function(
         fill_palette = eer_smoke_pal(),
         display_by_default = FALSE
       ) |>
-      handyr::on_error(.return = NULL),
+      handyr::on_error(.return = NULL, .warn = TRUE),
     get_noaa_hms_smoke_polygons() |>
       PolygonLayer(
         group = "Visible Smoke",
@@ -39,9 +39,8 @@ make_aqmap <- function(
         fill_palette = hms_smoke_pal(),
         display_by_default = FALSE
       ) |>
-      handyr::on_error(.return = NULL)
+      handyr::on_error(.return = NULL, .warn = TRUE)
   )
-
   polygon_layers <- polygon_layers[which(!sapply(polygon_layers, is.null))]
 
   # Build basemap
