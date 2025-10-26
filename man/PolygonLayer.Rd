@@ -51,7 +51,7 @@ PolygonLayer(
   label_options = list(interactive = FALSE, permanent = FALSE, direction = "auto",
     opacity = 1, offset = c(0, 0), textsize = "10px", textOnly = FALSE, className = "",
     sticky = TRUE),
-  highlight_options = list(),
+  highlight_options = structure(list(), names = character(0)),
   options = list(interactive = TRUE, className = "")
 )
 }

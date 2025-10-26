@@ -10,17 +10,34 @@ PointLayer <- new_class(
   parent = LeafletLayer,
   properties = list(
     data = class_data.frame |>
-      new_property(setter = \(self, value) {
-        if (is.null(value)) {
-          self@data <- value
-        } else if (!"sf" %in% class(value) & ncol(value) & nrow(value)) {
-          self@data <- value |>
-            sf::st_as_sf(coords = c(self@x_col, self@y_col), crs = self@crs)
-        } else {
-          self@data <- value
+      new_property(
+        setter = \(self, value) {
+          if (is.null(value)) {
+            self@data <- value
+          } else if (!"sf" %in% class(value) & ncol(value) & nrow(value)) {
+            self@data <- value |>
+              sf::st_as_sf(coords = c(self@x_col, self@y_col), crs = self@crs)
+          } else {
+            self@data <- value
+          }
+          return(self)
+        },
+        validator = \(value) {
+          if (!is.null(value)) {
+            if (!"sf" %in% class(value) & ncol(value) & nrow(value)) {
+              "must be an `sf` data.frame"
+            }
+            if (
+              !all(
+                as.character(sf::st_geometry_type(value$geometry)) %in%
+                  c("POINT", "MULTIPOINT")
+              )
+            ) {
+              "all geometries must be `POINT` or `MULTIPOINT`"
+            }
+          }
         }
-        return(self)
-      }),
+      ),
     x_col = class_character |>
       new_union(class_integer) |>
       new_property(default = "lng", validator = validator_len_0_1),
@@ -39,33 +56,13 @@ PointLayer <- new_class(
     stroke_dash_array = class_character,
     colour = class_colour |>
       new_property(default = "black", setter = colour_setter),
-    color = new_property(
-      class_colour,
-      default = quote(colour),
-      getter = function(self) {
-        self@colour
-      },
-      setter = function(self, value) {
-        if (identical(value, self@colour)) {
-          return(self)
-        }
-        self@colour <- value
-        self
-      }
-    ),
+    color = color_property(),
     colour_palette = class_function |>
       new_property(default = \(x) rep("black", length(x))),
     colour_values = class_vector,
-    use_fill = class_logical |>
-      new_property(
-        default = TRUE,
-        validator = validator_len_1
-      ),
+    use_fill = class_flag_on,
     fill = class_colour |>
-      new_property(
-        default = "grey",
-        setter = fill_setter
-      ),
+      new_property(default = "grey", setter = fill_setter),
     fill_palette = class_function |>
       new_property(default = \(x) rep("grey", length(x))),
     fill_values = class_vector,
@@ -138,7 +135,12 @@ S7::method(add_to_map, PointLayer) <- function(layer, map) {
     }
   }
 
-  if (layer@use_fill & length(layer@fill_values)) {
+  if (
+    layer@use_fill &
+      length(layer@fill_values) &
+      length(layer@group) &
+      !identical(layer@fill_values, layer@fill)
+  ) {
     map <- map |>
       leaflet::addLegend(
         data = layer@data,

@@ -81,6 +81,23 @@ class_leaflet_position <- class_character |>
     }
   )
 
+color_property <- function() {
+  class_colour |>
+    S7::new_property(
+      default = quote(colour),
+      getter = function(self) {
+        self@colour
+      },
+      setter = function(self, value) {
+        if (identical(value, self@colour)) {
+          return(self)
+        }
+        self@colour <- value
+        self
+      }
+    )
+}
+
 colour_setter <- function(self, value) {
   parsed <- value |>
     parse_colours(
