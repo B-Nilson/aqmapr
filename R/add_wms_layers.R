@@ -137,9 +137,6 @@ make_wms_legend_url <- function(url, layer, style) {
     sprintf(url, layer, style)
 }
 
-# Define generic method to add layers to leaflet map
-add_to_map <- S7::new_generic("add_to_map", "layer")
-
 # Define method to add WMS layer to map
 S7::method(add_to_map, WMS) <- function(layer, map) {
   # TODO: add subtitle using <small></small>

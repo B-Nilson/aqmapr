@@ -35,3 +35,27 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 LazyData: true
+Collate: 
+    'add_base_maps.R'
+    'add_json_layer.R'
+    'add_map_timestamp.R'
+    's7_classes.R'
+    'add_point_layers.R'
+    'add_wms_layers.R'
+    'app.R'
+    'append_to_layer_control.R'
+    'aqmapr-package.R'
+    'data.R'
+    'get_eccc_eer_smoke_forecasts.R'
+    'get_noaa_hms_smoke_polygons.R'
+    'helpers.R'
+    'icons.R'
+    'include_font.R'
+    'include_scripts.R'
+    'load_canadian_provinces.R'
+    'load_data.R'
+    'make_leaflet_map.R'
+    'make_map.R'
+    'monitor_hover.R'
+    'monitors.R'
+    'track_map_state.R'

@@ -6,9 +6,7 @@
 \usage{
 make_leaflet_map(
   base_maps = c(`Light Theme` = "OpenStreetMap", `Dark Theme` = "CartoDB.DarkMatter"),
-  point_data = list(),
-  point_options = list(radius = 3, weight = 1, color = "black", fillColor = "#808080",
-    fillOpacity = 0.8, opacity = 1, palette = NULL, position = "bottomleft"),
+  point_layers = list(),
   polygon_data = list(),
   polygon_options = list(weight = 2, color = "black", fillColor = "#808080", fillOpacity
     = 0.8, opacity = 1, palette = NULL, position = "bottomleft"),
@@ -23,18 +21,22 @@ A character vector named basemaps from \link[leaflet:providers]{leaflet::provide
 Names will be used in the control menu for the basemaps.
 Default is a nice light and dark open data theme.}
 
-\item{point_data, polygon_data}{(Optional).
-A named list of 1 or more \code{sf} data frames of points/polygons to be added to the map.
-Names will be used in the control menu for the layers.
-Default is an empty list (no points/polygons added).}
+\item{point_layers}{(Optional).
+A list of 1 or more \code{PointLayer} objects (created with \code{\link[=PointLayer]{PointLayer()}}) to be added to the map.
+Default is an empty list (no points added).}
 
-\item{point_options, polygon_options}{(Optional).
-A list of options for the points/polygons, names must be present in arguments of \code{\link[leaflet:map-layers]{leaflet::addCircleMarkers()}}/\code{\link[leaflet:map-layers]{leaflet::addPolygons()}} OR
-must all be in \code{names(point_data)}/\code{names(polygon_data)} if individual options for each layer are desired.
+\item{polygon_data}{(Optional).
+A named list of 1 or more \code{sf} data frames of polygons to be added to the map.
+Names will be used in the control menu for the layers.
+Default is an empty list (no polygons added).}
+
+\item{polygon_options}{(Optional).
+A list of options for the polygons, names must be present in arguments of \code{\link[leaflet:map-layers]{leaflet::addPolygons()}} OR
+must all be in \code{names(polygon_data)} if individual options for each layer are desired.
 Addition options \code{palette} (a leaflet palette function) and \code{position} (default is "bottomleft")
 can be passed to include a legend for the layer if the data column is passed to \code{fillColor} as a formula (i.e. \code{fillColor = ~column_name}).
-In fact, you can use \code{~column_name} to pass a column from \code{point_data}/\code{polygon_data} as most options (i.e. \code{label = ~name}).
-Default is objectivley better options for point/polygon data, applied to all layers.}
+In fact, you can use \code{~column_name} to pass a column from \code{polygon_data} as most options (i.e. \code{label = ~name}).
+Default is objectivley better options for polygon data, applied to all layers.}
 
 \item{track_map_state}{(Optional). If TRUE, the map state will be tracked and saved in the URL when the map is saved to an HTML file.
 Default is TRUE.}

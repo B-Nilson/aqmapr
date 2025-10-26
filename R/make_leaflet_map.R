@@ -5,17 +5,20 @@
 #'   A character vector named basemaps from [leaflet::providers] to add to the map.
 #'   Names will be used in the control menu for the basemaps.
 #'   Default is a nice light and dark open data theme.
-#' @param point_data,polygon_data (Optional).
-#'   A named list of 1 or more `sf` data frames of points/polygons to be added to the map.
+#' @param point_layers (Optional).
+#'   A list of 1 or more `PointLayer` objects (created with [PointLayer()]) to be added to the map.
+#'   Default is an empty list (no points added).
+#' @param polygon_data (Optional).
+#'   A named list of 1 or more `sf` data frames of polygons to be added to the map.
 #'   Names will be used in the control menu for the layers.
-#'   Default is an empty list (no points/polygons added).
-#' @param point_options,polygon_options (Optional).
-#'   A list of options for the points/polygons, names must be present in arguments of [leaflet::addCircleMarkers()]/[leaflet::addPolygons()] OR
-#'   must all be in `names(point_data)`/`names(polygon_data)` if individual options for each layer are desired.
+#'   Default is an empty list (no polygons added).
+#' @param polygon_options (Optional).
+#'   A list of options for the polygons, names must be present in arguments of [leaflet::addPolygons()] OR
+#'   must all be in `names(polygon_data)` if individual options for each layer are desired.
 #'   Addition options `palette` (a leaflet palette function) and `position` (default is "bottomleft")
 #'   can be passed to include a legend for the layer if the data column is passed to `fillColor` as a formula (i.e. `fillColor = ~column_name`).
-#'   In fact, you can use `~column_name` to pass a column from `point_data`/`polygon_data` as most options (i.e. `label = ~name`).
-#'   Default is objectivley better options for point/polygon data, applied to all layers.
+#'   In fact, you can use `~column_name` to pass a column from `polygon_data` as most options (i.e. `label = ~name`).
+#'   Default is objectivley better options for polygon data, applied to all layers.
 #' @param track_map_state (Optional). If TRUE, the map state will be tracked and saved in the URL when the map is saved to an HTML file.
 #'   Default is TRUE.
 #' @param include_timestamp (Optional).
@@ -71,17 +74,7 @@ make_leaflet_map <- function(
     "Light Theme" = "OpenStreetMap",
     "Dark Theme" = "CartoDB.DarkMatter"
   ),
-  point_data = list(),
-  point_options = list(
-    radius = 3,
-    weight = 1,
-    color = "black",
-    fillColor = "#808080",
-    fillOpacity = 0.8,
-    opacity = 1,
-    palette = NULL,
-    position = "bottomleft"
-  ),
+  point_layers = list(),
   polygon_data = list(),
   polygon_options = list(
     weight = 2,
@@ -100,8 +93,7 @@ make_leaflet_map <- function(
     is.character(base_maps),
     length(names(base_maps)) == length(base_maps)
   )
-  stopifnot(identical("list", class(point_data)))
-  stopifnot(identical("list", class(point_options)))
+  stopifnot(identical("list", class(point_layers)))
   stopifnot(identical("list", class(polygon_data)))
   stopifnot(identical("list", class(polygon_options)))
   stopifnot(is.logical(track_map_state), length(track_map_state) == 1)
@@ -113,7 +105,6 @@ make_leaflet_map <- function(
 
   # Check if each layer has its own options
   use_indiv_options <- list(
-    points = all(names(point_options) %in% names(point_data)),
     polygons = all(names(polygon_options) %in% names(polygon_data))
   )
 
@@ -136,45 +127,11 @@ make_leaflet_map <- function(
   }
 
   # Add point layers as needed
-  if (length(point_data) > 0) {
-    for (group in names(point_data)) {
-      if (use_indiv_options$points) {
-        p_options <- point_options[[group]]
-      } else {
-        p_options <- point_options
-      }
-      if ("palette" %in% names(p_options)) {
-        base_map <- base_map |>
-          add_fill_legend(
-            data = point_data[[group]],
-            group = group,
-            fillColor = p_options$fillColor,
-            opacity = p_options$fillOpacity,
-            palette = p_options$palette,
-            position = p_options$position,
-            na_label = "No Data"
-          )
-        p_options$fillColor <- point_data[[group]] |>
-          dplyr::pull(!!rlang::as_quosure(p_options$fillColor)) |>
-          p_options$palette()
-      }
-      if (any(names(p_options) %in% c("palette", "position"))) {
-        p_options <- p_options[
-          -which(names(p_options) %in% c("palette", "position"))
-        ]
-      }
-      base_map <- rlang::exec(
-        .fn = leaflet::addCircleMarkers,
-        map = base_map,
-        data = point_data[[group]],
-        group = group,
-        !!!p_options
-      )
+  if (length(point_layers) > 0) {
+    for (layer in point_layers) {
+      base_map <- base_map |>
+        add_to_map(layer = layer)
     }
-    base_map <- base_map |>
-      append_to_layer_control(
-        layer_groups = names(point_data)
-      )
   }
 
   # Add polygon layers as needed
