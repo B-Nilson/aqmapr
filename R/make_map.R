@@ -22,30 +22,24 @@ make_aqmap <- function(
 
   # Get extra layers
   polygon_layers <- list(
-    "Modelled Smoke" = get_eccc_eer_smoke_forecasts() |>
+    get_eccc_eer_smoke_forecasts() |>
+      PolygonLayer(
+        group = "Modelled Smoke",
+        data = _,
+        fill = ~min_pm25,
+        fill_palette = eer_smoke_pal()
+      ) |>
       handyr::on_error(.return = NULL),
-    "Visible Smoke" = get_noaa_hms_smoke_polygons() |>
+    get_noaa_hms_smoke_polygons() |>
+      PolygonLayer(
+        group = "Visible Smoke",
+        data = _,
+        fill = ~density,
+        fill_palette = hms_smoke_pal()
+      ) |>
       handyr::on_error(.return = NULL)
   )
-  polygon_options <- list(
-    "Modelled Smoke" = list(
-      fillColor = ~min_pm25,
-      weight = 1,
-      color = "black",
-      fillOpacity = 0.8,
-      opacity = 1,
-      palette = eer_smoke_pal()
-    ),
-    "Visible Smoke" = list(
-      fillColor = ~density,
-      weight = 1,
-      color = "black",
-      fillOpacity = 0.8,
-      opacity = 1,
-      palette = hms_smoke_pal()
-    )
-  )
-  polygon_options <- polygon_options[which(!sapply(polygon_layers, is.null))]
+
   polygon_layers <- polygon_layers[which(!sapply(polygon_layers, is.null))]
 
   # Build basemap
@@ -54,8 +48,7 @@ make_aqmap <- function(
       track_map_state = TRUE,
       as_reference = use_references,
       include_timestamp = TRUE,
-      polygon_data = polygon_layers,
-      polygon_options = polygon_options
+      polygon_layers = polygon_layers
     ) |>
     # Include custom js used by various parts of the map
     include_scripts(paths = js_paths, as_reference = use_references) |>
