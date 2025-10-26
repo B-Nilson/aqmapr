@@ -54,10 +54,11 @@ PointLayer(
   label_options = list(interactive = FALSE, permanent = FALSE, direction = "auto",
     opacity = 1, offset = c(0, 0), textsize = "10px", textOnly = FALSE, className = "",
     sticky = TRUE),
-  cluster_id = character(0),
-  cluster_options = list(),
-  options = list(interactive = TRUE, draggable = FALSE, keyboard = TRUE, title = "", alt
-    = "", zIndexOffset = 0, opacity = 1, riseOnHover = FALSE, riseOffset = 250)
+  cluster_id = NULL,
+  cluster_options = list(showCoverageOnHover = TRUE, zoomToBoundsOnClick = TRUE,
+    spiderfyOnMaxZoom = TRUE, removeOutsideVisibleBounds = TRUE, spiderLegPolylineOptions
+    = list(weight = 1.5, color = "#222", opacity = 0.5), freezeAtZoom = FALSE),
+  options = list(interactive = TRUE, className = "")
 )
 }
 \description{

@@ -13,9 +13,7 @@ PointLayer <- new_class(
       new_property(setter = \(self, value) {
         if (is.null(value)) {
           self@data <- value
-          return(self)
-        }
-        if (!"sf" %in% class(value) & ncol(value) & nrow(value)) {
+        } else if (!"sf" %in% class(value) & ncol(value) & nrow(value)) {
           self@data <- value |>
             sf::st_as_sf(coords = c(self@x_col, self@y_col), crs = self@crs)
         } else {
@@ -25,51 +23,22 @@ PointLayer <- new_class(
       }),
     x_col = class_character |>
       new_union(class_integer) |>
-      new_property(validator = validator_len_0_1, default = "lng"),
+      new_property(default = "lng", validator = validator_len_0_1),
     y_col = class_character |>
       new_union(class_integer) |>
-      new_property(validator = validator_len_0_1, default = "lat"),
+      new_property(default = "lat", validator = validator_len_0_1),
     crs = class_character |>
       new_property(default = "WGS84", validator = validator_len_0_1),
     data_url = class_character,
     icon_urls = class_character,
-    use_stroke = class_logical |>
-      new_property(
-        default = TRUE,
-        validator = validator_len_1
-      ),
+    use_stroke = class_flag_on,
     stroke_width = class_double |>
-      new_property(
-        default = 1,
-      ),
+      new_property(default = 1),
     stroke_opacity = class_double |>
-      new_property(
-        default = 1,
-      ),
+      new_property(default = 1),
     stroke_dash_array = class_character,
     colour = class_colour |>
-      new_property(
-        default = "black",
-        setter = \(self, value) {
-          if (
-            is.list(value) &
-              identical(sort(names(value)), c("palette", "values"))
-          ) {
-            self@colour_palette <- value$palette
-            if ("formula" %in% class(value$palette) & !is.null(self@data)) {
-              self@colour_values <- self@data |>
-                dplyr::pull(!!rlang::as_quosure(value$palette))
-            }
-            self@colour_values <- value$values
-          } else if ("formula" %in% class(value) & !is.null(self@data)) {
-            self@colour_values <- self@data |>
-              dplyr::pull(!!rlang::as_quosure(value))
-            value <- self@colour_palette(self@colour_values)
-          }
-          self@colour <- value
-          return(self)
-        }
-      ),
+      new_property(default = "black", setter = colour_setter),
     color = new_property(
       class_colour,
       default = quote(colour),
@@ -95,21 +64,7 @@ PointLayer <- new_class(
     fill = class_colour |>
       new_property(
         default = "grey",
-        setter = \(self, value) {
-          if (
-            is.list(value) &
-              identical(sort(names(value)), c("palette", "values"))
-          ) {
-            self@fill_palette <- value$palette
-            self@fill_values <- value$values
-          } else if ("formula" %in% class(value) & !is.null(self@data)) {
-            self@fill_values <- self@data |>
-              dplyr::pull(!!rlang::as_quosure(value))
-            value <- self@fill_palette(self@fill_values)
-          }
-          self@fill <- value
-          return(self)
-        }
+        setter = fill_setter
       ),
     fill_palette = class_function |>
       new_property(default = \(x) rep("grey", length(x))),
@@ -122,24 +77,13 @@ PointLayer <- new_class(
     label = class_any,
     label_options = class_list |>
       new_property(default = leaflet::labelOptions()),
-    cluster_id = class_character,
+    cluster_id = class_any,
     cluster_options = class_list |>
-      new_union(class_any) |>
-      new_property(setter = \(self, value) {
-        if (length(value) == 0) {
-          self@cluster_options <- NULL
-        } else {
-          self@cluster_options <- value
-        }
-        return(self)
-      }),
+      new_property(default = leaflet::markerClusterOptions()),
     options = class_list |>
-      new_property(default = leaflet::markerOptions())
+      new_property(default = leaflet::pathOptions())
   )
 )
-
-# Define generic method to add layers to leaflet map
-add_to_map <- S7::new_generic("add_to_map", "layer")
 
 # Define method to add WMS layer to map
 S7::method(add_to_map, PointLayer) <- function(layer, map) {
@@ -158,7 +102,9 @@ S7::method(add_to_map, PointLayer) <- function(layer, map) {
   if (length(layer@data_url)) {
     map <- map |>
       add_geojson_layer(
+        layer_id = layer@layer_id,
         json_url = layer@data_url,
+        options = c(list(pane = pane_name), layer@options),
         group = layer@group,
         add_to_layer_control = length(layer@group) > 0,
         as_reference = TRUE
@@ -188,11 +134,10 @@ S7::method(add_to_map, PointLayer) <- function(layer, map) {
       )
     if (length(layer@group)) {
       map <- map |>
-        append_to_layer_control(
-          layer_groups = layer@group
-        )
+        append_to_layer_control(layer_groups = layer@group)
     }
   }
+
   if (layer@use_fill & length(layer@fill_values)) {
     map <- map |>
       leaflet::addLegend(
@@ -205,5 +150,6 @@ S7::method(add_to_map, PointLayer) <- function(layer, map) {
         title = layer@group
       )
   }
+
   return(map)
 }
