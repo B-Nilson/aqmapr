@@ -190,7 +190,11 @@ get_eer_zip <- function(
     handyr::for_each(.enumerate = TRUE, \(zip_url, i) {
       if (is_todays[i] || !file.exists(local_paths[i])) {
         success <- zip_url |>
-          download.file(destfile = local_paths[i], mode = "wb", quiet = quiet) |>
+          download.file(
+            destfile = local_paths[i],
+            mode = "wb",
+            quiet = quiet
+          ) |>
           suppressWarnings() |>
           handyr::on_error(.return = NULL) # Fails near 24 UTC when latest transitions to next day
         if (unzip & !is.null(success)) unzip(local_paths[i], exdir = data_dir)

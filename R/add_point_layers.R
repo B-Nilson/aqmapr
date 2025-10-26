@@ -128,12 +128,11 @@ PointLayer <- new_class(
       new_property(setter = \(self, value) {
         if (length(value) == 0) {
           self@cluster_options <- NULL
-        }else {
+        } else {
           self@cluster_options <- value
         }
         return(self)
-      }
-      ),
+      }),
     options = class_list |>
       new_property(default = leaflet::markerOptions())
   )

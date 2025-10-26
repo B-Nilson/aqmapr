@@ -45,7 +45,7 @@ class_leaflet_pane <- class_character |>
         if (any(sapply(value, length) != 1)) {
           "list values must be length 1"
         }
-        if(!is.character(value$name)) {
+        if (!is.character(value$name)) {
           "name must be character"
         }
         if (value$name %in% allowed) {

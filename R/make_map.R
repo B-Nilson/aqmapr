@@ -16,7 +16,7 @@ make_aqmap <- function(
   } else {
     js_paths <- file.path(js_endpoint, js_files)
   }
-  
+
   # Define WMS layers to display
   wms_layers <- make_aqmap_wms_layers()
 

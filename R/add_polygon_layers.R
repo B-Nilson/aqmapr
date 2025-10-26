@@ -14,7 +14,12 @@ PolygonLayer <- new_class(
         if (!"sf" %in% class(value) & ncol(value) & nrow(value)) {
           "must be an `sf` data.frame"
         }
-        if (! all(as.character(sf::st_geometry_type(value$geometry)) %in% c("POLYGON", "MULTIPOLYGON"))) {
+        if (
+          !all(
+            as.character(sf::st_geometry_type(value$geometry)) %in%
+              c("POLYGON", "MULTIPOLYGON")
+          )
+        ) {
           "all geometries must be `POLYGON` or `MULTIPOLYGON`"
         }
       }),
@@ -115,12 +120,11 @@ PolygonLayer <- new_class(
       new_property(setter = \(self, value) {
         if (length(value) == 0) {
           self@highlight_options <- NULL
-        }else {
+        } else {
           self@highlight_options <- value
         }
         return(self)
-      }
-      ),
+      }),
     options = class_list |>
       new_property(default = leaflet::pathOptions())
   )
