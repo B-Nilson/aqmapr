@@ -172,6 +172,9 @@ get_eer_zip <- function(
   quiet = FALSE
 ) {
   is_todays <- model_runs >= lubridate::with_tz(Sys.Date(), "UTC")
+  if (any(is_todays)) {
+    is_todays <- c(is_todays, TRUE)
+  }
 
   # Build url to this runs zip file
   zip_urls <- model_runs |>
