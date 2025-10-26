@@ -2,6 +2,7 @@
 
 export(LeafletLayer)
 export(PointLayer)
+export(PolygonLayer)
 export(WMS)
 export(add_base_maps)
 export(add_geojson_layer)

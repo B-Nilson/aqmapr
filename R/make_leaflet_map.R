@@ -5,20 +5,9 @@
 #'   A character vector named basemaps from [leaflet::providers] to add to the map.
 #'   Names will be used in the control menu for the basemaps.
 #'   Default is a nice light and dark open data theme.
-#' @param point_layers (Optional).
-#'   A list of 1 or more `PointLayer` objects (created with [PointLayer()]) to be added to the map.
-#'   Default is an empty list (no points added).
-#' @param polygon_data (Optional).
-#'   A named list of 1 or more `sf` data frames of polygons to be added to the map.
-#'   Names will be used in the control menu for the layers.
-#'   Default is an empty list (no polygons added).
-#' @param polygon_options (Optional).
-#'   A list of options for the polygons, names must be present in arguments of [leaflet::addPolygons()] OR
-#'   must all be in `names(polygon_data)` if individual options for each layer are desired.
-#'   Addition options `palette` (a leaflet palette function) and `position` (default is "bottomleft")
-#'   can be passed to include a legend for the layer if the data column is passed to `fillColor` as a formula (i.e. `fillColor = ~column_name`).
-#'   In fact, you can use `~column_name` to pass a column from `polygon_data` as most options (i.e. `label = ~name`).
-#'   Default is objectivley better options for polygon data, applied to all layers.
+#' @param point_layers,polygon_layers (Optional).
+#'   A list of 1 or more `PointLayer`/`PolygonLayer` objects (created with [PointLayer()]/[PolygonLayer()]) to be added to the map.
+#'   Default is an empty list (no points/polygons added).
 #' @param track_map_state (Optional). If TRUE, the map state will be tracked and saved in the URL when the map is saved to an HTML file.
 #'   Default is TRUE.
 #' @param include_timestamp (Optional).
@@ -39,52 +28,32 @@
 #'   ordered = TRUE,
 #'   reverse = TRUE
 #' )
-#' make_leaflet_map(
-#'   point_data = list("Communities" = canada_communities),
-#'   point_options = list(
-#'     radius = 3,
-#'     weight = 1,
-#'     color = "black",
-#'     fillColor = ~ colour_pal(type),
-#'     fillOpacity = 0.8,
-#'     opacity = 1,
+#' point_layers <- list(PointLayer(
+#'   group = "Communities",
+#'   data = canada_communities,
+#'   fill_palette = colour_pal,
+#'   fill = ~type,
 #'     label = ~ paste("Name: ", name, "<br/>", "Type: ", type) |>
 #'       lapply(htmltools::HTML)
-#'   )
-#' ) |>
-#'   leaflet::addLegend(
-#'     pal = colour_pal,
-#'     values = unique(canada_communities$type) |> sort()
-#'   )
+#' ))
 #'
 #' canadian_provinces <- load_canadian_provinces()
-#'   make_leaflet_map(
-#'     polygon_data = list("Provinces" = canadian_provinces),
-#'     polygon_options = list(
-#'       weight = 1,
-#'       color = "black",
-#'       fillColor = "black",
-#'       fillOpacity = 0.1,
-#'       opacity = 1,
-#'       label = ~name
-#'     )
-#'   )
+#' make_leaflet_map(
+#'   polygon_layers = list(PolygonLayer(
+#'     group = "Provinces",
+#'     data = canadian_provinces,
+#'     fill = "black",
+#'     opacity = 0.1,
+#'     label = ~name
+#'   ))
+#' )
 make_leaflet_map <- function(
   base_maps = c(
     "Light Theme" = "OpenStreetMap",
     "Dark Theme" = "CartoDB.DarkMatter"
   ),
   point_layers = list(),
-  polygon_data = list(),
-  polygon_options = list(
-    weight = 2,
-    color = "black",
-    fillColor = "#808080",
-    fillOpacity = 0.8,
-    opacity = 1,
-    palette = NULL,
-    position = "bottomleft"
-  ),
+  polygon_layers = list(),
   track_map_state = TRUE,
   include_timestamp = FALSE,
   as_reference = FALSE
@@ -94,18 +63,12 @@ make_leaflet_map <- function(
     length(names(base_maps)) == length(base_maps)
   )
   stopifnot(identical("list", class(point_layers)))
-  stopifnot(identical("list", class(polygon_data)))
-  stopifnot(identical("list", class(polygon_options)))
+  stopifnot(identical("list", class(polygon_layers)))
   stopifnot(is.logical(track_map_state), length(track_map_state) == 1)
   stopifnot(is.logical(as_reference), length(as_reference) == 1)
   stopifnot(
     is.logical(include_timestamp) | lubridate::is.POSIXct(include_timestamp),
     length(include_timestamp) == 1
-  )
-
-  # Check if each layer has its own options
-  use_indiv_options <- list(
-    polygons = all(names(polygon_options) %in% names(polygon_data))
   )
 
   # Make basemap
@@ -127,55 +90,15 @@ make_leaflet_map <- function(
   }
 
   # Add point layers as needed
-  if (length(point_layers) > 0) {
-    for (layer in point_layers) {
-      base_map <- base_map |>
-        add_to_map(layer = layer)
-    }
+  for (layer in point_layers) {
+    base_map <- base_map |>
+      add_to_map(layer = layer)
   }
 
   # Add polygon layers as needed
-  if (length(polygon_data) > 0) {
-    for (group in names(polygon_data)) {
-      if (use_indiv_options$polygons) {
-        p_options <- polygon_options[[group]]
-      } else {
-        p_options <- polygon_options
-      }
-      if ("palette" %in% names(p_options)) {
-        stopifnot("formula" %in% class(p_options$fillColor))
-        base_map <- base_map |>
-          add_fill_legend(
-            data = polygon_data[[group]],
-            group = group,
-            fillColor = p_options$fillColor,
-            opacity = p_options$fillOpacity,
-            palette = p_options$palette,
-            position = p_options$position,
-            na_label = "No Data"
-          )
-        p_options$fillColor <- polygon_data[[group]] |>
-          dplyr::pull(!!rlang::as_quosure(p_options$fillColor)) |>
-          p_options$palette()
-      }
-      if (any(names(p_options) %in% c("palette", "position"))) {
-        p_options <- p_options[
-          -which(names(p_options) %in% c("palette", "position"))
-        ]
-      }
-      base_map <- rlang::exec(
-        .fn = leaflet::addPolygons,
-        map = base_map,
-        data = polygon_data[[group]],
-        group = group,
-        !!!p_options
-      ) |>
-        withr::with_package(package = "sf")
-    }
+  for (layer in polygon_layers) {
     base_map <- base_map |>
-      append_to_layer_control(
-        layer_groups = names(polygon_data)
-      )
+      add_to_map(layer = layer)
   }
 
   # Use leaflet.extras::addHash() + custom js

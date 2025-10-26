@@ -7,9 +7,7 @@
 make_leaflet_map(
   base_maps = c(`Light Theme` = "OpenStreetMap", `Dark Theme` = "CartoDB.DarkMatter"),
   point_layers = list(),
-  polygon_data = list(),
-  polygon_options = list(weight = 2, color = "black", fillColor = "#808080", fillOpacity
-    = 0.8, opacity = 1, palette = NULL, position = "bottomleft"),
+  polygon_layers = list(),
   track_map_state = TRUE,
   include_timestamp = FALSE,
   as_reference = FALSE
@@ -21,22 +19,9 @@ A character vector named basemaps from \link[leaflet:providers]{leaflet::provide
 Names will be used in the control menu for the basemaps.
 Default is a nice light and dark open data theme.}
 
-\item{point_layers}{(Optional).
-A list of 1 or more \code{PointLayer} objects (created with \code{\link[=PointLayer]{PointLayer()}}) to be added to the map.
-Default is an empty list (no points added).}
-
-\item{polygon_data}{(Optional).
-A named list of 1 or more \code{sf} data frames of polygons to be added to the map.
-Names will be used in the control menu for the layers.
-Default is an empty list (no polygons added).}
-
-\item{polygon_options}{(Optional).
-A list of options for the polygons, names must be present in arguments of \code{\link[leaflet:map-layers]{leaflet::addPolygons()}} OR
-must all be in \code{names(polygon_data)} if individual options for each layer are desired.
-Addition options \code{palette} (a leaflet palette function) and \code{position} (default is "bottomleft")
-can be passed to include a legend for the layer if the data column is passed to \code{fillColor} as a formula (i.e. \code{fillColor = ~column_name}).
-In fact, you can use \code{~column_name} to pass a column from \code{polygon_data} as most options (i.e. \code{label = ~name}).
-Default is objectivley better options for polygon data, applied to all layers.}
+\item{point_layers, polygon_layers}{(Optional).
+A list of 1 or more \code{PointLayer}/\code{PolygonLayer} objects (created with \code{\link[=PointLayer]{PointLayer()}}/\code{\link[=PolygonLayer]{PolygonLayer()}}) to be added to the map.
+Default is an empty list (no points/polygons added).}
 
 \item{track_map_state}{(Optional). If TRUE, the map state will be tracked and saved in the URL when the map is saved to an HTML file.
 Default is TRUE.}
@@ -65,34 +50,23 @@ colour_pal <- leaflet::colorFactor(
   ordered = TRUE,
   reverse = TRUE
 )
-make_leaflet_map(
-  point_data = list("Communities" = canada_communities),
-  point_options = list(
-    radius = 3,
-    weight = 1,
-    color = "black",
-    fillColor = ~ colour_pal(type),
-    fillOpacity = 0.8,
-    opacity = 1,
+point_layers <- list(PointLayer(
+  group = "Communities",
+  data = canada_communities,
+  fill_palette = colour_pal,
+  fill = ~type,
     label = ~ paste("Name: ", name, "<br/>", "Type: ", type) |>
       lapply(htmltools::HTML)
-  )
-) |>
-  leaflet::addLegend(
-    pal = colour_pal,
-    values = unique(canada_communities$type) |> sort()
-  )
+))
 
 canadian_provinces <- load_canadian_provinces()
-  make_leaflet_map(
-    polygon_data = list("Provinces" = canadian_provinces),
-    polygon_options = list(
-      weight = 1,
-      color = "black",
-      fillColor = "black",
-      fillOpacity = 0.1,
-      opacity = 1,
-      label = ~name
-    )
-  )
+make_leaflet_map(
+  polygon_layers = list(PolygonLayer(
+    group = "Provinces",
+    data = canadian_provinces,
+    fill = "black",
+    opacity = 0.1,
+    label = ~name
+  ))
+)
 }

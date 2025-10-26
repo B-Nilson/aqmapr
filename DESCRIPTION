@@ -41,6 +41,7 @@ Collate:
     'add_map_timestamp.R'
     's7_classes.R'
     'add_point_layers.R'
+    'add_polygon_layers.R'
     'add_wms_layers.R'
     'app.R'
     'append_to_layer_control.R'

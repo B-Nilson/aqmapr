@@ -6,9 +6,7 @@
 # basic case with polygons data works
 
     Code
-      expect_no_warning(expect_no_error(make_leaflet_map(polygon_data = list(
-        Provinces = canadian_provinces), polygon_options = list(weight = 1, color = "black",
-        fillColor = "black", fillOpacity = 0.1, opacity = 1, label = ~name))))
+      expect_no_warning(expect_no_error(make_leaflet_map(polygon_layers = polygon_layers)))
 
 # advanced case with points data works
 
