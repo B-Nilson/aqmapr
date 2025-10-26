@@ -183,5 +183,13 @@ LeafletLayer <- new_class(
   )
 )
 
-# Define generic method to add layers to leaflet map
+#' S7 generic to add a layer to a Leaflet map
+#'
+#' Add a layer to a map using [add_to_map()].
+#'
+#' @param layer A leaflet layer to add to the map. Created using [PointLayer()], [PolygonLayer()], or [WMSLayer()].
+#' @param map A leaflet map to add the layer to.
+#' @param ... Additional arguments to pass to the layer's `add_to_map` method.
+#' @return A leaflet map with the layer added
+#' @export
 add_to_map <- S7::new_generic("add_to_map", "layer")
