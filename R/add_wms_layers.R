@@ -146,6 +146,9 @@ S7::method(add_to_map, WMSLayer) <- function(layer, map) {
     this.on('overlayremove', (e) => {if (e.name === '%s') toggleLegend('%s', false);});
   }"
 
+  pane_name <- is.list(layer@pane) |>
+    ifelse(layer@pane$name, layer@pane)
+
   map |>
     leaflet::addWMSTiles(
       baseUrl = layer@url,
@@ -155,7 +158,8 @@ S7::method(add_to_map, WMSLayer) <- function(layer, map) {
         format = layer@format,
         styles = layer@style,
         opacity = layer@opacity,
-        transparent = layer@transparent
+        transparent = layer@transparent,
+        pane = pane_name
       )
     ) |>
     # Add legend
