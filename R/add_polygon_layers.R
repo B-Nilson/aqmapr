@@ -60,29 +60,8 @@ PolygonLayer <- new_class(
 
 # Define method to add WMS layer to map
 S7::method(add_to_map, PolygonLayer) <- function(layer, map) {
-  # Create custom panes as needed
-  if (is.list(layer@pane)) {
-    map <- map |>
-      leaflet::addMapPane(
-        name = layer@pane$name,
-        zIndex = layer@pane$zindex
-      )
-    pane_name <- layer@pane$name
-  } else {
-    pane_name <- layer@pane
-  }
-
-  if (length(layer@data_url)) {
-    map <- map |>
-      add_geojson_layer(
-        layer_id = layer@layer_id,
-        json_url = layer@data_url,
-        options = c(list(pane = pane_name), layer@options),
-        group = layer@group,
-        add_to_layer_control = length(layer@group) > 0,
-        as_reference = TRUE
-      )
-  } else {
+  pane_name <- ifelse(is.list(layer@pane), layer@pane$name, layer@pane)
+  if (!length(layer@data_url)) {
     map <- map |>
       leaflet::addPolygons(
         data = layer@data,
@@ -104,29 +83,6 @@ S7::method(add_to_map, PolygonLayer) <- function(layer, map) {
         labelOptions = layer@label_options,
         highlightOptions = layer@highlight_options,
         options = c(list(pane = pane_name), layer@options)
-      )
-    if (length(layer@group)) {
-      map <- map |>
-        append_to_layer_control(
-          layer_groups = layer@group
-        )
-    }
-  }
-  if (
-    layer@use_fill &
-      length(layer@fill_values) &
-      length(layer@group) &
-      !identical(layer@fill_values, layer@fill)
-  ) {
-    map <- map |>
-      leaflet::addLegend(
-        data = layer@data,
-        group = layer@group,
-        pal = layer@fill_palette,
-        values = layer@fill_values,
-        opacity = layer@opacity,
-        position = layer@legend_position,
-        title = layer@group
       )
   }
   return(map)

@@ -158,7 +158,6 @@ S7::method(add_to_map, WMSLayer) <- function(layer, map) {
         transparent = layer@transparent
       )
     ) |>
-    append_to_layer_control(layer_groups = layer@group) |>
     # Add legend
     leaflet::addControl(
       layerId = layer@group |>

@@ -104,7 +104,6 @@ colour_setter <- function(self, value) {
       data = self@data,
       palette = self@colour_palette
     )
-  print(parsed)
 
   self@colour_palette <- parsed$palette
   self@colour_values <- parsed$values
@@ -118,7 +117,6 @@ fill_setter <- function(self, value) {
       data = self@data,
       palette = self@fill_palette
     )
-  print(parsed)
   self@fill_palette <- parsed$palette
   self@fill_values <- parsed$values
   self@fill <- parsed$colours
@@ -192,4 +190,62 @@ LeafletLayer <- new_class(
 #' @param ... Additional arguments to pass to the layer's `add_to_map` method.
 #' @return A leaflet map with the layer added
 #' @export
-add_to_map <- S7::new_generic("add_to_map", "layer")
+add_to_map <- "add_to_map" |>
+  S7::new_generic(dispatch_args = "layer", fun = function(layer, map, ...) {
+    # Create custom panes as needed
+    if (is.list(layer@pane)) {
+      map <- map |>
+        leaflet::addMapPane(
+          name = layer@pane$name,
+          zIndex = layer@pane$zindex
+        )
+    }
+
+    if (!"aqmapr::WMSLayer" %in% class(layer)) {
+      pane_name <- is.list(layer@pane) |>
+        ifelse(layer@pane$name, layer@pane)
+      # Add referenced geojson if url provided
+      if (length(layer@data_url)) {
+        map <- map |>
+          add_geojson_layer(
+            layer_id = layer@layer_id,
+            json_url = layer@data_url,
+            options = c(
+              list(pane = pane_name),
+              layer@options
+            ),
+            group = layer@group,
+            add_to_layer_control = FALSE,
+            as_reference = TRUE
+          )
+      }
+      # Add legend if desired
+      if (
+        layer@use_fill &
+          length(layer@fill_values) &
+          length(layer@group) &
+          !identical(layer@fill_values, layer@fill)
+      ) {
+        map <- map |>
+          leaflet::addLegend(
+            data = layer@data,
+            group = layer@group,
+            pal = layer@fill_palette,
+            values = layer@fill_values,
+            opacity = layer@opacity,
+            position = layer@legend_position,
+            title = layer@group
+          )
+      }
+    }
+
+    # Add add to layer control if desired
+    if (length(layer@group)) {
+      map <- map |>
+        append_to_layer_control(
+          layer_groups = layer@group
+        )
+    }
+
+    S7::S7_dispatch()
+  })
