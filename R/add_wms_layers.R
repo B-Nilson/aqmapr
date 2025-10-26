@@ -1,7 +1,7 @@
 #' Add multiple WMS layers to a map
 #'
 #' Adds multiple WMS layers to a Leaflet map using the WMS class.
-#' Build WMS layers with [make_wms_layers()] or manually with [WMS()].
+#' Build WMS layers with [make_wms_layers()] or manually with [WMSLayer()].
 #'
 #' @param map A Leaflet map object
 #' @param wms_layers A list of WMS class objects. See [make_wms_layers()] for details.
@@ -57,7 +57,7 @@ make_wms_layers <- function(
       .show_progress = FALSE,
       .name = TRUE,
       \(group, i) {
-        WMS(
+        WMSLayer(
           url = inputs$url[i],
           legend_url = inputs$legend_url[i],
           legend_position = inputs$legend_position[i],
@@ -78,8 +78,8 @@ make_wms_layers <- function(
 #'
 #' @export
 #' @import S7
-WMS <- new_class(
-  "WMS",
+WMSLayer <- new_class(
+  "WMSLayer",
   parent = LeafletLayer,
   properties = list(
     url = class_character |>
@@ -138,7 +138,7 @@ make_wms_legend_url <- function(url, layer, style) {
 }
 
 # Define method to add WMS layer to map
-S7::method(add_to_map, WMS) <- function(layer, map) {
+S7::method(add_to_map, WMSLayer) <- function(layer, map) {
   # TODO: add subtitle using <small></small>
   legend_template <- "<strong>%s</strong><br/><img src = '%s'/>"
   on_render_template <- "function(el, x) {

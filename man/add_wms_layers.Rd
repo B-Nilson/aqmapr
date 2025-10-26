@@ -16,5 +16,5 @@ A Leaflet map object with added WMS layers
 }
 \description{
 Adds multiple WMS layers to a Leaflet map using the WMS class.
-Build WMS layers with \code{\link[=make_wms_layers]{make_wms_layers()}} or manually with \code{\link[=WMS]{WMS()}}.
+Build WMS layers with \code{\link[=make_wms_layers]{make_wms_layers()}} or manually with \code{\link[=WMSLayer]{WMSLayer()}}.
 }
