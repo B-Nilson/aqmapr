@@ -50,7 +50,8 @@ make_aqmap <- function(
       track_map_state = TRUE,
       as_reference = use_references,
       include_timestamp = TRUE,
-      polygon_layers = polygon_layers
+      polygon_layers = polygon_layers,
+      wms_layers = wms_layers
     ) |>
     # Include custom js used by various parts of the map
     include_scripts(paths = js_paths, as_reference = use_references) |>
@@ -63,12 +64,6 @@ make_aqmap <- function(
         networks = networks,
         as_reference = use_references
       )
-  }
-
-  # Add wms layers
-  if (length(wms_layers)) {
-    map <- map |>
-      add_wms_layers(wms_layers = wms_layers)
   }
 
   return(map)

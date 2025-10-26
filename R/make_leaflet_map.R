@@ -5,9 +5,9 @@
 #'   A character vector named basemaps from [leaflet::providers] to add to the map.
 #'   Names will be used in the control menu for the basemaps.
 #'   Default is a nice light and dark open data theme.
-#' @param point_layers,polygon_layers (Optional).
-#'   A list of 1 or more `PointLayer`/`PolygonLayer` objects (created with [PointLayer()]/[PolygonLayer()]) to be added to the map.
-#'   Default is an empty list (no points/polygons added).
+#' @param point_layers,polygon_layers,wms_layers (Optional).
+#'   A list of 1 or more `PointLayer`/`PolygonLayer`/`WMSLayer` objects (created with [PointLayer()]/[PolygonLayer()]/[WMSLayer()]) to be added to the map.
+#'   Default is an empty list (no points/polygons/WMS layers added).
 #' @param track_map_state (Optional). If TRUE, the map state will be tracked and saved in the URL when the map is saved to an HTML file.
 #'   Default is TRUE.
 #' @param include_timestamp (Optional).
@@ -54,6 +54,7 @@ make_leaflet_map <- function(
   ),
   point_layers = list(),
   polygon_layers = list(),
+  wms_layers = list(),
   track_map_state = TRUE,
   include_timestamp = FALSE,
   as_reference = FALSE
@@ -64,6 +65,7 @@ make_leaflet_map <- function(
   )
   stopifnot(identical("list", class(point_layers)))
   stopifnot(identical("list", class(polygon_layers)))
+  stopifnot(identical("list", class(wms_layers)))
   stopifnot(is.logical(track_map_state), length(track_map_state) == 1)
   stopifnot(is.logical(as_reference), length(as_reference) == 1)
   stopifnot(
@@ -76,6 +78,39 @@ make_leaflet_map <- function(
     add_base_maps(base_maps = base_maps) |>
     # Cache provider tiles for faster reload times
     leaflet.extras::enableTileCaching()
+
+  # Define map layers/defaults
+  layer_names <- list(
+    base = names(base_maps),
+    data = point_layers |>
+      sapply(\(x) x@group) |>
+      c(polygon_layers |> sapply(\(x) x@group)) |>
+      c(unname(wms_layers) |> sapply(\(x) x@group)),
+    is_default = point_layers |>
+      sapply(\(x) x@display_by_default[1]) |>
+      c(polygon_layers |> sapply(\(x) x@display_by_default[1])) |>
+      c(unname(wms_layers) |> sapply(\(x) x@display_by_default[1])) |>
+      unlist()
+  )
+  layers_quoted <- layer_names[1:2] |>
+    c(list(default = layer_names$data[which(layer_names$is_default)])) |>
+    lapply(\(x) {
+      paste0("'", x |> stringr::str_replace("'", "\\'"), "'") |>
+        paste(collapse = ", ")
+    })
+
+  define_layers_js <- "function(el, x) { 
+  _layers = {\"base\": [%s], \"data\": [%s] };
+  _default_layers = { \"data\": [%s], \"base\": '%s' }; 
+}" |>
+    sprintf(
+      layers_quoted$base,
+      layers_quoted$data,
+      layers_quoted$default,
+      names(base_maps)[1]
+    )
+  base_map <- base_map |>
+    htmlwidgets::onRender(define_layers_js)
 
   # Add a timestamp to bottom left if desired
   if (include_timestamp) {
@@ -99,6 +134,12 @@ make_leaflet_map <- function(
   for (layer in polygon_layers) {
     base_map <- base_map |>
       add_to_map(layer = layer)
+  }
+
+  # Add wms layers as needed
+  if (length(wms_layers)) {
+    base_map <- base_map |>
+      add_wms_layers(wms_layers = wms_layers)
   }
 
   # Use leaflet.extras::addHash() + custom js

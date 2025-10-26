@@ -1,16 +1,3 @@
-
-// TODO: set this via R
-var _layers = {
-    "base": ["Light Theme", "Dark Theme"],
-    "data": ["Regulatory", "Low-cost"]
-};
-
-// TODO: set this via R
-var _default_layers = {
-    "data": ["Regulatory", "Low-cost"],
-    "base": "Light Theme"
-}
-
 function get_layers() {
     // Loop through map layers and get pointers 
     let base_layers = [];
