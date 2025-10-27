@@ -46,7 +46,15 @@ add_geojson_layer <- function(
   layer_id = NULL,
   group = NULL,
   options = list(),
+  option_columns = list(
+    iconUrl = "iconUrl",
+    pane = "pane",
+    zIndexOffset = "zIndexOffset",
+    iconSize = "iconSize",
+    label = "label"
+  ),
   as_reference = FALSE,
+  display_on_load = TRUE,
   add_to_layer_control = !is.null(group)
 ) {
   if (identical(layer_id, character(0))) {
@@ -85,7 +93,9 @@ add_geojson_layer <- function(
         json_url,
         layer_id,
         group,
-        options
+        options,
+        display_on_load,
+        option_columns
       ) |>
       # Include js file inline in the header
       include_scripts(paths = js_path, as_reference = FALSE) |>
