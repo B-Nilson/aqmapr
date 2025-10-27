@@ -23,11 +23,10 @@ PointLayer <- new_class(
           return(self)
         },
         validator = \(value) {
-          if (!is.null(value)) {
-            if (!"sf" %in% class(value) & ncol(value) & nrow(value)) {
+          if (!is.null(value) & ncol(value) & nrow(value)) {
+            if (!"sf" %in% class(value)) {
               "must be an `sf` data.frame"
-            }
-            if (
+            }else if (
               !all(
                 as.character(sf::st_geometry_type(value$geometry)) %in%
                   c("POINT", "MULTIPOINT")

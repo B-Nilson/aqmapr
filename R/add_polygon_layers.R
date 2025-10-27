@@ -11,16 +11,18 @@ PolygonLayer <- new_class(
   properties = list(
     data = class_data.frame |>
       new_property(validator = \(value) {
-        if (!"sf" %in% class(value) & ncol(value) & nrow(value)) {
-          "must be an `sf` data.frame"
-        }
-        if (
-          !all(
-            as.character(sf::st_geometry_type(value$geometry)) %in%
-              c("POLYGON", "MULTIPOLYGON")
-          )
-        ) {
-          "all geometries must be `POLYGON` or `MULTIPOLYGON`"
+        if (!is.null(value) & ncol(value) & nrow(value)) {
+          if (!"sf" %in% class(value)) {
+            "must be an `sf` data.frame"
+          }
+          if (
+            !all(
+              as.character(sf::st_geometry_type(value$geometry)) %in%
+                c("POLYGON", "MULTIPOLYGON")
+            )
+          ) {
+            "all geometries must be `POLYGON` or `MULTIPOLYGON`"
+          }
         }
       }),
     data_url = class_character,
