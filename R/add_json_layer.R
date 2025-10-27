@@ -49,6 +49,9 @@ add_geojson_layer <- function(
   as_reference = FALSE,
   add_to_layer_control = !is.null(group)
 ) {
+  if (identical(layer_id, character(0))) {
+    layer_id <- NULL
+  }
   stopifnot("leaflet" %in% class(map))
   stopifnot(is.character(json_url), length(json_url) == 1)
   stopifnot(
