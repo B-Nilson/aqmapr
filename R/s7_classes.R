@@ -210,13 +210,15 @@ add_to_map <- "add_to_map" |>
         map <- map |>
           add_geojson_layer(
             layer_id = layer@layer_id,
+            group = layer@group,
             json_url = layer@data_url,
             options = c(
               list(pane = pane_name),
               layer@options
             ),
-            group = layer@group,
+            option_columns = layer@data_url_columns,
             add_to_layer_control = FALSE,
+            display_on_load = layer@display_by_default,
             as_reference = TRUE
           )
       }

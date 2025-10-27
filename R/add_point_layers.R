@@ -26,7 +26,7 @@ PointLayer <- new_class(
           if (!is.null(value) & ncol(value) & nrow(value)) {
             if (!"sf" %in% class(value)) {
               "must be an `sf` data.frame"
-            }else if (
+            } else if (
               !all(
                 as.character(sf::st_geometry_type(value$geometry)) %in%
                   c("POINT", "MULTIPOINT")
@@ -46,6 +46,16 @@ PointLayer <- new_class(
     crs = class_character |>
       new_property(default = "WGS84", validator = validator_len_0_1),
     data_url = class_character,
+    data_url_columns = class_list |>
+      new_property(
+        default = list(
+          iconUrl = "iconUrl",
+          pane = "pane",
+          zIndexOffset = "zIndexOffset",
+          iconSize = "iconSize",
+          label = "label"
+        )
+      ),
     icon_urls = class_character,
     use_stroke = class_flag_on,
     stroke_width = class_double |>

@@ -25,7 +25,8 @@ make_aqmap <- function(
     lapply(\(network) {
       PointLayer(
         group = pretty_text(network),
-        data_url = "/data/recent/%s/geojson" |> sprintf(network)
+        data_url = "/data/recent/%s/geojson" |> sprintf(network),
+        display_by_default = TRUE
       )
     })
 

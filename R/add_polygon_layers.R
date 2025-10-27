@@ -26,6 +26,16 @@ PolygonLayer <- new_class(
         }
       }),
     data_url = class_character,
+    data_url_columns = class_list |>
+      new_property(
+        default = list(
+          iconUrl = "iconUrl",
+          pane = "pane",
+          zIndexOffset = "zIndexOffset",
+          iconSize = "iconSize",
+          label = "label"
+        )
+      ),
     use_stroke = class_flag_on,
     stroke_width = class_double |>
       new_property(default = 1),
