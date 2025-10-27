@@ -92,8 +92,13 @@ make_leaflet_map <- function(
       c(unname(wms_layers) |> sapply(\(x) x@display_by_default[1])) |>
       unlist()
   )
+  if (any(layer_names$is_default)) {
+    layer_names$defaults <- layer_names$data[which(layer_names$is_default)]
+  }else {
+    layer_names$defaults <- list()
+  }
   layers_quoted <- layer_names[1:2] |>
-    c(list(default = layer_names$data[which(layer_names$is_default)])) |>
+    c(list(default = layer_names$defaults)) |>
     lapply(\(x) {
       paste0("'", x |> stringr::str_replace("'", "\\'"), "'") |>
         paste(collapse = ", ")
