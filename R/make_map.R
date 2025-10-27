@@ -20,6 +20,15 @@ make_aqmap <- function(
   # Define WMS layers to display
   wms_layers <- make_aqmap_wms_layers()
 
+  # Define point layers to display
+  point_layers <- networks |>
+    lapply(\(network) {
+      PointLayer(
+        group = pretty_text(network),
+        data_url = "/data/recent/%s/geojson" |> sprintf(network)
+      )
+    })
+
   # Get extra layers
   polygon_layers <- list(
     get_eccc_eer_smoke_forecasts() |>
@@ -49,6 +58,7 @@ make_aqmap <- function(
       track_map_state = TRUE,
       as_reference = use_references,
       include_timestamp = TRUE,
+      point_layers = point_layers,
       polygon_layers = polygon_layers,
       wms_layers = wms_layers
     ) |>
@@ -56,12 +66,14 @@ make_aqmap <- function(
     include_scripts(paths = js_paths, as_reference = use_references) |>
     htmlwidgets::onRender("handle_page_render")
 
-  # Add observation markers
+  # Add offline/online panes and icon legend
   if (length(networks)) {
     map <- map |>
-      add_obs_markers(
+      leaflet::addMapPane("offline", zIndex = 415) |>
+      leaflet::addMapPane("online", zIndex = 420) |>
+      add_monitor_legend(
         networks = networks,
-        as_reference = use_references
+        position = "bottomright"
       )
   }
 

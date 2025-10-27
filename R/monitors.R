@@ -1,34 +1,3 @@
-add_obs_markers <- function(
-  map,
-  networks,
-  json_url = "/data/recent/%s/geojson", # %s -> network
-  as_reference = FALSE
-) {
-  stopifnot("leaflet" %in% class(map))
-  stopifnot(is.character(networks), length(networks) > 0)
-  stopifnot(is.character(json_url), length(json_url) == 1)
-
-  # Add geojson references for each network
-  # (styles controled by properties in geojson - see format_for_geojson())
-  for (network in networks) {
-    map <- map |>
-      leaflet::addMapPane("offline", zIndex = 415) |>
-      leaflet::addMapPane("online", zIndex = 420) |>
-      add_geojson_layer(
-        json_url = "/data/recent/%s/geojson" |> sprintf(network),
-        group = pretty_text(network),
-        add_to_layer_control = TRUE,
-        as_reference = as_reference
-      )
-  }
-  # Add a network legend
-  map |>
-    add_monitor_legend(
-      networks = networks,
-      position = "bottomright"
-    )
-}
-
 # TODO: add as_reference arg so able to embed icons directly
 add_monitor_legend <- function(
   map,
