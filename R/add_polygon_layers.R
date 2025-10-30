@@ -33,7 +33,8 @@ PolygonLayer <- new_class(
           pane = "pane",
           zIndexOffset = "zIndexOffset",
           iconSize = "iconSize",
-          label = "label"
+          label = "label",
+          popup = "popup"
         )
       ),
     use_stroke = class_flag_on,

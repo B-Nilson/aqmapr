@@ -33,7 +33,7 @@ PointLayer(
   crs = "WGS84",
   data_url = character(0),
   data_url_columns = list(iconUrl = "iconUrl", pane = "pane", zIndexOffset =
-    "zIndexOffset", iconSize = "iconSize", label = "label"),
+    "zIndexOffset", iconSize = "iconSize", label = "label", popup = "popup"),
   icon_urls = character(0),
   use_stroke = TRUE,
   stroke_width = 1,

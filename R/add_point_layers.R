@@ -53,7 +53,8 @@ PointLayer <- new_class(
           pane = "pane",
           zIndexOffset = "zIndexOffset",
           iconSize = "iconSize",
-          label = "label"
+          label = "label",
+          popup = "popup"
         )
       ),
     icon_urls = class_character,

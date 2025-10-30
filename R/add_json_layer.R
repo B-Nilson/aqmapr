@@ -51,7 +51,8 @@ add_geojson_layer <- function(
     pane = "pane",
     zIndexOffset = "zIndexOffset",
     iconSize = "iconSize",
-    label = "label"
+    label = "label",
+    popup = "popup"
   ),
   as_reference = FALSE,
   display_on_load = TRUE,

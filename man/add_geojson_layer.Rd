@@ -11,7 +11,7 @@ add_geojson_layer(
   group = NULL,
   options = list(),
   option_columns = list(iconUrl = "iconUrl", pane = "pane", zIndexOffset =
-    "zIndexOffset", iconSize = "iconSize", label = "label"),
+    "zIndexOffset", iconSize = "iconSize", label = "label", popup = "popup"),
   as_reference = FALSE,
   display_on_load = TRUE,
   add_to_layer_control = !is.null(group)

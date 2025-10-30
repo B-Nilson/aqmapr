@@ -30,7 +30,7 @@ PolygonLayer(
     })(),
   data_url = character(0),
   data_url_columns = list(iconUrl = "iconUrl", pane = "pane", zIndexOffset =
-    "zIndexOffset", iconSize = "iconSize", label = "label"),
+    "zIndexOffset", iconSize = "iconSize", label = "label", popup = "popup"),
   use_stroke = TRUE,
   stroke_width = 1,
   stroke_opacity = 1,

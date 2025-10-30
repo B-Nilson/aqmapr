@@ -1,6 +1,6 @@
 LeafletWidget.methods.addJsonPointerLayer = function (
     json_url, layer_id, group, options, _add_to_map = false,
-    keys = {iconUrl: "iconUrl", pane: "pane", zIndexOffset: "zIndexOffset", iconSize: "iconSize", label: "label"}
+    keys = { iconUrl: "iconUrl", pane: "pane", zIndexOffset: "zIndexOffset", iconSize: "iconSize", label: "label", popup: "popup" }
 ) {
     fetch(json_url)
         .then(response => response.json())
@@ -32,6 +32,10 @@ LeafletWidget.methods.addJsonPointerLayer = function (
                             direction: "right",
                             offset: [Math.round(iconSize / 2), 0]
                         });
+                    }
+
+                    if (feature.properties && feature.properties[keys.popup]) {
+                        layer.bindPopup(feature.properties[keys.popup]);
                     }
                 }
 
