@@ -4,14 +4,14 @@
 \alias{add_to_map}
 \title{S7 generic to add a layer to a Leaflet map}
 \usage{
-add_to_map(layer, ...)
+add_to_map(layer, map, ...)
 }
 \arguments{
 \item{layer}{A leaflet layer to add to the map. Created using \code{\link[=PointLayer]{PointLayer()}}, \code{\link[=PolygonLayer]{PolygonLayer()}}, or \code{\link[=WMSLayer]{WMSLayer()}}.}
 
-\item{...}{Additional arguments to pass to the layer's \code{add_to_map} method.}
-
 \item{map}{A leaflet map to add the layer to.}
+
+\item{...}{Additional arguments to pass to the layer's \code{add_to_map} method.}
 }
 \value{
 A leaflet map with the layer added

@@ -10,6 +10,7 @@ WMSLayer(
   class_name = character(0),
   pane = "overlayPane",
   legend_position = "bottomleft",
+  display_by_default = TRUE,
   opacity = 0.8,
   interactive = TRUE,
   bubbling_mouse_events = TRUE,

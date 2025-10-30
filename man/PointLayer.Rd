@@ -10,6 +10,7 @@ PointLayer(
   class_name = character(0),
   pane = "overlayPane",
   legend_position = "bottomleft",
+  display_by_default = TRUE,
   opacity = 0.8,
   interactive = TRUE,
   bubbling_mouse_events = TRUE,
@@ -31,6 +32,8 @@ PointLayer(
   y_col = "lat",
   crs = "WGS84",
   data_url = character(0),
+  data_url_columns = list(iconUrl = "iconUrl", pane = "pane", zIndexOffset =
+    "zIndexOffset", iconSize = "iconSize", label = "label"),
   icon_urls = character(0),
   use_stroke = TRUE,
   stroke_width = 1,

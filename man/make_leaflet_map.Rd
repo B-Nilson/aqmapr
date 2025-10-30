@@ -8,6 +8,7 @@ make_leaflet_map(
   base_maps = c(`Light Theme` = "OpenStreetMap", `Dark Theme` = "CartoDB.DarkMatter"),
   point_layers = list(),
   polygon_layers = list(),
+  wms_layers = list(),
   track_map_state = TRUE,
   include_timestamp = FALSE,
   as_reference = FALSE
@@ -19,9 +20,9 @@ A character vector named basemaps from \link[leaflet:providers]{leaflet::provide
 Names will be used in the control menu for the basemaps.
 Default is a nice light and dark open data theme.}
 
-\item{point_layers, polygon_layers}{(Optional).
-A list of 1 or more \code{PointLayer}/\code{PolygonLayer} objects (created with \code{\link[=PointLayer]{PointLayer()}}/\code{\link[=PolygonLayer]{PolygonLayer()}}) to be added to the map.
-Default is an empty list (no points/polygons added).}
+\item{point_layers, polygon_layers, wms_layers}{(Optional).
+A list of 1 or more \code{PointLayer}/\code{PolygonLayer}/\code{WMSLayer} objects (created with \code{\link[=PointLayer]{PointLayer()}}/\code{\link[=PolygonLayer]{PolygonLayer()}}/\code{\link[=WMSLayer]{WMSLayer()}}) to be added to the map.
+Default is an empty list (no points/polygons/WMS layers added).}
 
 \item{track_map_state}{(Optional). If TRUE, the map state will be tracked and saved in the URL when the map is saved to an HTML file.
 Default is TRUE.}
