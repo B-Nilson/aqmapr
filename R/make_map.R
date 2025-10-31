@@ -71,23 +71,25 @@ make_aqmap <- function(
 
   # Get extra layers
   polygon_layers <- list(
-    get_eccc_eer_smoke_forecasts() |>
-      PolygonLayer(
-        group = "Modelled Smoke",
-        data = _,
-        fill = ~min_pm25,
-        fill_palette = eer_smoke_pal(),
-        display_by_default = FALSE
-      ) |>
+    # get_eccc_eer_smoke_forecasts() |>
+    #   PolygonLayer(
+    #     group = "Modelled Smoke",
+    #     data = _,
+    #     fill = ~min_pm25,
+    #     fill_palette = eer_smoke_pal(),
+    #     display_by_default = FALSE
+    #   ) |>
+    stop("disabled for testing") |>
       handyr::on_error(.return = NULL, .warn = TRUE),
-    get_noaa_hms_smoke_polygons() |>
-      PolygonLayer(
-        group = "Visible Smoke",
-        data = _,
-        fill = ~density,
-        fill_palette = hms_smoke_pal(),
-        display_by_default = FALSE
-      ) |>
+    # get_noaa_hms_smoke_polygons() |>
+    # PolygonLayer(
+    #   group = "Visible Smoke",
+    #   data = _,
+    #   fill = ~density,
+    #   fill_palette = hms_smoke_pal(),
+    #   display_by_default = FALSE
+    # ) |>
+    stop("disabled for testing") |>
       handyr::on_error(.return = NULL, .warn = TRUE)
   )
   polygon_layers <- polygon_layers[which(!sapply(polygon_layers, is.null))]

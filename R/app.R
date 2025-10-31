@@ -54,7 +54,7 @@ start_server <- function(
   app$get("/data/:name/:network/:site_id/:type", get_data)
 
   ## Serve map
-  app$get("/", get_map)
+  app$get("/map", get_map)
 
   ## Start server
   app$start()
@@ -108,7 +108,7 @@ get_data <- function(req, res) {
       format_for_geojson() |>
       geojson::as.geojson() |>
       as.character() |>
-      handyr::on_error(.return = NULL)
+      handyr::on_error(.return = NULL, .warn = TRUE)
     type = "text"
   }
 
@@ -122,3 +122,4 @@ get_map <- function(req, res) {
 
   res$htmlwidget(map)
 }
+

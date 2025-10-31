@@ -10,6 +10,8 @@ add_geojson_layer(
   layer_id = NULL,
   group = NULL,
   options = list(),
+  tooltip_options = list(permanent = FALSE, direction = "right", offset = c(0, -5)),
+  popup_options = list(offset = c(0, -5), minWidth = 330, closeOnClick = FALSE),
   option_columns = list(iconUrl = "iconUrl", pane = "pane", zIndexOffset =
     "zIndexOffset", iconSize = "iconSize", label = "label", popup = "popup"),
   as_reference = FALSE,

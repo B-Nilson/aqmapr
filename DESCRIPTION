@@ -39,6 +39,7 @@ Collate:
     'add_base_maps.R'
     'add_json_layer.R'
     'add_map_timestamp.R'
+    'add_monitor_legend.R'
     's7_classes.R'
     'add_point_layers.R'
     'add_polygon_layers.R'
@@ -58,5 +59,4 @@ Collate:
     'make_leaflet_map.R'
     'make_map.R'
     'monitor_hover.R'
-    'monitors.R'
     'track_map_state.R'
