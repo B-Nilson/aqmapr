@@ -10,7 +10,12 @@ make_aqmap <- function(
   use_references = TRUE
 ) {
   # General javascript files
-  js_files <- c("map_layers.js", "on_render.js")
+  js_files <- c(
+    "aqhi.js",
+    "make_monitor_popup.js",
+    "map_layers.js",
+    "on_render.js"
+  )
   if (!use_references) {
     js_paths <- file.path(js_dir, js_files)
   } else {
@@ -21,11 +26,45 @@ make_aqmap <- function(
   wms_layers <- make_aqmap_wms_layers()
 
   # Define point layers to display
+  # TODO: just pass col namesw to function, add on reature.properties in there?
+  popup_fn_template <- paste(
+    "JS:::make_monitor_popup(",
+    "feature.properties.%s,",
+    "feature.properties.%s, {",
+    "date_stamp: feature.properties.%s,",
+    "pm25_10min: feature.properties.%s,",
+    "pm25_1hr: feature.properties.%s,",
+    "pm25_3hr: feature.properties.%s,",
+    "pm25_24hr: feature.properties.%s});"
+  )
+
   point_layers <- networks |>
     lapply(\(network) {
+      popup <- popup_fn_template |>
+        sprintf(
+          "name",
+          "network_type",
+          "date_stamp",
+          "pm25_10min",
+          "pm25_1hr",
+          "pm25_3hr",
+          "pm25_24hr"
+        )
+      if (network == "agency") {
+        popup <- popup |>
+          stringr::str_remove("pm25_10min: .+?, ")
+      }
       PointLayer(
         group = pretty_text(network),
         data_url = "/data/recent/%s/geojson" |> sprintf(network),
+        data_url_columns = list(
+          iconUrl = "iconUrl",
+          pane = "pane",
+          zIndexOffset = "zIndexOffset",
+          iconSize = "iconSize",
+          label = "label",
+          popup = popup
+        ),
         display_by_default = TRUE
       )
     })
@@ -65,6 +104,7 @@ make_aqmap <- function(
     ) |>
     # Include custom js used by various parts of the map
     include_scripts(paths = js_paths, as_reference = use_references) |>
+    include_scripts(paths = system.file("css/monitor_popup.css", package = "aqmapr"), as_reference = use_references) |>
     htmlwidgets::onRender("handle_page_render")
 
   # Add offline/online panes and icon legend
@@ -124,7 +164,14 @@ format_for_geojson <- function(out_data) {
     "zIndexOffset",
     "iconUrl",
     "iconSize",
-    "label"
+    "label",
+    "name",
+    "network_type",
+    "date_stamp" = "date",
+    "pm25_10min",
+    "pm25_1hr",
+    "pm25_3hr",
+    "pm25_24hr"
   )
 
   # Define visible text for hovers
@@ -179,7 +226,8 @@ format_for_geojson <- function(out_data) {
         pm25_3hr = .data$pm25_3hr,
         pm25_24hr = .data$pm25_24hr,
         text = marker_hover_text
-      )
+      ),
+      network_type = factor(monitor_type, levels = c("FEM", "PA", "EGG"), labels = c("Regulatory (FEM)", "PurpleAir (PA)", "AQegg (EGG)")),
     ) |>
     dplyr::select(dplyr::all_of(desired_cols)) |>
     sf::st_as_sf(coords = c("lng", "lat"))

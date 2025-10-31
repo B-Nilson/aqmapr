@@ -46,6 +46,12 @@ add_geojson_layer <- function(
   layer_id = NULL,
   group = NULL,
   options = list(),
+  tooltip_options = list(
+    permanent = FALSE,
+    direction = "right",
+    offset = c(0, -5)
+  ),
+  popup_options = list(offset = c(0, -5), minWidth = 330, closeOnClick = FALSE),
   option_columns = list(
     iconUrl = "iconUrl",
     pane = "pane",
@@ -84,7 +90,7 @@ add_geojson_layer <- function(
         geojson = json_data,
         layerId = layer_id,
         group = group,
-        options = options
+        options = options # TODO: what about tooltip/popup options?
       )
   } else {
     map <- map |>
@@ -96,6 +102,8 @@ add_geojson_layer <- function(
         group,
         options,
         display_on_load,
+        tooltip_options,
+        popup_options,
         option_columns
       ) |>
       # Include js file inline in the header

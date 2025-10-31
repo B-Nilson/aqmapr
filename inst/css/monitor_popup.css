@@ -1,0 +1,12 @@
+.popup_title {
+  font-size: larger;
+  font-weight: bolder;
+}
+
+.popup_value, .popup_value_highlight{
+  padding: 0.1rem 0.25rem;
+}
+
+.popup_value_highlight {
+  display:inline-block; 
+}

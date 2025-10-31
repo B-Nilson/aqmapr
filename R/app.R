@@ -29,6 +29,7 @@
 start_server <- function(
   host = "127.0.0.1",
   port = 8000,
+  html_dir = system.file("html", package = "aqmapr"),
   icon_dir = system.file("images/icons", package = "aqmapr"),
   css_dir = system.file("css", package = "aqmapr"),
   js_dir = system.file("js", package = "aqmapr")
@@ -36,8 +37,9 @@ start_server <- function(
   # Initialize Ambiorix server object
   app <- ambiorix::Ambiorix$new(port = port, host = host)
 
-  ## Serve icons css, and js
+  ## Serve icons, html templates, css, and js
   app$static(icon_dir, "/icons")
+  app$static(html_dir, "/html")
   app$static(css_dir, "/css")
   app$static(js_dir, "/js")
 

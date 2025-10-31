@@ -7,6 +7,7 @@
 start_server(
   host = "127.0.0.1",
   port = 8000,
+  html_dir = system.file("html", package = "aqmapr"),
   icon_dir = system.file("images/icons", package = "aqmapr"),
   css_dir = system.file("css", package = "aqmapr"),
   js_dir = system.file("js", package = "aqmapr")

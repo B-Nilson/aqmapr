@@ -1,5 +1,16 @@
-LeafletWidget.methods.addJsonPointerLayer = function (
-    json_url, layer_id, group, options, _add_to_map = false,
+LeafletWidget.methods.addJsonPointerLayer = async function (
+    json_url, layer_id, group, 
+    options = {}, _add_to_map = false,
+    tooltip_options = {
+        permanent: false,
+        direction: "right",
+        offset: [Math.round(iconSize / 2), 0]
+    },
+    popup_options = {
+        offset: [0, -5],
+        minWidth: 330,
+        closeOnClick: false
+    },
     keys = { iconUrl: "iconUrl", pane: "pane", zIndexOffset: "zIndexOffset", iconSize: "iconSize", label: "label", popup: "popup" }
 ) {
     fetch(json_url)
@@ -24,19 +35,19 @@ LeafletWidget.methods.addJsonPointerLayer = function (
                     }
                 },
                 // Optional: add custom tooltip using .label property
-                onEachFeature: function (feature, layer) {
+                onEachFeature: async function (feature, layer) {
                     if (feature.properties && feature.properties[keys.label]) {
                         const iconSize = feature.properties[keys.iconSize] ?? 32;
-                        layer.bindTooltip(feature.properties[keys.label], {
-                            permanent: false,
-                            direction: "right",
-                            offset: [Math.round(iconSize / 2), 0]
-                        });
-                    }
+                        layer.bindTooltip(feature.properties[keys.label], tooltip_options);
+                    };
 
-                    if (feature.properties && feature.properties[keys.popup]) {
-                        layer.bindPopup(feature.properties[keys.popup]);
-                    }
+                    if (feature.properties && (feature.properties[keys.popup] || keys.popup.startsWith("JS:::"))) {
+                        if (keys.popup.startsWith("JS:::")) {
+                            layer.bindPopup(await eval(keys.popup.substring(5)), popup_options);
+                        } else {
+                            layer.bindPopup(feature.properties[keys.popup], popup_options);
+                        };
+                    };
                 }
 
             });
