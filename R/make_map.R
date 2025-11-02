@@ -29,13 +29,13 @@ make_aqmap <- function(
   # TODO: just pass col namesw to function, add on reature.properties in there?
   popup_fn_template <- paste(
     "JS:::make_monitor_popup(",
-    "feature.properties.%s,",
-    "feature.properties.%s, {",
-    "date_stamp: feature.properties.%s,",
-    "pm25_10min: feature.properties.%s,",
-    "pm25_1hr: feature.properties.%s,",
-    "pm25_3hr: feature.properties.%s,",
-    "pm25_24hr: feature.properties.%s});"
+    "data.%s,",
+    "data.%s, {",
+    "date_stamp: data.%s,",
+    "pm25_10min: data.%s,",
+    "pm25_1hr: data.%s,",
+    "pm25_3hr: data.%s,",
+    "pm25_24hr: data.%s});"
   )
 
   point_layers <- networks |>
@@ -106,7 +106,10 @@ make_aqmap <- function(
     ) |>
     # Include custom js used by various parts of the map
     include_scripts(paths = js_paths, as_reference = use_references) |>
-    include_scripts(paths = system.file("css/monitor_popup.css", package = "aqmapr"), as_reference = use_references) |>
+    include_scripts(
+      paths = system.file("css/monitor_popup.css", package = "aqmapr"),
+      as_reference = use_references
+    ) |>
     htmlwidgets::onRender("handle_page_render")
 
   # Add offline/online panes and icon legend
@@ -229,7 +232,11 @@ format_for_geojson <- function(out_data) {
         pm25_24hr = .data$pm25_24hr,
         text = marker_hover_text
       ),
-      network_type = factor(monitor_type, levels = c("FEM", "PA", "EGG"), labels = c("Regulatory (FEM)", "PurpleAir (PA)", "AQegg (EGG)")),
+      network_type = factor(
+        monitor_type,
+        levels = c("FEM", "PA", "EGG"),
+        labels = c("Regulatory (FEM)", "PurpleAir (PA)", "AQegg (EGG)")
+      ),
     ) |>
     dplyr::select(dplyr::all_of(desired_cols)) |>
     sf::st_as_sf(coords = c("lng", "lat"))

@@ -19,11 +19,12 @@ LeafletWidget.methods.addJsonPointerLayer = async function (
             const layer = L.geoJSON(data, {
                 ...options,
                 pointToLayer: function (feature, latlng) {
-                    const iconUrl = feature.properties[keys.iconUrl];
-                    const pane = feature.properties[keys.pane] ?? "markerPane";
-                    const zIndexOffset = feature.properties[keys.zIndexOffset] ?? 0;
+                    let data = feature.properties;
+                    const iconUrl = data[keys.iconUrl];
+                    const pane = data[keys.pane] ?? "markerPane";
+                    const zIndexOffset = data[keys.zIndexOffset] ?? 0;
                     if (iconUrl) {
-                        const iconSize = feature.properties[keys.iconSize] ?? 32;
+                        const iconSize = data[keys.iconSize] ?? 32;
                         const icon = L.icon({
                             iconUrl: iconUrl,
                             iconSize: [iconSize, iconSize]
@@ -36,16 +37,17 @@ LeafletWidget.methods.addJsonPointerLayer = async function (
                 },
                 // Optional: add custom tooltip using .label property
                 onEachFeature: async function (feature, layer) {
-                    if (feature.properties && feature.properties[keys.label]) {
-                        const iconSize = feature.properties[keys.iconSize] ?? 32;
-                        layer.bindTooltip(feature.properties[keys.label], tooltip_options);
+                    let data = feature.properties;
+                    if (data && data[keys.label]) {
+                        const iconSize = data[keys.iconSize] ?? 32;
+                        layer.bindTooltip(data[keys.label], tooltip_options);
                     };
 
-                    if (feature.properties && (feature.properties[keys.popup] || keys.popup.startsWith("JS:::"))) {
+                    if (data && (data[keys.popup] || keys.popup.startsWith("JS:::"))) {
                         if (keys.popup.startsWith("JS:::")) {
                             layer.bindPopup(await eval(keys.popup.substring(5)), popup_options);
                         } else {
-                            layer.bindPopup(feature.properties[keys.popup], popup_options);
+                            layer.bindPopup(data[keys.popup], popup_options);
                         };
                     };
                 }
