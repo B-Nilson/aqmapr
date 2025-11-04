@@ -49,7 +49,7 @@ add_geojson_layer <- function(
   tooltip_options = list(
     permanent = FALSE,
     direction = "right",
-    offset = c(0, -5)
+    offset = c(15, 0)
   ),
   popup_options = list(offset = c(0, -5), minWidth = 330, closeOnClick = FALSE),
   option_columns = list(
