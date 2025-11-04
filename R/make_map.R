@@ -13,6 +13,7 @@ make_aqmap <- function(
   js_files <- c(
     "aqhi.js",
     "make_monitor_popup.js",
+    "make_monitor_tooltip.js",
     "map_layers.js",
     "on_render.js"
   )
@@ -26,7 +27,6 @@ make_aqmap <- function(
   wms_layers <- make_aqmap_wms_layers()
 
   # Define point layers to display
-  # TODO: just pass col namesw to function, add on reature.properties in there?
   popup_fn_template <- paste(
     "JS:::make_monitor_popup(",
     "data.%s,",
@@ -40,6 +40,7 @@ make_aqmap <- function(
 
   point_layers <- networks |>
     lapply(\(network) {
+      # Build popup/tooltip
       popup <- popup_fn_template |>
         sprintf(
           "name",
@@ -54,6 +55,9 @@ make_aqmap <- function(
         popup <- popup |>
           stringr::str_remove("pm25_10min: .+?, ")
       }
+      tooltip <- popup |> 
+        stringr::str_replace("JS:::make_monitor_popup", "JS:::make_monitor_tooltip")
+      # Build layer
       PointLayer(
         group = pretty_text(network),
         data_url = "/data/recent/%s/geojson" |> sprintf(network),
@@ -62,7 +66,7 @@ make_aqmap <- function(
           pane = "pane",
           zIndexOffset = "zIndexOffset",
           iconSize = "iconSize",
-          label = "label",
+          label = tooltip,
           popup = popup
         ),
         display_by_default = TRUE
@@ -169,7 +173,6 @@ format_for_geojson <- function(out_data) {
     "zIndexOffset",
     "iconUrl",
     "iconSize",
-    "label",
     "name",
     "network_type",
     "date_stamp" = "date",
@@ -221,17 +224,6 @@ format_for_geojson <- function(out_data) {
           for_legend = FALSE
         ),
       iconSize = ifelse(is.na(.data$pm25_1hr), 18, 32),
-      label = make_monitor_hover(
-        name = .data$name,
-        network = .data$network,
-        monitor_type = .data$monitor_type,
-        date_last_obs = .data$date,
-        pm25_10min = .data$pm25_10min,
-        pm25_1hr = .data$pm25_1hr,
-        pm25_3hr = .data$pm25_3hr,
-        pm25_24hr = .data$pm25_24hr,
-        text = marker_hover_text
-      ),
       network_type = factor(
         monitor_type,
         levels = c("FEM", "PA", "EGG"),

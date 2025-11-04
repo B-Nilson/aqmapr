@@ -3,10 +3,6 @@
   font-weight: bolder;
 }
 
-.popup_value, .popup_value_highlight{
+.popup_value {
   padding: 0.1rem 0.25rem;
-}
-
-.popup_value_highlight {
-  display:inline-block; 
 }
