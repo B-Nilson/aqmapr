@@ -1,5 +1,5 @@
 LeafletWidget.methods.addJsonPointerLayer = async function (
-    json_url, layer_id, group, 
+    json_url, layer_id, group,
     options = {}, _add_to_map = false,
     tooltip_options = {
         permanent: false,

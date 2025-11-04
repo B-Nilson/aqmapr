@@ -55,8 +55,11 @@ make_aqmap <- function(
         popup <- popup |>
           stringr::str_remove("pm25_10min: .+?, ")
       }
-      tooltip <- popup |> 
-        stringr::str_replace("JS:::make_monitor_popup", "JS:::make_monitor_tooltip")
+      tooltip <- popup |>
+        stringr::str_replace(
+          "JS:::make_monitor_popup",
+          "JS:::make_monitor_tooltip"
+        )
       # Build layer
       PointLayer(
         group = pretty_text(network),

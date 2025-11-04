@@ -94,7 +94,7 @@ make_leaflet_map <- function(
   )
   if (any(layer_names$is_default)) {
     layer_names$defaults <- layer_names$data[which(layer_names$is_default)]
-  }else {
+  } else {
     layer_names$defaults <- list()
   }
   layers_quoted <- layer_names[1:2] |>

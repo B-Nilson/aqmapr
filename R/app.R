@@ -122,4 +122,3 @@ get_map <- function(req, res) {
 
   res$htmlwidget(map)
 }
-
