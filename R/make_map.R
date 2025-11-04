@@ -226,7 +226,7 @@ format_for_geojson <- function(out_data) {
           icon_dir = "/icons",
           for_legend = FALSE
         ),
-      iconSize = ifelse(is.na(.data$pm25_1hr), 18, 32),
+      iconSize = ifelse(is.na(.data$pm25_1hr), 21, 30),
       network_type = factor(
         monitor_type,
         levels = c("FEM", "PA", "EGG"),
