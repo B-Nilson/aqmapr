@@ -35,20 +35,22 @@ LeafletWidget.methods.addJsonPointerLayer = async function (
                         return L.marker(latlng, { pane: pane, zIndexOffset: zIndexOffset });
                     }
                 },
-                // Optional: add custom tooltip using .label property
+                // add tooltips/popups if available
                 onEachFeature: async function (feature, layer) {
                     let data = feature.properties;
-                    if (data && data[keys.label]) {
-                        const iconSize = data[keys.iconSize] ?? 32;
-                        layer.bindTooltip(data[keys.label], tooltip_options);
+                    // add tooltips
+                    if (data && (data[keys.label] || keys.label.startsWith("JS:::"))) {
+                        let tooltip = keys.label.startsWith("JS:::") ?
+                            await eval(keys.label.substring(5)) :
+                            data[keys.label];
+                        layer.bindTooltip(tooltip, tooltip_options);
                     };
-
+                    // add popups
                     if (data && (data[keys.popup] || keys.popup.startsWith("JS:::"))) {
-                        if (keys.popup.startsWith("JS:::")) {
-                            layer.bindPopup(await eval(keys.popup.substring(5)), popup_options);
-                        } else {
-                            layer.bindPopup(data[keys.popup], popup_options);
-                        };
+                        let popup = keys.popup.startsWith("JS:::") ?
+                            await eval(keys.popup.substring(5)) :
+                            data[keys.popup];
+                        layer.bindPopup(popup, popup_options);
                     };
                 }
 
