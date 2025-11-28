@@ -85,8 +85,7 @@ PointLayer <- new_class(
     label_options = class_list |>
       new_property(default = leaflet::labelOptions()),
     cluster_id = class_any,
-    cluster_options = class_list |>
-      new_property(default = leaflet::markerClusterOptions()),
+    cluster_options = class_any, # if not NULL, then enables clusters...
     options = class_list |>
       new_property(default = leaflet::pathOptions())
   )
