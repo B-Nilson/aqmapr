@@ -1,6 +1,45 @@
 #' Leaflet point layer S7 class
 #'
 #' Represent a leaflet point layer to be added to the map using [add_to_map()].
+#' 
+#' @inheritParams LeafletLayer
+#' @param data (Optional). 
+#'   A data.frame/sf of coordinates to create points from.
+#' @param x_col,y_col (Optional).
+#'   The name of the column containing the x/y coordinates if `data` is a non-sf data.frame.
+#' @param crs (Optional).
+#'   The coordinate reference system to use if `data` is a non-sf data.frame.
+#' @param data_url (Optional).
+#'   The URL to fetch data from for creating the layer.
+#' @param data_url_columns (Optional).
+#'   The columns to use from the data fetched from `data_url`.
+#' @param icon_urls (Optional).
+#'   A character vector of URLs to use for the icons. (IN DEVELOPMENT)
+#' @param use_stroke (Optional).
+#'   A logical value indicating whether to use a stroke for edge of the points.
+#'   Defaults to `TRUE`.
+#' @param stroke_width,stroke_opacity (Optional).
+#'   A numeric value indicating the width and opacity of the stroke for the points.
+#'   Defaults to `1`.
+#' @param stroke_dash_array (Optional).
+#'   A character value indicating the dash array for the stroke.
+#' @param colour,fill (Optional).
+#'   A character value or formula reference indicating the colour of the stroke or fill colour of the points.
+#' @param color Alias for `colour`.
+#' @param colour_palette,fill_palette (Optional).
+#'   A function that returns inputs for `colour`/`fill` based on the `colour_values`/`fill_values`.
+#' @param colour_values,fill_values (Optional).
+#'   Values or a formula reference to be passed to `colour_palette`/`fill_palette`.
+#' @param popup,label (Optional).
+#'   Character value(s) or a formula reference to be used for the popup/label of the points.
+#' @param popup_options,label_options (Optional).
+#'   A list of options for the popup/label.
+#'   See [leaflet::popupOptions()] and [leaflet::labelOptions()] for more details.
+#' @param cluster_id (Optional).
+#'   A character value to use for the cluster id.
+#' @param cluster_options (Optional).
+#'   A list of options for clustering the points.
+#'   See [leaflet::markerClusterOptions()] for more details.
 #'
 #' @export
 #' @import S7

@@ -151,7 +151,30 @@ parse_colours <- function(value, data = NULL, palette = NULL) {
 #' Leaflet generic layer S7 class
 #'
 #' Represent a leaflet layer to be added to the map. Usually expanded by other classes then added to a map using [add_to_map()].
-#'
+#' 
+#' @param group,layer_id,class_name (Optional). 
+#'   A character string of the layer group/id/class to attach to the layer.
+#'   Default is NULL (no group/id/class).
+#' @param pane (Optional). A character string of the map pane to place the layer.
+#' @param legend_position (Optional).
+#'   A character string of the legend position to attach to the layer.
+#'   Default is "bottomleft".
+#' @param display_by_default (Optional).
+#'   A logical value indicating whether the layer should be visible on the map by default.
+#'   Default is TRUE.
+#' @param opacity (Optional).
+#'   A numeric value between 0 and 1 indicating the opacity of the layer.
+#'   Default is 0.8.
+#' @param transparent (Internal - not to be used).
+#'   A logical value indicating whether the layer should be transparent.
+#'   Is set to TRUE if opacity < 1.
+#' @param interactive (Optional).
+#'   A logical value indicating whether the layer should be interactive or static.
+#'   Default is TRUE (interactive layer).
+#' @param bubbling_mouse_events (Optional).
+#'   A logical value indicating whether the layer should bubble mouse events.
+#'   Default is TRUE.
+#'   
 #' @export
 #' @import S7
 LeafletLayer <- new_class(

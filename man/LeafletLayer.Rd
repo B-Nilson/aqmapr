@@ -16,6 +16,37 @@ LeafletLayer(
   bubbling_mouse_events = TRUE
 )
 }
+\arguments{
+\item{group, layer_id, class_name}{(Optional).
+A character string of the layer group/id/class to attach to the layer.
+Default is NULL (no group/id/class).}
+
+\item{pane}{(Optional). A character string of the map pane to place the layer.}
+
+\item{legend_position}{(Optional).
+A character string of the legend position to attach to the layer.
+Default is "bottomleft".}
+
+\item{display_by_default}{(Optional).
+A logical value indicating whether the layer should be visible on the map by default.
+Default is TRUE.}
+
+\item{opacity}{(Optional).
+A numeric value between 0 and 1 indicating the opacity of the layer.
+Default is 0.8.}
+
+\item{interactive}{(Optional).
+A logical value indicating whether the layer should be interactive or static.
+Default is TRUE (interactive layer).}
+
+\item{bubbling_mouse_events}{(Optional).
+A logical value indicating whether the layer should bubble mouse events.
+Default is TRUE.}
+
+\item{transparent}{(Internal - not to be used).
+A logical value indicating whether the layer should be transparent.
+Is set to TRUE if opacity < 1.}
+}
 \description{
 Represent a leaflet layer to be added to the map. Usually expanded by other classes then added to a map using \code{\link[=add_to_map]{add_to_map()}}.
 }
