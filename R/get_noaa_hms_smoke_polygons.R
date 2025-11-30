@@ -153,8 +153,14 @@ get_hms_zip <- function(
     file.path(
       paste0("hms_", format(select_times, "%Y%m%d"), "_shp.zip")
     )
+  if (!quiet) {
+    rlang::check_installed("pbapply")
+  }
   zip_urls |>
-    handyr::for_each(.enumerate = TRUE, \(zip_url, i) {
+    handyr::for_each(
+      .enumerate = TRUE, 
+      .show_progress = !quiet,
+      \(zip_url, i) {
       if (is_todays[i] || !file.exists(run_zips[i])) {
         zip_url |>
           download.file(destfile = run_zips[i], mode = "wb", quiet = quiet)

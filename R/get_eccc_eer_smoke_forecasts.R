@@ -189,20 +189,27 @@ get_eer_zip <- function(
     )
   local_paths <- data_dir |>
     file.path(unzip_details[, 1] |> paste0("_", unzip_details[, 2], ".zip"))
+  if (!quiet) {
+    rlang::check_installed("pbapply")
+  }
   zip_urls |>
-    handyr::for_each(.enumerate = TRUE, \(zip_url, i) {
-      if (is_todays[i] || !file.exists(local_paths[i])) {
-        success <- zip_url |>
-          download.file(
-            destfile = local_paths[i],
-            mode = "wb",
-            quiet = quiet
-          ) |>
-          suppressWarnings() |>
-          handyr::on_error(.return = NULL) # Fails near 24 UTC when latest transitions to next day
-        if (unzip & !is.null(success)) unzip(local_paths[i], exdir = data_dir)
+    handyr::for_each(
+      .enumerate = TRUE,
+      .show_progress = !quiet,
+      \(zip_url, i) {
+        if (is_todays[i] || !file.exists(local_paths[i])) {
+          success <- zip_url |>
+            download.file(
+              destfile = local_paths[i],
+              mode = "wb",
+              quiet = quiet
+            ) |>
+            suppressWarnings() |>
+            handyr::on_error(.return = NULL) # Fails near 24 UTC when latest transitions to next day
+          if (unzip & !is.null(success)) unzip(local_paths[i], exdir = data_dir)
+        }
       }
-    })
+    )
 }
 
 make_eer_zip_dir <- function(model_runs) {
