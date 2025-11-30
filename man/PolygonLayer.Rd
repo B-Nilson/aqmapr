@@ -77,10 +77,6 @@ Default is TRUE.}
 A numeric value between 0 and 1 indicating the opacity of the layer.
 Default is 0.8.}
 
-\item{interactive}{(Optional).
-A logical value indicating whether the layer should be interactive or static.
-Default is TRUE (interactive layer).}
-
 \item{bubbling_mouse_events}{(Optional).
 A logical value indicating whether the layer should bubble mouse events.
 Default is TRUE.}
@@ -94,8 +90,8 @@ The URL to fetch data from for creating the layer.}
 \item{data_url_columns}{(Optional).
 The columns to use from the data fetched from \code{data_url}.}
 
-\item{use_stroke}{(Optional).
-A logical value indicating whether to use a stroke for edge of the points.
+\item{use_stroke, use_fill}{(Optional).
+A logical value indicating whether to use a stroke/fill for edge/center of the points.
 Defaults to \code{TRUE}.}
 
 \item{stroke_width, stroke_opacity}{(Optional).

@@ -35,10 +35,6 @@ Default is TRUE.}
 A numeric value between 0 and 1 indicating the opacity of the layer.
 Default is 0.8.}
 
-\item{interactive}{(Optional).
-A logical value indicating whether the layer should be interactive or static.
-Default is TRUE (interactive layer).}
-
 \item{bubbling_mouse_events}{(Optional).
 A logical value indicating whether the layer should bubble mouse events.
 Default is TRUE.}

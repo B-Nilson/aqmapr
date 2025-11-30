@@ -22,8 +22,8 @@ Default is "127.0.0.1" (localhost).}
 The port to listen on.
 Default is 8000.}
 
-\item{icon_dir, css_dir, js_dir}{(Optional).
-The directory where AQmapr icons/css/js are stored.
+\item{icon_dir, css_dir, js_dir, html_dir}{(Optional).
+The directory where AQmapr icons/css/js/html files are stored.
 Default points to relevant directories in the \code{aqmapr} package installation.
 These should not need to be changed.}
 }

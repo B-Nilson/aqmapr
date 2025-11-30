@@ -41,8 +41,11 @@ make_leaflet_map(
     color = "black",
     fillOpacity = 0.8,
     opacity = 1,
-    label = ~ paste("Satellite(s): ", satellite, "<br/>", "Period: ", period, "<br/>", "Density: ", density) |>
-      lapply(htmltools::HTML),
+    label = ~ paste(
+      "Satellite(s): ", satellite, "<br/>", 
+      "Period: ", period, "<br/>", 
+      "Density: ", density
+    ),
     palette = hms_smoke_pal()
   )
 )

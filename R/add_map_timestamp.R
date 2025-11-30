@@ -44,7 +44,7 @@
 add_map_timestamp <- function(
   map,
   timestamp = Sys.time(),
-  prefix = ifelse(en_francais, "Dernière mise à jour: ", "Last updated: "),
+  prefix = ifelse(en_francais, "Derni\u00E8re mise \u00E0 jour: ", "Last updated: "),
   date_format = ifelse(en_francais, '%d %b %Y %H:%M', "%Y %b %d %H:%M"), # + timezone
   use_browser_timezone = TRUE,
   hover_text = "",

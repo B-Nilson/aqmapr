@@ -10,7 +10,7 @@ include_font(map, font_urls, force_display = FALSE)
 \item{map}{A leaflet map object}
 
 \item{font_urls}{The url(s) of the font(s) to include.
-If using google fonts, go to https://fonts.google.com/specimen/{font_name} (or search for the font from there), click "get font", then "get embed code", then "@import". The url should be within \code{url()} there.
+If using google fonts, go to https://fonts.google.com/specimen/FONT_NAME (or search for the font from there), click "get font", then "get embed code", then "@import". The url should be within \code{url()} there.
 If \code{force_display} is TRUE, the name(s) of the url(s) must be set to the names of the font(s) (i.e. \code{font_urls = c("Inter" = "...")}).}
 
 \item{force_display}{(Optional).

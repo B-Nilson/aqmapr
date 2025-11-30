@@ -18,9 +18,6 @@
 #' @param transparent (Internal - not to be used).
 #'   A logical value indicating whether the layer should be transparent.
 #'   Is set to TRUE if opacity < 1.
-#' @param interactive (Optional).
-#'   A logical value indicating whether the layer should be interactive or static.
-#'   Default is TRUE (interactive layer).
 #' @param bubbling_mouse_events (Optional).
 #'   A logical value indicating whether the layer should bubble mouse events.
 #'   Default is TRUE.
@@ -72,8 +69,8 @@ LeafletLayer <- new_class(
 #'   The columns to use from the data fetched from `data_url`.
 #' @param icon_urls (Optional).
 #'   A character vector of URLs to use for the icons. (IN DEVELOPMENT)
-#' @param use_stroke (Optional).
-#'   A logical value indicating whether to use a stroke for edge of the points.
+#' @param use_stroke,use_fill (Optional).
+#'   A logical value indicating whether to use a stroke/fill for edge/center of the points.
 #'   Defaults to `TRUE`.
 #' @param stroke_width,stroke_opacity (Optional).
 #'   A numeric value indicating the width and opacity of the stroke for the points.

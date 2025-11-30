@@ -20,8 +20,8 @@
 #' @param port (Optional).
 #'   The port to listen on.
 #'   Default is 8000.
-#' @param icon_dir,css_dir,js_dir (Optional).
-#'   The directory where AQmapr icons/css/js are stored.
+#' @param icon_dir,css_dir,js_dir,html_dir (Optional).
+#'   The directory where AQmapr icons/css/js/html files are stored.
 #'   Default points to relevant directories in the `aqmapr` package installation.
 #'   These should not need to be changed.
 #'

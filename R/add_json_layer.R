@@ -8,7 +8,9 @@
 #' @param json_url A character string pointing to the URL of the GeoJSON data
 #' @param layer_id,group (Optional).
 #'   A character string of the layer id or group name to add to the layer.
-#'   Default is NULL (no ID/group).
+#'   Default is `NULL` (no ID/group).
+#' @param option_columns (Optional).
+#'   A list of column names from the GeoJSON data to use as options for the layer if want to vary options by feature.
 #' @param options (Optional).
 #'   A list of options to pass to the L.geoJSON() method (see \url{https://leafletjs.com/reference.html#geojson}).
 #'   List names must match the names of the L.geoJSON() options.
@@ -17,19 +19,27 @@
 #'   - Fill styles: fill (FALSE/TRUE), fillColor, fillOpacity (0-1)
 #'   - Other: bubblingMouseEvents (FALSE/TRUE), className
 #'   Default is an empty list.
+#' @param tooltip_options,popup_options (Optional).
+#'   A list of options to use when making the tooltips/popups (see [leaflet::labelOptions()]/[leaflet::popupOptions()]).
 #' @param as_reference (Optional).
 #'   If TRUE, the GeoJSON data will be fetched from the url and added to the map on page load.
 #'   If FALSE, the GeoJSON data will be added as embeded data to the map.
-#'   Default is FALSE.
+#'   Default is `FALSE.`
 #' @param add_to_layer_control (Optional).
 #'   If TRUE, `group` must be provided and the layer will be added to the map's layer control under the group.
-#'   Default is TRUE if `group` is provided, FALSE otherwise.
+#'   Default is `TRUE` if `group` is provided, FALSE otherwise.
+#' @param display_on_load (Optional).
+#'   A logical value indicating whether the layer should be visible on the map by default.
+#'   Default is `TRUE.`
 #' @export
 #' @examples
 #' library(leaflet)
 #' library(aqmapr)
 #'
-#' geojson_url <- "https://raw.githubusercontent.com/B-Nilson/aqmapr/refs/heads/main/inst/extdata/example.geojson"
+#' geojson_url <- paste0(
+#'   "https://raw.githubusercontent.com/B-Nilson/",
+#'   "aqmapr/refs/heads/main/inst/extdata/example.geojson"
+#' )
 #'
 #' # Add as embeded data (normal R leaflet method)
 #' leaflet() |>

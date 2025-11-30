@@ -5,7 +5,7 @@
 #'
 #' @param map A leaflet map object
 #' @param font_urls The url(s) of the font(s) to include.
-#'   If using google fonts, go to https://fonts.google.com/specimen/{font_name} (or search for the font from there), click "get font", then "get embed code", then "@import". The url should be within `url()` there.
+#'   If using google fonts, go to https://fonts.google.com/specimen/FONT_NAME (or search for the font from there), click "get font", then "get embed code", then "@import". The url should be within `url()` there.
 #'   If `force_display` is TRUE, the name(s) of the url(s) must be set to the names of the font(s) (i.e. `font_urls = c("Inter" = "...")`).
 #' @param force_display (Optional).
 #'   If FALSE, the font(s) will be included in the page header and will need to be referenced in your css.

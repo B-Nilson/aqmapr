@@ -25,8 +25,11 @@
 #'     color = "black",
 #'     fillOpacity = 0.8,
 #'     opacity = 1,
-#'     label = ~ paste("Satellite(s): ", satellite, "<br/>", "Period: ", period, "<br/>", "Density: ", density) |>
-#'       lapply(htmltools::HTML),
+#'     label = ~ paste(
+#'       "Satellite(s): ", satellite, "<br/>", 
+#'       "Period: ", period, "<br/>", 
+#'       "Density: ", density
+#'     ),
 #'     palette = hms_smoke_pal()
 #'   )
 #' )
@@ -64,7 +67,7 @@ get_noaa_hms_smoke_polygons <- function(
     dplyr::mutate(
       # Format dates properly
       dplyr::across(
-        c(.data$Start, .data$End),
+        c("Start", "End"),
         ~ lubridate::as_datetime(.x, format = "%Y%j %H%M", tz = "UTC")
       ),
       period = lubridate::interval(.data$Start, .data$End),
@@ -76,7 +79,7 @@ get_noaa_hms_smoke_polygons <- function(
     # Combine into multipolygons by period/density
     dplyr::summarise(
       .by = c(.data$period, .data$Density),
-      Satellite = unique(Satellite) |> paste(collapse = " + "),
+      Satellite = unique(.data$Satellite) |> paste(collapse = " + "),
       geometry = sf::st_union(.data$geometry)
     ) |>
     # Select/rename columns

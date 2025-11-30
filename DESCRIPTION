@@ -25,7 +25,9 @@ Imports:
     purrr,
     rlang,
     S7,
-    stringr
+    stringr,
+    units,
+    withr
 Remotes: 
     github::B-Nilson/handyr
 Suggests: 
