@@ -145,6 +145,7 @@ load_aqmap_plot_data <- function(
 ) {
   stopifnot(length(network) == 1, is.character(network))
   stopifnot(length(site_id) == 1, is.character(site_id) | is.numeric(site_id))
+  rlang::check_installed("bit64") # due to integer64 data type being present
 
   aqmap_url <- "https://aqmap.ca/aqmap"
   plot_data_url <- file.path(aqmap_url, "data/plotting")

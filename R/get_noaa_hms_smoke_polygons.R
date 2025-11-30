@@ -18,20 +18,17 @@
 #' @examples
 #' hms <- get_noaa_hms_smoke_polygons()
 #' make_leaflet_map(
-#'   polygon_data = list("HMS Smoke" = hms),
-#'   polygon_options = list(
-#'     fillColor = ~ density,
-#'     weight = 1,
-#'     color = "black",
-#'     fillOpacity = 0.8,
-#'     opacity = 1,
+#'   polygon_layers = list(PolygonLayer(
+#'     group = "HMS Smoke",
+#'     data = hms,
 #'     label = ~ paste(
 #'       "Satellite(s): ", satellite, "<br/>",
 #'       "Period: ", period, "<br/>",
 #'       "Density: ", density
 #'     ),
-#'     palette = hms_smoke_pal()
-#'   )
+#'     fill = ~ density,
+#'     fill_palette = hms_smoke_pal()
+#'   ))
 #' )
 get_noaa_hms_smoke_polygons <- function(
   select_times = Sys.time(),
@@ -78,7 +75,7 @@ get_noaa_hms_smoke_polygons <- function(
     sf::st_make_valid() |>
     # Combine into multipolygons by period/density
     dplyr::summarise(
-      .by = c(.data$period, .data$Density),
+      .by = c("period", "Density"),
       Satellite = unique(.data$Satellite) |> paste(collapse = " + "),
       geometry = sf::st_union(.data$geometry)
     ) |>

@@ -42,10 +42,6 @@ Default is TRUE.}
 \item{bubbling_mouse_events}{(Optional).
 A logical value indicating whether the layer should bubble mouse events.
 Default is TRUE.}
-
-\item{transparent}{(Internal - not to be used).
-A logical value indicating whether the layer should be transparent.
-Is set to TRUE if opacity < 1.}
 }
 \description{
 Represent a leaflet layer to be added to the map. Usually expanded by other classes then added to a map using \code{\link[=add_to_map]{add_to_map()}}.

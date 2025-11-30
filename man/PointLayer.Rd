@@ -90,7 +90,7 @@ A logical value indicating whether the layer should bubble mouse events.
 Default is TRUE.}
 
 \item{data}{(Optional).
-A data.frame/sf of coordinates to create points from.}
+A data.frame/sf of coordinates to create layer from.}
 
 \item{data_url}{(Optional).
 The URL to fetch data from for creating the layer.}
@@ -139,6 +139,9 @@ Defaults to \code{"WGS84"}.}
 
 \item{icon_urls}{(Optional).
 A character vector of URLs to use for the icons. (IN DEVELOPMENT)}
+
+\item{radius}{(Optional).
+A numeric vector or formula reference indicating the radius of the points.}
 
 \item{cluster_id}{(Optional).
 A character value to use for the cluster id.}

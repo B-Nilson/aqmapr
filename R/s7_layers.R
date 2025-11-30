@@ -15,9 +15,6 @@
 #' @param opacity (Optional).
 #'   A numeric value between 0 and 1 indicating the opacity of the layer.
 #'   Default is 0.8.
-#' @param transparent (Internal - not to be used).
-#'   A logical value indicating whether the layer should be transparent.
-#'   Is set to TRUE if opacity < 1.
 #' @param interactive (Optional).
 #'   A logical value indicating whether the layer should be interactive.
 #'   Default is TRUE.
@@ -60,6 +57,8 @@ LeafletLayer <- new_class(
 #' For use with data related leaflet functions like [leaflet::addCircleMarkers()], [leaflet::addPolygons()], etc.
 #'
 #' @inheritParams LeafletLayer
+#' @param data (Optional).
+#'   A data.frame/sf of coordinates to create layer from.
 #' @param data_url (Optional).
 #'   The URL to fetch data from for creating the layer.
 #' @param data_url_columns (Optional).
@@ -141,13 +140,13 @@ LeafletDataLayer <- new_class(
 #'
 #' @inheritParams LeafletLayer
 #' @inheritParams LeafletDataLayer
-#' @param data (Optional).
-#'   A data.frame/sf of coordinates to create points from.
 #' @param x_col,y_col (Optional).
 #'   The name of the column containing the x/y coordinates if `data` is a non-sf data.frame.
 #' @param crs (Optional).
 #'   The coordinate reference system to use if `data` is a non-sf data.frame.
 #'   Defaults to `"WGS84"`.
+#' @param radius (Optional).
+#'   A numeric vector or formula reference indicating the radius of the points.
 #' @param icon_urls (Optional).
 #'   A character vector of URLs to use for the icons. (IN DEVELOPMENT)
 #' @param cluster_id (Optional).

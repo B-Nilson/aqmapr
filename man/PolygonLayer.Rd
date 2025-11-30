@@ -85,6 +85,9 @@ Default is TRUE.}
 A logical value indicating whether the layer should bubble mouse events.
 Default is TRUE.}
 
+\item{data}{(Optional).
+A data.frame/sf of coordinates to create layer from.}
+
 \item{data_url}{(Optional).
 The URL to fetch data from for creating the layer.}
 
