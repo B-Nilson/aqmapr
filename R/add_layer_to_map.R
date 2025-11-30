@@ -76,6 +76,7 @@ add_to_map <- "add_to_map" |>
   })
 
 # Define method to add point layers to map
+#' @include s7_layers.R
 S7::method(add_to_map, PointLayer) <- function(layer, map) {
   pane_name <- ifelse(is.list(layer@pane), layer@pane$name, layer@pane)
   if (!length(layer@data_url)) {
@@ -111,6 +112,7 @@ S7::method(add_to_map, PointLayer) <- function(layer, map) {
 }
 
 # Define method to add polygon layers to map
+#' @include s7_layers.R
 S7::method(add_to_map, PolygonLayer) <- function(layer, map) {
   pane_name <- ifelse(is.list(layer@pane), layer@pane$name, layer@pane)
   if (!length(layer@data_url)) {
@@ -141,6 +143,7 @@ S7::method(add_to_map, PolygonLayer) <- function(layer, map) {
 }
 
 # Define method to add WMS layer to map
+#' @include s7_layers.R
 S7::method(add_to_map, WMSLayer) <- function(layer, map) {
   # TODO: add subtitle using <small></small>
   legend_template <- "<strong>%s</strong><br/><img src = '%s'/>"
