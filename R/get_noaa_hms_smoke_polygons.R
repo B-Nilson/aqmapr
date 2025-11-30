@@ -26,8 +26,8 @@
 #'     fillOpacity = 0.8,
 #'     opacity = 1,
 #'     label = ~ paste(
-#'       "Satellite(s): ", satellite, "<br/>", 
-#'       "Period: ", period, "<br/>", 
+#'       "Satellite(s): ", satellite, "<br/>",
+#'       "Period: ", period, "<br/>",
 #'       "Density: ", density
 #'     ),
 #'     palette = hms_smoke_pal()
@@ -161,13 +161,18 @@ get_hms_zip <- function(
   }
   zip_urls |>
     handyr::for_each(
-      .enumerate = TRUE, 
+      .enumerate = TRUE,
       .show_progress = !quiet,
       \(zip_url, i) {
-      if (is_todays[i] || !file.exists(run_zips[i])) {
-        zip_url |>
-          utils::download.file(destfile = run_zips[i], mode = "wb", quiet = quiet)
-        if (unzip) unzip(run_zips[i], exdir = data_dir)
+        if (is_todays[i] || !file.exists(run_zips[i])) {
+          zip_url |>
+            utils::download.file(
+              destfile = run_zips[i],
+              mode = "wb",
+              quiet = quiet
+            )
+          if (unzip) unzip(run_zips[i], exdir = data_dir)
+        }
       }
-    })
+    )
 }

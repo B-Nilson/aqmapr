@@ -28,14 +28,12 @@ See \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/}{here} for more informa
 \examples{
 eer <- get_eccc_eer_smoke_forecasts()
 make_leaflet_map(
-  polygon_data = list("EER Smoke" = eer),
-  polygon_options = list(
-    fillColor = ~ min_pm25,
-    weight = 1,
-    color = "black",
-    fillOpacity = 0.8,
-    opacity = 1,
-    palette = eer_smoke_pal()
-  )
+  polygon_layers = list(PolygonLayer(
+    group = "EER Smoke",
+    data = eer,
+    fill = ~ min_pm25,
+    fill_palette = eer_smoke_pal(),
+    display_by_default = FALSE
+  ))
 )
 }

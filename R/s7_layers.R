@@ -1,8 +1,8 @@
 #' Leaflet generic layer S7 class
 #'
 #' Represent a leaflet layer to be added to the map. Usually expanded by other classes then added to a map using [add_to_map()].
-#' 
-#' @param group,layer_id,class_name (Optional). 
+#'
+#' @param group,layer_id,class_name (Optional).
 #'   A character string of the layer group/id/class to attach to the layer.
 #'   Default is NULL (no group/id/class).
 #' @param pane (Optional). A character string of the map pane to place the layer.
@@ -24,7 +24,7 @@
 #' @param bubbling_mouse_events (Optional).
 #'   A logical value indicating whether the layer should bubble mouse events.
 #'   Default is TRUE.
-#'   
+#'
 #' @export
 #' @import S7
 LeafletLayer <- new_class(
@@ -56,9 +56,9 @@ LeafletLayer <- new_class(
 )
 
 #' Leaflet data layer S7 class
-#' 
+#'
 #' For use with data related leaflet functions like [leaflet::addCircleMarkers()], [leaflet::addPolygons()], etc.
-#' 
+#'
 #' @inheritParams LeafletLayer
 #' @param data_url (Optional).
 #'   The URL to fetch data from for creating the layer.
@@ -84,9 +84,9 @@ LeafletLayer <- new_class(
 #' @param popup_options,label_options (Optional).
 #'   A list of options for the popup/label.
 #'   See [leaflet::popupOptions()] and [leaflet::labelOptions()] for more details.
-#' @param options (Optional). 
+#' @param options (Optional).
 #'   A list of additional options to pass. See [leaflet::pathOptions()] for more details.
-#' 
+#'
 #' @import S7
 #' @include s7_classes.R
 LeafletDataLayer <- new_class(
@@ -138,10 +138,10 @@ LeafletDataLayer <- new_class(
 #' Leaflet point layer S7 class
 #'
 #' Represent a leaflet point layer to be added to the map using [add_to_map()].
-#' 
+#'
 #' @inheritParams LeafletLayer
 #' @inheritParams LeafletDataLayer
-#' @param data (Optional). 
+#' @param data (Optional).
 #'   A data.frame/sf of coordinates to create points from.
 #' @param x_col,y_col (Optional).
 #'   The name of the column containing the x/y coordinates if `data` is a non-sf data.frame.
@@ -210,10 +210,10 @@ PointLayer <- new_class(
 #' Leaflet polygon layer S7 class
 #'
 #' Represent a leaflet polygon layer to be added to the map using [add_to_map()].
-#' 
+#'
 #' @inheritParams LeafletLayer
 #' @inheritParams LeafletDataLayer
-#' 
+#'
 #' @param no_clip (Optional). A logical value indicating whether to clip the layer to the map bounds. Defaults to `FALSE`.
 #' @param smooth_factor (Optional). A numeric value indicating the smoothness of the polygon edges. Defaults to `1`.
 #' @param highlight_options (Optional). A list of options for highlighting the polygons. See [leaflet::highlightOptions()] for more details.
@@ -261,7 +261,7 @@ PolygonLayer <- new_class(
 #' @param format character. Format of the layer (e.g. image/png).
 #' @param version character. Version of the WMS service. Defaults to "1.1.1".
 #' @param crs character. Coordinate reference system to use for the layer.
-#' 
+#'
 #' @export
 #' @import S7
 WMSLayer <- new_class(

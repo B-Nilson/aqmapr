@@ -1,7 +1,8 @@
 test_that("basic case with points data works", {
   point_layers <- list(PointLayer(
     group = "test",
-    data = data.frame(lat = 20, lng = 20, pm25 = 100) |> sf::st_as_sf(coords = c("lng", "lat")),
+    data = data.frame(lat = 20, lng = 20, pm25 = 100) |>
+      sf::st_as_sf(coords = c("lng", "lat")),
     fill_palette = eer_smoke_pal(),
     fill = ~pm25
   ))
