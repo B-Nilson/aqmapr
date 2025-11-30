@@ -8,12 +8,14 @@
 #' @param point_layers,polygon_layers,wms_layers (Optional).
 #'   A list of 1 or more `PointLayer`/`PolygonLayer`/`WMSLayer` objects (created with [PointLayer()]/[PolygonLayer()]/[WMSLayer()]) to be added to the map.
 #'   Default is an empty list (no points/polygons/WMS layers added).
-#' @param track_map_state (Optional). If TRUE, the map state will be tracked and saved in the URL when the map is saved to an HTML file.
-#'   Default is TRUE.
+#' @param track_map_state (Optional).
+#'   If TRUE, the map center and zoom will be tracked and saved in the URL when the map is saved to an HTML file.
+#'   This allows the map to be loaded with the same state on page load/refresh.
+#'   Default is FALSE.
 #' @param include_timestamp (Optional).
 #'   If TRUE, the current timestamp (browser time) will be included in a bottom left leaflet control.
 #'   If a single POSIXct object is passed, it will be used as the timestamp instead of the current time.
-#'   Default is FALSE (no timestamp added).
+#'   Default is FALSE.
 #' @param as_reference (Optional). If TRUE, js/css will be referenced in the map header. If FALSE, the js/css will be embeded directly in the map.
 #'   Requires local server to be running (see [start_server()]), or the js and css files need to be hosted in "/js" and "/css" respectively relative to the html file.
 #'   Run `system.file("js", package = "aqmapr")`/`system.file("css", package = "aqmapr")` to find the location of the js/css files respectively.
@@ -56,7 +58,7 @@ make_leaflet_map <- function(
   point_layers = list(),
   polygon_layers = list(),
   wms_layers = list(),
-  track_map_state = TRUE,
+  track_map_state = FALSE,
   include_timestamp = FALSE,
   as_reference = FALSE
 ) {
@@ -74,49 +76,23 @@ make_leaflet_map <- function(
     length(include_timestamp) == 1
   )
 
+  # Define map layers/defaults
+  layer_names <- list(
+    base = names(base_maps),
+    data = c(point_layers, polygon_layers, wms_layers) |>
+      sapply(\(x) x@group) |>
+      unname(),
+    defaults = c(point_layers, polygon_layers, wms_layers) |>
+      sapply(\(x) ifelse(x@display_by_default, x@group, NA)) |>
+      unname() |>
+      stats::na.omit()
+  )
+
   # Make basemap
   base_map <- leaflet::leaflet() |>
     add_base_maps(base_maps = base_maps) |>
     # Cache provider tiles for faster reload times
     leaflet.extras::enableTileCaching()
-
-  # Define map layers/defaults
-  layer_names <- list(
-    base = names(base_maps),
-    data = point_layers |>
-      sapply(\(x) x@group) |>
-      c(polygon_layers |> sapply(\(x) x@group)) |>
-      c(unname(wms_layers) |> sapply(\(x) x@group)),
-    is_default = point_layers |>
-      sapply(\(x) x@display_by_default[1]) |>
-      c(polygon_layers |> sapply(\(x) x@display_by_default[1])) |>
-      c(unname(wms_layers) |> sapply(\(x) x@display_by_default[1])) |>
-      unlist()
-  )
-  if (any(layer_names$is_default)) {
-    layer_names$defaults <- layer_names$data[which(layer_names$is_default)]
-  } else {
-    layer_names$defaults <- list()
-  }
-  layers_quoted <- layer_names[1:2] |>
-    c(list(default = layer_names$defaults)) |>
-    lapply(\(x) {
-      paste0("'", x |> stringr::str_replace("'", "\\'"), "'") |>
-        paste(collapse = ", ")
-    })
-
-  define_layers_js <- "function(el, x) { 
-  _layers = {\"base\": [%s], \"data\": [%s] };
-  _default_layers = { \"data\": [%s], \"base\": '%s' }; 
-}" |>
-    sprintf(
-      layers_quoted$base,
-      layers_quoted$data,
-      layers_quoted$default,
-      names(base_maps)[1]
-    )
-  base_map <- base_map |>
-    htmlwidgets::onRender(define_layers_js)
 
   # Add a timestamp to bottom left if desired
   if (include_timestamp) {
@@ -129,6 +105,26 @@ make_leaflet_map <- function(
         as_reference = as_reference
       )
   }
+
+  # Insert js to define layer names for other js functions
+  layers_quoted <- layer_names |>
+    lapply(\(x) {
+      x_safe <- x |> stringr::str_replace_all("'", "\\'")
+      "'%s'" |> sprintf(x_safe) |> paste(collapse = ", ")
+    })
+  define_layers_js <- '
+    function(el, x) { 
+      _layers = {"base": [%s], "data": [%s] };
+      _default_layers = { "data": [%s], "base": "%s" }; 
+    }' |>
+    sprintf(
+      layers_quoted$base,
+      layers_quoted$data,
+      layers_quoted$default,
+      names(base_maps)[1] |> stringr::str_replace_all('"', '\\"')
+    )
+  base_map <- base_map |>
+    htmlwidgets::onRender(define_layers_js)
 
   # Add point layers as needed
   for (layer in point_layers) {

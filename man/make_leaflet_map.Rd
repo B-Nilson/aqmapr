@@ -9,7 +9,7 @@ make_leaflet_map(
   point_layers = list(),
   polygon_layers = list(),
   wms_layers = list(),
-  track_map_state = TRUE,
+  track_map_state = FALSE,
   include_timestamp = FALSE,
   as_reference = FALSE
 )
@@ -24,13 +24,15 @@ Default is a nice light and dark open data theme.}
 A list of 1 or more \code{PointLayer}/\code{PolygonLayer}/\code{WMSLayer} objects (created with \code{\link[=PointLayer]{PointLayer()}}/\code{\link[=PolygonLayer]{PolygonLayer()}}/\code{\link[=WMSLayer]{WMSLayer()}}) to be added to the map.
 Default is an empty list (no points/polygons/WMS layers added).}
 
-\item{track_map_state}{(Optional). If TRUE, the map state will be tracked and saved in the URL when the map is saved to an HTML file.
-Default is TRUE.}
+\item{track_map_state}{(Optional).
+If TRUE, the map center and zoom will be tracked and saved in the URL when the map is saved to an HTML file.
+This allows the map to be loaded with the same state on page load/refresh.
+Default is FALSE.}
 
 \item{include_timestamp}{(Optional).
 If TRUE, the current timestamp (browser time) will be included in a bottom left leaflet control.
 If a single POSIXct object is passed, it will be used as the timestamp instead of the current time.
-Default is FALSE (no timestamp added).}
+Default is FALSE.}
 
 \item{as_reference}{(Optional). If TRUE, js/css will be referenced in the map header. If FALSE, the js/css will be embeded directly in the map.
 Requires local server to be running (see \code{\link[=start_server]{start_server()}}), or the js and css files need to be hosted in "/js" and "/css" respectively relative to the html file.
