@@ -56,20 +56,33 @@ LeafletWidget.methods.addJsonPointerLayer = async function (
                 ...options,
                 pointToLayer: function (feature, latlng) {
                     let data = feature.properties;
-                    const iconUrl = data[keys.iconUrl];
-                    const pane = data[keys.pane] ?? "markerPane";
-                    const zIndexOffset = data[keys.zIndexOffset] ?? 0;
-                    if (iconUrl) {
-                        const iconSize = data[keys.iconSize] ?? 32;
-                        const icon = L.icon({
-                            iconUrl: iconUrl,
-                            iconSize: [iconSize, iconSize]
+                    // See https://leafletjs.com/reference.html#marker
+                    let opt = {
+                        keyboard: data[keys.keyboard] ?? false,
+                        title: data[keys.title] ?? "",
+                        alt: data[keys.alt] ?? "Marker",
+                        zIndexOffset: data[keys.zIndexOffset] ?? 0,
+                        opacity: data[keys.opacity] ?? 1,
+                        riseOnHover: data[keys.riseOnHover] ?? false,
+                        riseOffset: data[keys.riseOffset] ?? 250,
+                        pane: data[keys.pane] ?? "markerPane",
+                        shadowPane: data[keys.shadowPane] ?? "shadowPane",
+                        bubblingMouseEvents: data[keys.bubblingMouseEvents] ?? false,
+                        autoPanOnFocus: data[keys.autoPanOnFocus] ?? true,
+                        draggable: data[keys.draggable] ?? false,
+                        autoPan: data[keys.autoPan] ?? true,
+                        // autoPanPadding: data[keys.autoPanPadding] ?? L.point(50, 50),
+                        autoPanSpeed: data[keys.autoPanSpeed] ?? 10,
+                        interactive: data[keys.interactive] ?? true,
+                        attribution: data[keys.attribution] ?? null
+                    };
+                    if (data[keys.iconUrl]) {
+                        opt.icon = L.icon({
+                            iconUrl: data[keys.iconUrl],
+                            iconSize: [data[keys.iconSize] ?? 32, data[keys.iconSize] ?? 32],
                         });
-                        return L.marker(latlng, { icon: icon, pane: pane, zIndexOffset: zIndexOffset });
-                    } else {
-                        // Use default Leaflet marker
-                        return L.marker(latlng, { pane: pane, zIndexOffset: zIndexOffset });
                     }
+                    return L.marker(latlng, opt);
                 },
                 // add tooltips/popups if available
                 onEachFeature: async function (feature, layer) {
