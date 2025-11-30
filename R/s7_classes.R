@@ -42,7 +42,7 @@ class_leaflet_pane <- class_character |>
         if (!identical(sort(names(value)), c("name", "zindex"))) {
           "list must have names 'name' and 'zindex'"
         }
-        if (any(sapply(value, length) != 1)) {
+        if (any(lengths(value) != 1)) {
           "list values must be length 1"
         }
         if (!is.character(value$name)) {
