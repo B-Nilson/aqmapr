@@ -1,17 +1,53 @@
 LeafletWidget.methods.addJsonPointerLayer = async function (
     json_url, layer_id, group,
-    options = {}, _add_to_map = false,
-    tooltip_options = {
-        permanent: false,
-        direction: "right",
-        offset: [Math.round(iconSize / 2), 0]
+    // see https://leafletjs.com/reference.html#geojson
+    options = {
+        style: function (feature) { return {}; },
+        filter: function (feature) { return true; },
+        // coordsToLatLng: L.coordsToLatLng,
+        markersInheritOptions: false,
+        interactive: true,
+        bubblingMouseEvents: true,
+        pane: "overlayPane",
+        attribution: null
     },
+    _add_to_map = false,
+    // see https://leafletjs.com/reference.html#tooltip
+    tooltip_options = {
+        pane: "popupPane",
+        offset: [5, 0],
+        direction: "right",
+        permanent: false,
+        sticky: false,
+        opacity: 1,
+        interactive: false,
+        className: '',
+        content: '',
+        bubblingMouseEvents: true,
+        attribution: null
+    },
+    // see https://leafletjs.com/reference.html#popup
     popup_options = {
+        pane: "popupPane",
         offset: [0, -5],
         minWidth: 330,
-        closeOnClick: false
+        maxWidth: 330,
+        maxHeight: null,
+        autoPan: true,
+        autoPanPadding: [5, 5],
+        keepInView: false,
+        closeButton: true,
+        autoClose: true,
+        closeOnEscapeKey: true,
+        closeOnClick: true,
+        className: '',
+        interactive: true,
+        content: '',
+        bubblingMouseEvents: true,
+        attribution: null
     },
-    keys = { iconUrl: "iconUrl", pane: "pane", zIndexOffset: "zIndexOffset", iconSize: "iconSize", label: "label", popup: "popup" }
+    // TODO: cleanup defaults
+    keys = { iconUrl: "iconUrl", keyboard: "keyboard", pane: "pane", zIndexOffset: "zIndexOffset", iconSize: "iconSize", label: "label", popup: "popup" }
 ) {
     fetch(json_url)
         .then(response => response.json())
