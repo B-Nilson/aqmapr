@@ -17,7 +17,7 @@ make_leaflet_map(
 \arguments{
 \item{base_maps}{(Optional).
 A character vector named basemaps from \link[leaflet:providers]{leaflet::providers} to add to the map.
-Names will be used in the control menu for the basemaps.
+Names will be used in the control menu for the basemaps if provided.
 Default is a nice light and dark open data theme.}
 
 \item{point_layers, polygon_layers, wms_layers}{(Optional).
@@ -59,6 +59,7 @@ point_layers <- list(PointLayer(
     label = ~ paste("Name: ", name, "<br/>", "Type: ", type) |>
       lapply(htmltools::HTML)
 ))
+make_leaflet_map(point_layers = point_layers)
 
 canadian_provinces <- load_canadian_provinces()
 make_leaflet_map(
