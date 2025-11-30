@@ -58,6 +58,79 @@ PolygonLayer(
   options = list(interactive = TRUE, className = "")
 )
 }
+\arguments{
+\item{group, layer_id, class_name}{(Optional).
+A character string of the layer group/id/class to attach to the layer.
+Default is NULL (no group/id/class).}
+
+\item{pane}{(Optional). A character string of the map pane to place the layer.}
+
+\item{legend_position}{(Optional).
+A character string of the legend position to attach to the layer.
+Default is "bottomleft".}
+
+\item{display_by_default}{(Optional).
+A logical value indicating whether the layer should be visible on the map by default.
+Default is TRUE.}
+
+\item{opacity}{(Optional).
+A numeric value between 0 and 1 indicating the opacity of the layer.
+Default is 0.8.}
+
+\item{interactive}{(Optional).
+A logical value indicating whether the layer should be interactive or static.
+Default is TRUE (interactive layer).}
+
+\item{bubbling_mouse_events}{(Optional).
+A logical value indicating whether the layer should bubble mouse events.
+Default is TRUE.}
+
+\item{data}{(Optional).
+A data.frame/sf of coordinates to create points from.}
+
+\item{data_url}{(Optional).
+The URL to fetch data from for creating the layer.}
+
+\item{data_url_columns}{(Optional).
+The columns to use from the data fetched from \code{data_url}.}
+
+\item{use_stroke}{(Optional).
+A logical value indicating whether to use a stroke for edge of the points.
+Defaults to \code{TRUE}.}
+
+\item{stroke_width, stroke_opacity}{(Optional).
+A numeric value indicating the width and opacity of the stroke for the points.
+Defaults to \code{1}.}
+
+\item{stroke_dash_array}{(Optional).
+A character value indicating the dash array for the stroke.}
+
+\item{smooth_factor}{(Optional). A numeric value indicating the smoothness of the polygon edges. Defaults to \code{1}.}
+
+\item{no_clip}{(Optional). A logical value indicating whether to clip the layer to the map bounds. Defaults to \code{FALSE}.}
+
+\item{colour, fill}{(Optional).
+A character value or formula reference indicating the colour of the stroke or fill colour of the points.}
+
+\item{color}{Alias for \code{colour}.}
+
+\item{colour_palette, fill_palette}{(Optional).
+A function that returns inputs for \code{colour}/\code{fill} based on the \code{colour_values}/\code{fill_values}.}
+
+\item{colour_values, fill_values}{(Optional).
+Values or a formula reference to be passed to \code{colour_palette}/\code{fill_palette}.}
+
+\item{popup, label}{(Optional).
+Character value(s) or a formula reference to be used for the popup/label of the points.}
+
+\item{popup_options, label_options}{(Optional).
+A list of options for the popup/label.
+See \code{\link[leaflet:map-options]{leaflet::popupOptions()}} and \code{\link[leaflet:map-options]{leaflet::labelOptions()}} for more details.}
+
+\item{highlight_options}{(Optional). A list of options for highlighting the polygons. See \code{\link[leaflet:map-layers]{leaflet::highlightOptions()}} for more details.}
+
+\item{options}{(Optional). A list of additional options to pass to the L.polygon() method. See \code{\link[leaflet:map-options]{leaflet::pathOptions()}} for more details.}
+}
 \description{
 Represent a leaflet polygon layer to be added to the map using \code{\link[=add_to_map]{add_to_map()}}.
 }

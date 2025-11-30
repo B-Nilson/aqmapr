@@ -77,8 +77,18 @@ make_wms_layers <- function(
 
 #' WMS S7 class
 #'
-#' Represent a single Web Map Service (WMS) layer to be added to the map via add_wms_layers
+#' Represent a single Web Map Service (WMS) layer to be added to the map via [add_wms_layers()]
 #'
+#' @inheritParams LeafletLayer
+#' @param url character. Base URL of the WMS service.
+#' @param layer,style character. Name of the layer/style to display from the WMS service.
+#' @param group character. Name of the layer group to associate with the layer.
+#' @param legend_url character. URL of the legend to display when the layer is visible.
+#' @param legend_position character. Position of the legend to display for the layer. Must be one of "bottomleft", "bottomright", "topleft", "topright".
+#' @param format character. Format of the layer (e.g. image/png).
+#' @param version character. Version of the WMS service. Defaults to "1.1.1".
+#' @param crs character. Coordinate reference system to use for the layer.
+#' 
 #' @export
 #' @import S7
 WMSLayer <- new_class(

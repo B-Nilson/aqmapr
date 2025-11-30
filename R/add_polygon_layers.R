@@ -1,6 +1,13 @@
 #' Leaflet polygon layer S7 class
 #'
 #' Represent a leaflet polygon layer to be added to the map using [add_to_map()].
+#' 
+#' @inheritParams LeafletLayer
+#' @inheritParams PointLayer
+#' @param no_clip (Optional). A logical value indicating whether to clip the layer to the map bounds. Defaults to `FALSE`.
+#' @param smooth_factor (Optional). A numeric value indicating the smoothness of the polygon edges. Defaults to `1`.
+#' @param highlight_options (Optional). A list of options for highlighting the polygons. See [leaflet::highlightOptions()] for more details.
+#' @param options (Optional). A list of additional options to pass to the L.polygon() method. See [leaflet::pathOptions()] for more details.
 #'
 #' @export
 #' @import S7

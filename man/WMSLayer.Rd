@@ -23,6 +23,41 @@ WMSLayer(
   crs = character(0)
 )
 }
+\arguments{
+\item{group}{character. Name of the layer group to associate with the layer.}
+
+\item{pane}{(Optional). A character string of the map pane to place the layer.}
+
+\item{legend_position}{character. Position of the legend to display for the layer. Must be one of "bottomleft", "bottomright", "topleft", "topright".}
+
+\item{display_by_default}{(Optional).
+A logical value indicating whether the layer should be visible on the map by default.
+Default is TRUE.}
+
+\item{opacity}{(Optional).
+A numeric value between 0 and 1 indicating the opacity of the layer.
+Default is 0.8.}
+
+\item{interactive}{(Optional).
+A logical value indicating whether the layer should be interactive or static.
+Default is TRUE (interactive layer).}
+
+\item{bubbling_mouse_events}{(Optional).
+A logical value indicating whether the layer should bubble mouse events.
+Default is TRUE.}
+
+\item{url}{character. Base URL of the WMS service.}
+
+\item{layer, style}{character. Name of the layer/style to display from the WMS service.}
+
+\item{legend_url}{character. URL of the legend to display when the layer is visible.}
+
+\item{format}{character. Format of the layer (e.g. image/png).}
+
+\item{version}{character. Version of the WMS service. Defaults to "1.1.1".}
+
+\item{crs}{character. Coordinate reference system to use for the layer.}
+}
 \description{
-Represent a single Web Map Service (WMS) layer to be added to the map via add_wms_layers
+Represent a single Web Map Service (WMS) layer to be added to the map via \code{\link[=add_wms_layers]{add_wms_layers()}}
 }
