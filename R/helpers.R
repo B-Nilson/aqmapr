@@ -48,7 +48,7 @@ translate_network <- function(
   if (remove_last) {
     which_network <- which_network[-length(which_network)]
   }
-  if (any(is.na(which_network))) {
+  if (anyNA(which_network)) {
     stop(paste0("Unknown network: ", networks[is.na(which_network)]))
   }
 
@@ -63,20 +63,20 @@ translate_network <- function(
 
 # Translate from code names to pretty names for display
 pretty_text <- function(text) {
-  allowed_networks = list(
+  allowed_networks <- list(
     agency = c("fem", "naps", "agency", "fems"),
     lcm = c("lcm", "lcms"),
     purpleair = c("pa", "purpleair", "pas", "purpleairs"),
     aqegg = c("aqegg", "egg", "eggs")
   )
-  networks_pretty = list(
+  networks_pretty <- list(
     agency = "Regulatory",
     lcm = "Low-cost",
     purpleair = "PurpleAir",
     aqegg = "AQegg"
   )
 
-  monitors_pretty = list(
+  monitors_pretty <- list(
     FEM = "Federal Equivelant Method (FEM)",
     PA = "PurpleAir (PA)",
     EGG = "AQegg (EGG)"

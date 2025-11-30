@@ -9,12 +9,12 @@ make_icon_svg <- function(
   icon_dir = system.file("images/icons", package = "aqmapr"),
   template_dir = system.file("images", package = "aqmapr")
 ) {
-  stopifnot(is.character(groups), length(groups) > 0, all(!is.na(groups)))
+  stopifnot(is.character(groups), length(groups) > 0, !anyNA(groups))
   stopifnot(is.numeric(values), length(values) == length(groups))
   stopifnot(
     is.numeric(font_sizes),
     length(font_sizes) == 3,
-    all(!is.na(font_sizes))
+    !anyNA(font_sizes)
   )
   stopifnot(is.numeric(marker_size), length(marker_size) == 1)
   stopifnot(
@@ -93,7 +93,7 @@ make_icon_path <- function(
   icon_dir,
   for_legend = FALSE
 ) {
-  stopifnot(is.character(groups), length(groups) > 0, all(!is.na(groups)))
+  stopifnot(is.character(groups), length(groups) > 0, !anyNA(groups))
   stopifnot(is.numeric(values), length(values) > 0)
   stopifnot(is.character(icon_dir), length(icon_dir) == 1)
 
