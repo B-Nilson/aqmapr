@@ -109,7 +109,7 @@ get_data <- function(req, res) {
       geojson::as.geojson() |>
       as.character() |>
       handyr::on_error(.return = NULL, .warn = TRUE)
-    type = "text"
+    type <- "text"
   }
 
   # Return data
