@@ -64,20 +64,20 @@ get_noaa_hms_smoke_polygons <- function(
     dplyr::mutate(
       # Format dates properly
       dplyr::across(
-        c(Start, End),
+        c(.data$Start, .data$End),
         ~ lubridate::as_datetime(.x, format = "%Y%j %H%M", tz = "UTC")
       ),
-      period = lubridate::interval(Start, End),
+      period = lubridate::interval(.data$Start, .data$End),
       # Set density to factor
-      Density = factor(Density, levels = c("Heavy", "Medium", "Light")),
+      Density = factor(.data$Density, levels = c("Heavy", "Medium", "Light")),
     ) |>
-    dplyr::filter(!sf::st_is_empty(geometry)) |>
+    dplyr::filter(!sf::st_is_empty(.data$geometry)) |>
     sf::st_make_valid() |>
     # Combine into multipolygons by period/density
     dplyr::summarise(
-      .by = c(period, Density),
+      .by = c(.data$period, .data$Density),
       Satellite = unique(Satellite) |> paste(collapse = " + "),
-      geometry = sf::st_union(geometry)
+      geometry = sf::st_union(.data$geometry)
     ) |>
     # Select/rename columns
     dplyr::select(dplyr::all_of(desired_cols))
@@ -88,11 +88,11 @@ get_noaa_hms_smoke_polygons <- function(
     handyr::for_each(
       \(fcst_data) {
         fcst_data |>
-          dplyr::arrange(dplyr::desc(density)) |>
+          dplyr::arrange(dplyr::desc(.data$density)) |>
           sf::st_transform(3857) |>
           sf::st_difference() |>
           sf::st_transform("WGS84") |>
-          dplyr::arrange(density)
+          dplyr::arrange(.data$density)
       },
       .bind = TRUE,
       .show_progress = FALSE
@@ -163,7 +163,7 @@ get_hms_zip <- function(
       \(zip_url, i) {
       if (is_todays[i] || !file.exists(run_zips[i])) {
         zip_url |>
-          download.file(destfile = run_zips[i], mode = "wb", quiet = quiet)
+          utils::download.file(destfile = run_zips[i], mode = "wb", quiet = quiet)
         if (unzip) unzip(run_zips[i], exdir = data_dir)
       }
     })

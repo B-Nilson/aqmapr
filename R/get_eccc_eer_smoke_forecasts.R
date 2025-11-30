@@ -97,7 +97,7 @@ get_eccc_eer_smoke_forecasts <- function(
           sf::read_sf() |>
           # Add useful info
           dplyr::mutate(
-            Height = Height |> units::set_units("m"),
+            Height = .data$Height |> units::set_units("m"),
             model_time = select_times[i] |>
               lubridate::floor_date("6 hours"),
             forecast_time = select_times[i],
@@ -108,7 +108,7 @@ get_eccc_eer_smoke_forecasts <- function(
       .show_progress = FALSE,
       .enumerate = TRUE
     ) |>
-    dplyr::filter(!sf::st_is_empty(geometry)) |>
+    dplyr::filter(!sf::st_is_empty(.data$geometry)) |>
     # LINESTRING -> POLYGON
     sf::st_cast("POLYGON") |>
     sf::st_make_valid() |>
@@ -121,11 +121,11 @@ get_eccc_eer_smoke_forecasts <- function(
     handyr::for_each(
       \(fcst_data) {
         fcst_data |>
-          dplyr::arrange(dplyr::desc(min_pm25)) |>
+          dplyr::arrange(dplyr::desc(.data$min_pm25)) |>
           sf::st_transform(3857) |>
           sf::st_difference() |>
           sf::st_transform("WGS84") |>
-          dplyr::arrange(min_pm25)
+          dplyr::arrange(.data$min_pm25)
       },
       .bind = TRUE,
       .show_progress = FALSE
@@ -199,7 +199,7 @@ get_eer_zip <- function(
       \(zip_url, i) {
         if (is_todays[i] || !file.exists(local_paths[i])) {
           success <- zip_url |>
-            download.file(
+            utils::download.file(
               destfile = local_paths[i],
               mode = "wb",
               quiet = quiet

@@ -149,7 +149,7 @@ make_aqmap_wms_layers <- function() {
     opacities = 0.6
   ) |>
     c(make_wms_layers(
-      url = "https://cwfis.cfs.nrcan.gc.ca/geoserver/ows",
+      urls = "https://cwfis.cfs.nrcan.gc.ca/geoserver/ows",
       layers = c(
         "Active Fires" = "public:activefires_current",
         "Fire Perimeters" = "m3_polygons_current",
@@ -227,11 +227,11 @@ format_for_geojson <- function(out_data) {
           for_legend = FALSE
         ),
       iconSize = ifelse(is.na(.data$pm25_1hr), 21, 30),
-      network_type = factor(
-        monitor_type,
-        levels = c("FEM", "PA", "EGG"),
-        labels = c("Regulatory (FEM)", "PurpleAir (PA)", "AQegg (EGG)")
-      ),
+      network_type = .data$monitor_type |>
+        factor(
+          levels = c("FEM", "PA", "EGG"),
+          labels = c("Regulatory (FEM)", "PurpleAir (PA)", "AQegg (EGG)")
+        ),
     ) |>
     dplyr::select(dplyr::all_of(desired_cols)) |>
     sf::st_as_sf(coords = c("lng", "lat"))
