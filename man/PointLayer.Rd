@@ -58,9 +58,7 @@ PointLayer(
     opacity = 1, offset = c(0, 0), textsize = "10px", textOnly = FALSE, className = "",
     sticky = TRUE),
   cluster_id = NULL,
-  cluster_options = list(showCoverageOnHover = TRUE, zoomToBoundsOnClick = TRUE,
-    spiderfyOnMaxZoom = TRUE, removeOutsideVisibleBounds = TRUE, spiderLegPolylineOptions
-    = list(weight = 1.5, color = "#222", opacity = 0.5), freezeAtZoom = FALSE),
+  cluster_options = NULL,
   options = list(interactive = TRUE, className = "")
 )
 }
