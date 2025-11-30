@@ -35,8 +35,6 @@ PolygonLayer(
   stroke_width = 1,
   stroke_opacity = 1,
   stroke_dash_array = character(0),
-  smooth_factor = 1,
-  no_clip = FALSE,
   colour = "black",
   color = colour,
   colour_palette = function (x) 
@@ -54,8 +52,10 @@ PolygonLayer(
   label_options = list(interactive = FALSE, permanent = FALSE, direction = "auto",
     opacity = 1, offset = c(0, 0), textsize = "10px", textOnly = FALSE, className = "",
     sticky = TRUE),
-  highlight_options = structure(list(), names = character(0)),
-  options = list(interactive = TRUE, className = "")
+  options = list(interactive = TRUE, className = ""),
+  smooth_factor = 1,
+  no_clip = FALSE,
+  highlight_options = structure(list(), names = character(0))
 )
 }
 \arguments{
@@ -77,12 +77,13 @@ Default is TRUE.}
 A numeric value between 0 and 1 indicating the opacity of the layer.
 Default is 0.8.}
 
+\item{interactive}{(Optional).
+A logical value indicating whether the layer should be interactive.
+Default is TRUE.}
+
 \item{bubbling_mouse_events}{(Optional).
 A logical value indicating whether the layer should bubble mouse events.
 Default is TRUE.}
-
-\item{data}{(Optional).
-A data.frame/sf of coordinates to create points from.}
 
 \item{data_url}{(Optional).
 The URL to fetch data from for creating the layer.}
@@ -100,10 +101,6 @@ Defaults to \code{1}.}
 
 \item{stroke_dash_array}{(Optional).
 A character value indicating the dash array for the stroke.}
-
-\item{smooth_factor}{(Optional). A numeric value indicating the smoothness of the polygon edges. Defaults to \code{1}.}
-
-\item{no_clip}{(Optional). A logical value indicating whether to clip the layer to the map bounds. Defaults to \code{FALSE}.}
 
 \item{colour, fill}{(Optional).
 A character value or formula reference indicating the colour of the stroke or fill colour of the points.}
@@ -123,9 +120,14 @@ Character value(s) or a formula reference to be used for the popup/label of the 
 A list of options for the popup/label.
 See \code{\link[leaflet:map-options]{leaflet::popupOptions()}} and \code{\link[leaflet:map-options]{leaflet::labelOptions()}} for more details.}
 
-\item{highlight_options}{(Optional). A list of options for highlighting the polygons. See \code{\link[leaflet:map-layers]{leaflet::highlightOptions()}} for more details.}
+\item{options}{(Optional).
+A list of additional options to pass. See \code{\link[leaflet:map-options]{leaflet::pathOptions()}} for more details.}
 
-\item{options}{(Optional). A list of additional options to pass to the L.polygon() method. See \code{\link[leaflet:map-options]{leaflet::pathOptions()}} for more details.}
+\item{smooth_factor}{(Optional). A numeric value indicating the smoothness of the polygon edges. Defaults to \code{1}.}
+
+\item{no_clip}{(Optional). A logical value indicating whether to clip the layer to the map bounds. Defaults to \code{FALSE}.}
+
+\item{highlight_options}{(Optional). A list of options for highlighting the polygons. See \code{\link[leaflet:map-layers]{leaflet::highlightOptions()}} for more details.}
 }
 \description{
 Represent a leaflet polygon layer to be added to the map using \code{\link[=add_to_map]{add_to_map()}}.

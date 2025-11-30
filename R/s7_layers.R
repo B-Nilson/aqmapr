@@ -18,6 +18,9 @@
 #' @param transparent (Internal - not to be used).
 #'   A logical value indicating whether the layer should be transparent.
 #'   Is set to TRUE if opacity < 1.
+#' @param interactive (Optional).
+#'   A logical value indicating whether the layer should be interactive.
+#'   Default is TRUE.
 #' @param bubbling_mouse_events (Optional).
 #'   A logical value indicating whether the layer should bubble mouse events.
 #'   Default is TRUE.
@@ -52,23 +55,15 @@ LeafletLayer <- new_class(
   )
 )
 
-#' Leaflet point layer S7 class
-#'
-#' Represent a leaflet point layer to be added to the map using [add_to_map()].
+#' Leaflet data layer S7 class
+#' 
+#' For use with data related leaflet functions like [leaflet::addCircleMarkers()], [leaflet::addPolygons()], etc.
 #' 
 #' @inheritParams LeafletLayer
-#' @param data (Optional). 
-#'   A data.frame/sf of coordinates to create points from.
-#' @param x_col,y_col (Optional).
-#'   The name of the column containing the x/y coordinates if `data` is a non-sf data.frame.
-#' @param crs (Optional).
-#'   The coordinate reference system to use if `data` is a non-sf data.frame.
 #' @param data_url (Optional).
 #'   The URL to fetch data from for creating the layer.
 #' @param data_url_columns (Optional).
 #'   The columns to use from the data fetched from `data_url`.
-#' @param icon_urls (Optional).
-#'   A character vector of URLs to use for the icons. (IN DEVELOPMENT)
 #' @param use_stroke,use_fill (Optional).
 #'   A logical value indicating whether to use a stroke/fill for edge/center of the points.
 #'   Defaults to `TRUE`.
@@ -89,6 +84,72 @@ LeafletLayer <- new_class(
 #' @param popup_options,label_options (Optional).
 #'   A list of options for the popup/label.
 #'   See [leaflet::popupOptions()] and [leaflet::labelOptions()] for more details.
+#' @param options (Optional). 
+#'   A list of additional options to pass. See [leaflet::pathOptions()] for more details.
+#' 
+#' @import S7
+#' @include s7_classes.R
+LeafletDataLayer <- new_class(
+  "LeafletDataLayer",
+  parent = LeafletLayer,
+  properties = list(
+    data = class_data.frame,
+    data_url = class_character,
+    data_url_columns = class_list |>
+      new_property(
+        default = list(
+          iconUrl = "iconUrl",
+          pane = "pane",
+          zIndexOffset = "zIndexOffset",
+          iconSize = "iconSize",
+          label = "label",
+          popup = "popup"
+        )
+      ),
+    use_stroke = class_flag_on,
+    stroke_width = class_double |>
+      new_property(default = 1),
+    stroke_opacity = class_double |>
+      new_property(default = 1),
+    stroke_dash_array = class_character,
+    colour = class_colour |>
+      new_property(default = "black", setter = colour_setter),
+    color = color_property(),
+    colour_palette = class_function |>
+      new_property(default = \(x) rep("black", length(x))),
+    colour_values = class_vector,
+    use_fill = class_flag_on,
+    fill = class_colour |>
+      new_property(default = "grey", setter = fill_setter),
+    fill_palette = class_function |>
+      new_property(default = \(x) rep("grey", length(x))),
+    fill_values = class_vector,
+    popup = class_any,
+    popup_options = class_list |>
+      new_property(default = leaflet::popupOptions()),
+    label = class_any,
+    label_options = class_list |>
+      new_property(default = leaflet::labelOptions()),
+    options = class_list |>
+      new_property(default = leaflet::pathOptions())
+  )
+)
+
+#' Leaflet point layer S7 class
+#'
+#' Represent a leaflet point layer to be added to the map using [add_to_map()].
+#' 
+#' @inheritParams LeafletLayer
+#' @inheritParams LeafletDataLayer
+#' @param data (Optional). 
+#'   A data.frame/sf of coordinates to create points from.
+#' @param x_col,y_col (Optional).
+#'   The name of the column containing the x/y coordinates if `data` is a non-sf data.frame.
+#' @param crs (Optional).
+#'   The coordinate reference system to use if `data` is a non-sf data.frame.
+#'   Defaults to `"WGS84"`.
+#' @param icon_urls (Optional).
+#'   A character vector of URLs to use for the icons. (IN DEVELOPMENT)
 #' @param cluster_id (Optional).
 #'   A character value to use for the cluster id.
 #' @param cluster_options (Optional).
@@ -100,7 +161,7 @@ LeafletLayer <- new_class(
 #' @include s7_classes.R
 PointLayer <- new_class(
   "PointLayer",
-  parent = LeafletLayer,
+  parent = LeafletDataLayer,
   properties = list(
     data = class_data.frame |>
       new_property(
@@ -138,49 +199,11 @@ PointLayer <- new_class(
       new_property(default = "lat", validator = validator_len_0_1),
     crs = class_character |>
       new_property(default = "WGS84", validator = validator_len_0_1),
-    data_url = class_character,
-    data_url_columns = class_list |>
-      new_property(
-        default = list(
-          iconUrl = "iconUrl",
-          pane = "pane",
-          zIndexOffset = "zIndexOffset",
-          iconSize = "iconSize",
-          label = "label",
-          popup = "popup"
-        )
-      ),
     icon_urls = class_character,
-    use_stroke = class_flag_on,
-    stroke_width = class_double |>
-      new_property(default = 1),
-    stroke_opacity = class_double |>
-      new_property(default = 1),
-    stroke_dash_array = class_character,
-    colour = class_colour |>
-      new_property(default = "black", setter = colour_setter),
-    color = color_property(),
-    colour_palette = class_function |>
-      new_property(default = \(x) rep("black", length(x))),
-    colour_values = class_vector,
-    use_fill = class_flag_on,
-    fill = class_colour |>
-      new_property(default = "grey", setter = fill_setter),
-    fill_palette = class_function |>
-      new_property(default = \(x) rep("grey", length(x))),
-    fill_values = class_vector,
     radius = class_double |>
       new_property(default = 5),
-    popup = class_any,
-    popup_options = class_list |>
-      new_property(default = leaflet::popupOptions()),
-    label = class_any,
-    label_options = class_list |>
-      new_property(default = leaflet::labelOptions()),
     cluster_id = class_any,
-    cluster_options = class_any, # if not NULL, then enables clusters...
-    options = class_list |>
-      new_property(default = leaflet::pathOptions())
+    cluster_options = class_any # if not NULL, then enables clusters...
   )
 )
 
@@ -189,18 +212,18 @@ PointLayer <- new_class(
 #' Represent a leaflet polygon layer to be added to the map using [add_to_map()].
 #' 
 #' @inheritParams LeafletLayer
-#' @inheritParams PointLayer
+#' @inheritParams LeafletDataLayer
+#' 
 #' @param no_clip (Optional). A logical value indicating whether to clip the layer to the map bounds. Defaults to `FALSE`.
 #' @param smooth_factor (Optional). A numeric value indicating the smoothness of the polygon edges. Defaults to `1`.
 #' @param highlight_options (Optional). A list of options for highlighting the polygons. See [leaflet::highlightOptions()] for more details.
-#' @param options (Optional). A list of additional options to pass to the L.polygon() method. See [leaflet::pathOptions()] for more details.
 #'
 #' @export
 #' @import S7
 #' @include s7_classes.R
 PolygonLayer <- new_class(
   "PolygonLayer",
-  parent = LeafletLayer,
+  parent = LeafletDataLayer,
   properties = list(
     data = class_data.frame |>
       new_property(validator = \(value) {
@@ -218,49 +241,11 @@ PolygonLayer <- new_class(
           }
         }
       }),
-    data_url = class_character,
-    data_url_columns = class_list |>
-      new_property(
-        default = list(
-          iconUrl = "iconUrl",
-          pane = "pane",
-          zIndexOffset = "zIndexOffset",
-          iconSize = "iconSize",
-          label = "label",
-          popup = "popup"
-        )
-      ),
-    use_stroke = class_flag_on,
-    stroke_width = class_double |>
-      new_property(default = 1),
-    stroke_opacity = class_double |>
-      new_property(default = 1),
-    stroke_dash_array = class_character,
     smooth_factor = class_double |>
       new_property(default = 1),
     no_clip = class_flag_off,
-    colour = class_colour |>
-      new_property(default = "black", setter = colour_setter),
-    color = color_property(),
-    colour_palette = class_function |>
-      new_property(default = \(x) rep("black", length(x))),
-    colour_values = class_vector,
-    use_fill = class_flag_on,
-    fill = class_colour |>
-      new_property(default = "grey", setter = fill_setter),
-    fill_palette = class_function |>
-      new_property(default = \(x) rep("grey", length(x))),
-    fill_values = class_vector,
-    popup = class_any,
-    popup_options = class_list |>
-      new_property(default = leaflet::popupOptions()),
-    label = class_any,
-    label_options = class_list |>
-      new_property(default = leaflet::labelOptions()),
     highlight_options = class_list |>
-      new_property(default = leaflet::highlightOptions()),
-    options = class_list |>
-      new_property(default = leaflet::pathOptions())
+      new_property(default = leaflet::highlightOptions())
   )
 )
 
