@@ -106,6 +106,7 @@ make_aqmap <- function(
   map <- base_maps |>
     make_leaflet_map(
       track_map_state = TRUE,
+      center_on_opened_popup = TRUE,
       as_reference = use_references,
       include_timestamp = TRUE,
       point_layers = point_layers,

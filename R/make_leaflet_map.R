@@ -11,6 +11,9 @@
 #' @param page_title (Optional).
 #'   A character string of the title to display in the browser tab when the map is saved to an HTML file.
 #'   Default `NULL` (no title).
+#' @param center_on_opened_popup (Optional).
+#'   If TRUE, the map will be centered on the popup when it is opened.
+#'   Default is FALSE.
 #' @param track_map_state (Optional).
 #'   If TRUE, the map center and zoom will be tracked and saved in the URL when the map is saved to an HTML file.
 #'   This allows the map to be loaded with the same state on page load/refresh.
@@ -62,6 +65,7 @@ make_leaflet_map <- function(
   polygon_layers = list(),
   wms_layers = list(),
   page_title = NULL,
+  center_on_opened_popup = FALSE,
   track_map_state = FALSE,
   include_timestamp = FALSE,
   as_reference = FALSE
@@ -99,6 +103,12 @@ make_leaflet_map <- function(
     # Cache provider tiles for faster reload times
     leaflet.extras::enableTileCaching()
 
+  # Center map on popups when they are opened if desired
+  if (center_on_opened_popup) {
+    base_map <- base_map |>
+      center_on_opened_popup()
+  }
+  
   # Add a timestamp to bottom left if desired
   if (include_timestamp) {
     if (is.logical(include_timestamp)) {

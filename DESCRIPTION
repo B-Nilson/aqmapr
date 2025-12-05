@@ -51,6 +51,7 @@ Collate:
     'app.R'
     'append_to_layer_control.R'
     'aqmapr-package.R'
+    'center_on_opened_popup.R'
     'data.R'
     'get_eccc_eer_smoke_forecasts.R'
     'get_noaa_hms_smoke_polygons.R'

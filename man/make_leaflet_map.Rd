@@ -10,6 +10,7 @@ make_leaflet_map(
   polygon_layers = list(),
   wms_layers = list(),
   page_title = NULL,
+  center_on_opened_popup = FALSE,
   track_map_state = FALSE,
   include_timestamp = FALSE,
   as_reference = FALSE
@@ -28,6 +29,10 @@ Default is an empty list (no points/polygons/WMS layers added).}
 \item{page_title}{(Optional).
 A character string of the title to display in the browser tab when the map is saved to an HTML file.
 Default \code{NULL} (no title).}
+
+\item{center_on_opened_popup}{(Optional).
+If TRUE, the map will be centered on the popup when it is opened.
+Default is FALSE.}
 
 \item{track_map_state}{(Optional).
 If TRUE, the map center and zoom will be tracked and saved in the URL when the map is saved to an HTML file.
