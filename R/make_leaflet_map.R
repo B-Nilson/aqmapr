@@ -8,6 +8,9 @@
 #' @param point_layers,polygon_layers,wms_layers (Optional).
 #'   A list of 1 or more `PointLayer`/`PolygonLayer`/`WMSLayer` objects (created with [PointLayer()]/[PolygonLayer()]/[WMSLayer()]) to be added to the map.
 #'   Default is an empty list (no points/polygons/WMS layers added).
+#' @param page_title (Optional).
+#'   A character string of the title to display in the browser tab when the map is saved to an HTML file.
+#'   Default `NULL` (no title).
 #' @param track_map_state (Optional).
 #'   If TRUE, the map center and zoom will be tracked and saved in the URL when the map is saved to an HTML file.
 #'   This allows the map to be loaded with the same state on page load/refresh.
@@ -58,6 +61,7 @@ make_leaflet_map <- function(
   point_layers = list(),
   polygon_layers = list(),
   wms_layers = list(),
+  page_title = NULL,
   track_map_state = FALSE,
   include_timestamp = FALSE,
   as_reference = FALSE
@@ -91,6 +95,7 @@ make_leaflet_map <- function(
   # Make basemap
   base_map <- leaflet::leaflet() |>
     add_base_maps(base_maps = base_maps) |>
+    set_page_title(page_title = page_title) |>
     # Cache provider tiles for faster reload times
     leaflet.extras::enableTileCaching()
 

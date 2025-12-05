@@ -62,4 +62,5 @@ Collate:
     'load_data.R'
     'make_leaflet_map.R'
     'make_map.R'
+    'set_page_title.R'
     'track_map_state.R'

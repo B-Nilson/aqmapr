@@ -9,6 +9,7 @@ make_leaflet_map(
   point_layers = list(),
   polygon_layers = list(),
   wms_layers = list(),
+  page_title = NULL,
   track_map_state = FALSE,
   include_timestamp = FALSE,
   as_reference = FALSE
@@ -23,6 +24,10 @@ Default is a nice light and dark open data theme.}
 \item{point_layers, polygon_layers, wms_layers}{(Optional).
 A list of 1 or more \code{PointLayer}/\code{PolygonLayer}/\code{WMSLayer} objects (created with \code{\link[=PointLayer]{PointLayer()}}/\code{\link[=PolygonLayer]{PolygonLayer()}}/\code{\link[=WMSLayer]{WMSLayer()}}) to be added to the map.
 Default is an empty list (no points/polygons/WMS layers added).}
+
+\item{page_title}{(Optional).
+A character string of the title to display in the browser tab when the map is saved to an HTML file.
+Default \code{NULL} (no title).}
 
 \item{track_map_state}{(Optional).
 If TRUE, the map center and zoom will be tracked and saved in the URL when the map is saved to an HTML file.

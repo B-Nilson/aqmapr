@@ -7,7 +7,8 @@ make_aqmap <- function(
   ),
   js_dir = system.file("js", package = "aqmapr"),
   js_endpoint = "/js",
-  use_references = TRUE
+  use_references = TRUE,
+  page_title = "AQmap"
 ) {
   # General javascript files
   js_files <- c(
@@ -109,7 +110,8 @@ make_aqmap <- function(
       include_timestamp = TRUE,
       point_layers = point_layers,
       polygon_layers = polygon_layers,
-      wms_layers = wms_layers
+      wms_layers = wms_layers,
+      page_title = page_title
     ) |>
     # Include custom js used by various parts of the map
     include_scripts(paths = js_paths, as_reference = use_references) |>
