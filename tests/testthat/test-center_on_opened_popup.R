@@ -8,7 +8,7 @@ test_that("basic case works", {
     center_on_opened_popup()
 
   w_js |>
-    htmlwidgets::saveWidget(file = temp_file)
+    htmlwidgets::saveWidget(file = temp_file, selfcontained = FALSE)
   on.exit({
     unlink(temp_file)
   })
