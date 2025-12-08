@@ -9,11 +9,11 @@ center_on_opened_popup <- function(map, ...) {
 
   js_file <- "js/center_on_popup.js" |>
     system.file(package = "aqmapr")
-  on_popup_open_js <- "(e) => { center_on_popup(_map, e.target._popup) }"
+  on_popup_open_js <- "(e) => { center_on_popup(_map_temp, e.target._popup) }"
   map |>
     include_scripts(paths = js_file, ...) |>
     htmlwidgets::onRender(
-      "function(el, x) { _map = this; _map.on('popupopen', %s); }" |>
+      "function(el, x) { _map_temp = this; _map_temp.on('popupopen', %s); }" |>
         sprintf(on_popup_open_js)
     )
 }
