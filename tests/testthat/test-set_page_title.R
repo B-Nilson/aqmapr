@@ -2,7 +2,7 @@ test_that("basic case works", {
   page_title <- "test"
   map <- make_leaflet_map()
 
-  temp_file <- tempfile()
+  temp_file <- tempfile(fileext = ".html")
 
   w_title <- map |>
     set_page_title(page_title = page_title)
@@ -21,6 +21,6 @@ test_that("basic case works", {
   header |>
     stringr::str_extract_all(pattern = "<title>.+?</title>") |>
     unlist() |>
-    dplyr::last() |>
+    dplyr::first() |>
     expect_equal("<title>%s</title>" |> sprintf(page_title))
 })
