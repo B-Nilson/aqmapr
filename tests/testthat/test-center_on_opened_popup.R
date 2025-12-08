@@ -14,8 +14,7 @@ test_that("basic case works", {
   w_js <- map |>
     center_on_opened_popup()
 
-  w_js |>
-    htmlwidgets::saveWidget(file = temp_file, selfcontained = FALSE)
+  w_js |> save_map(save_to = temp_file)
   on.exit({
     unlink(temp_file)
   })

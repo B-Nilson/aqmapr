@@ -7,8 +7,7 @@ test_that("basic case works", {
   w_title <- map |>
     set_page_title(page_title = page_title)
 
-  w_title |>
-    htmlwidgets::saveWidget(file = temp_file)
+  w_title |> save_map(save_to = temp_file)
   on.exit({
     unlink(temp_file)
   })
