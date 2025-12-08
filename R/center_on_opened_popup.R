@@ -13,7 +13,7 @@ center_on_opened_popup <- function(map, ...) {
   map |>
     include_scripts(paths = js_file, ...) |>
     htmlwidgets::onRender(
-      "(el, x) => { _map = this; _map.on('popupopen', %s); }" |>
+      "function(el, x) { _map = this; _map.on('popupopen', %s); }" |>
         sprintf(on_popup_open_js)
     )
 }
