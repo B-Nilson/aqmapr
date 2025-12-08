@@ -21,6 +21,7 @@ Imports:
     leaflet,
     leaflet.extras,
     lubridate,
+    mapview,
     prismatic,
     purrr,
     rlang,
@@ -36,7 +37,8 @@ Suggests:
     geojson,
     pbapply,
     sf,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    webshot
 Config/testthat/edition: 3
 LazyData: true
 Collate: 
@@ -63,5 +65,6 @@ Collate:
     'load_data.R'
     'make_leaflet_map.R'
     'make_map.R'
+    'save_map.R'
     'set_page_title.R'
     'track_map_state.R'
