@@ -1,13 +1,14 @@
 test_that("basic case works", {
-  page_title <- "test"
-  map <- make_leaflet_map(point_layers = list(PointLayer(
-    group = "test",
-    data = data.frame(lat = 20, lng = 20, pm25 = 100) |>
-      sf::st_as_sf(coords = c("lng", "lat")),
-    fill_palette = eer_smoke_pal(),
-    fill = ~pm25,
-    popup = ~as.character(pm25)
-  )))
+  map <- make_leaflet_map(
+    point_layers = list(PointLayer(
+      group = "test",
+      data = data.frame(lat = 20, lng = 20, pm25 = 100) |>
+        sf::st_as_sf(coords = c("lng", "lat")),
+      fill_palette = eer_smoke_pal(),
+      fill = ~pm25,
+      popup = ~ as.character(pm25)
+    ))
+  )
 
   temp_file <- tempfile(fileext = ".html")
 

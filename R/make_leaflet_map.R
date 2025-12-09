@@ -108,7 +108,7 @@ make_leaflet_map <- function(
     base_map <- base_map |>
       center_on_opened_popup()
   }
-  
+
   # Add a timestamp to bottom left if desired
   if (include_timestamp) {
     if (is.logical(include_timestamp)) {

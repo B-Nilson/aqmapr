@@ -1,6 +1,6 @@
 #' Save a leaflet map to a file
-#' 
-#' @description 
+#'
+#' @description
 #' Largely a wrapper around [mapview::mapshot], allowing for saving a leaflet map to a file.
 #'
 #' @param map A leaflet map
@@ -16,7 +16,7 @@
 #'   Default is `"UTF-8"`.
 #' @param page_title The title of the page.
 #'   Default is `"My Map"`.
-#' 
+#'
 #' @param ... Additional arguments to pass to [mapview::mapshot] (which calls [webshot::webshot] for non-HTML files, and [htmlwidgets::saveWidget] for HTML).
 #' @export
 save_map <- function(
