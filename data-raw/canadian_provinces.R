@@ -40,8 +40,7 @@ canadian_provinces <- osm_results |>
     type = ifelse(.data$name %in% prov_order[1:10], "province", "territory") |>
       factor(levels = c("province", "territory"))
   ) |>
-  dplyr::arrange(.data$name) |>
-  withr::with_package(package = "sf")
+  dplyr::arrange(.data$name)
 
 row.names(canadian_provinces) <- NULL
 

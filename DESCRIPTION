@@ -27,8 +27,7 @@ Imports:
     rlang,
     S7,
     stringr,
-    units,
-    withr
+    units
 Remotes: 
     github::B-Nilson/handyr
 Suggests: 
