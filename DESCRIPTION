@@ -32,7 +32,6 @@ Imports:
 Remotes: 
     github::B-Nilson/handyr
 Suggests: 
-    bit64,
     callr,
     geojson,
     pbapply,
