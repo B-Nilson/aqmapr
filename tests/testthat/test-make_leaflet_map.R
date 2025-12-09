@@ -15,7 +15,7 @@ test_that("basic case with points data works", {
 test_that("basic case with polygons data works", {
   polygon_layers <- list(PolygonLayer(
     group = "Provinces",
-    data = load_canadian_provinces(),
+    data = canadian_provinces,
     fill = "black",
     opacity = 0.1,
     label = ~name

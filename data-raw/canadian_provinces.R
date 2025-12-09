@@ -51,10 +51,12 @@ for (i in 1:nrow(canadian_provinces)) {
     sf::st_union()
 }
 
-# This creates too large of a file - instead save to .rds and load using a function
-# usethis::use_data(canadian_provinces, overwrite = TRUE, compress = "xz")
-canadian_provinces |>
-  saveRDS("inst/extdata/canadian_provinces.rds")
+# Smooth edges for smaller file size
+canadian_provinces <- canadian_provinces |>
+  rmapshaper::ms_simplify()
+
+# Write out data
+usethis::use_data(canadian_provinces, overwrite = TRUE, compress = "xz")
 
 # write out example to geojson as well
 geojson_path <- "inst/extdata/example.geojson"

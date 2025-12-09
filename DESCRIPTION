@@ -62,7 +62,6 @@ Collate:
     'icons.R'
     'include_font.R'
     'include_scripts.R'
-    'load_canadian_provinces.R'
     'load_data.R'
     'make_leaflet_map.R'
     'make_map.R'

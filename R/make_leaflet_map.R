@@ -46,7 +46,6 @@
 #' ))
 #' make_leaflet_map(point_layers = point_layers)
 #'
-#' canadian_provinces <- load_canadian_provinces()
 #' make_leaflet_map(
 #'   polygon_layers = list(PolygonLayer(
 #'     group = "Provinces",
