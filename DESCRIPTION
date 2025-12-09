@@ -11,7 +11,6 @@ RoxygenNote: 7.3.3
 Depends: 
     R (>= 4.1.0)
 Imports: 
-    ambiorix,
     aqhi (>= 0.1.0),
     data.table,
     dplyr,
@@ -31,6 +30,7 @@ Imports:
 Remotes: 
     github::B-Nilson/handyr
 Suggests: 
+    ambiorix,
     callr,
     geojson,
     pbapply,

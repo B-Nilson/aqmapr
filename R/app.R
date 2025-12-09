@@ -34,6 +34,7 @@ start_server <- function(
   css_dir = system.file("css", package = "aqmapr"),
   js_dir = system.file("js", package = "aqmapr")
 ) {
+  rlang::check_installed("ambiorix")
   # Initialize Ambiorix server object
   app <- ambiorix::Ambiorix$new(port = port, host = host)
 
