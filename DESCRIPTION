@@ -28,7 +28,7 @@ Imports:
     stringr,
     units
 Remotes: 
-    github::B-Nilson/handyr
+    github::B-Nilson/handyr,
     github::B-Nilson/aqhi
 Suggests: 
     ambiorix,
