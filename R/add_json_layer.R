@@ -38,7 +38,7 @@
 #'
 #' geojson_url <- paste0(
 #'   "https://raw.githubusercontent.com/B-Nilson/",
-#'   "canadata/refs/heads/main/inst/extdata/example.geojson"
+#'   "canadata/refs/heads/master/inst/extdata/example.geojson"
 #' )
 #'
 #' # Add as embeded data (normal R leaflet method)
