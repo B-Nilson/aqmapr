@@ -12,6 +12,7 @@ Depends:
     R (>= 4.1.0)
 Imports: 
     aqhi (>= 0.1.0),
+    canadata (>= 0.0.0.9000),
     data.table,
     dplyr,
     handyr (>= 0.0.0.9000),
@@ -27,9 +28,10 @@ Imports:
     S7,
     stringr,
     units
-Remotes: 
+Remotes:  
     github::B-Nilson/handyr,
-    github::B-Nilson/aqhi
+    github::B-Nilson/aqhi,
+    github::B-Nilson/canadata
 Suggests: 
     ambiorix,
     callr,

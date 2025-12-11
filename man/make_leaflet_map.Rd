@@ -76,7 +76,7 @@ make_leaflet_map(point_layers = point_layers)
 make_leaflet_map(
   polygon_layers = list(PolygonLayer(
     group = "Provinces",
-    data = canadian_provinces,
+    data = canadata::provinces_and_territories,
     fill = "black",
     opacity = 0.1,
     label = ~name

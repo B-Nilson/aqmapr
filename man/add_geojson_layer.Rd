@@ -69,7 +69,7 @@ library(aqmapr)
 
 geojson_url <- paste0(
   "https://raw.githubusercontent.com/B-Nilson/",
-  "aqmapr/refs/heads/main/inst/extdata/example.geojson"
+  "canadata/refs/heads/main/inst/extdata/example.geojson"
 )
 
 # Add as embeded data (normal R leaflet method)

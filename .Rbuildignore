@@ -4,7 +4,6 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 inst/images/icons
-inst/extdata/example.geojson
 ^[.]?air[.]toml$
 ^\.vscode$
 ^data-raw$
