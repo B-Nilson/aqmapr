@@ -81,7 +81,7 @@ make_aqmap <- function(
   polygon_layers <- list(
     PolygonLayer(
       data = canadata::provinces_and_territories,
-      opacity = 0.2  
+      opacity = 0.2
     ),
     # get_eccc_eer_smoke_forecasts() |>
     #   PolygonLayer(
