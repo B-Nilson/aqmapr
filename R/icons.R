@@ -7,7 +7,7 @@ make_icon_svg <- function(
   for_legend = FALSE,
   force = FALSE,
   icon_dir = system.file("images/icons", package = "aqmapr"),
-  template_dir = system.file("images", package = "aqmapr")
+  template_dir = system.file("images/icons/templates", package = "aqmapr")
 ) {
   stopifnot(is.character(groups), length(groups) > 0, !anyNA(groups))
   stopifnot(is.numeric(values), length(values) == length(groups))

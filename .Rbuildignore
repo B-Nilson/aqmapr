@@ -3,7 +3,7 @@
 ^aqmapr\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
-inst/images/icons
+inst/images/icons/*.svg$
 ^[.]?air[.]toml$
 ^\.vscode$
 ^data-raw$
