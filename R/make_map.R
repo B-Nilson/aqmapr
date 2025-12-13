@@ -10,6 +10,7 @@ make_aqmap <- function(
   use_references = TRUE,
   page_title = "AQmap"
 ) {
+  rlang::check_installed("canadata")
   # General javascript files
   js_files <- c(
     "aqhi.js",

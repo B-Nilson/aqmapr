@@ -12,7 +12,6 @@ Depends:
     R (>= 4.1.0)
 Imports: 
     aqhi (>= 0.1.0),
-    canadata (>= 0.0.0.9000),
     data.table,
     dplyr,
     handyr (>= 0.0.0.9000),
@@ -35,6 +34,7 @@ Remotes:
 Suggests: 
     ambiorix,
     callr,
+    canadata (>= 0.0.0.9000),
     geojson,
     pbapply,
     sf,

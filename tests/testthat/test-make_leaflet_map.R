@@ -13,6 +13,7 @@ test_that("basic case with points data works", {
 })
 
 test_that("basic case with polygons data works", {
+  rlang::check_installed("canadata")
   polygon_layers <- list(PolygonLayer(
     group = "Provinces",
     data = canadata::provinces_and_territories,
