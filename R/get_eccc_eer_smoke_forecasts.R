@@ -114,7 +114,7 @@ get_eccc_eer_smoke_forecasts <- function(
     dplyr::select(dplyr::all_of(desired_cols))
 
   # Remove overlap of polygons so opacity works properly
-  eer_smoke |>
+  eer_smoke <- eer_smoke |>
     split(~forecast_time) |>
     handyr::for_each(
       \(fcst_data) {
@@ -128,6 +128,13 @@ get_eccc_eer_smoke_forecasts <- function(
       .bind = TRUE,
       .show_progress = FALSE
     )
+  
+  # Handle no rows/columns (replace with NULL)
+  is_empty <- nrow(eer_smoke) == 0 | ncol(eer_smoke) == 0
+  if (is_empty) {
+    eer_smoke <- NULL
+  }
+  return(eer_smoke)
 }
 
 #' Colour palette for EER smoke forecasts

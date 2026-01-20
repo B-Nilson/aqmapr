@@ -83,7 +83,7 @@ get_noaa_hms_smoke_polygons <- function(
     dplyr::select(dplyr::all_of(desired_cols))
 
   # Remove overlap of polygons so opacity works properly
-  hms_smoke |>
+  hms_smoke <- hms_smoke |>
     split(~period) |>
     handyr::for_each(
       \(fcst_data) {
@@ -97,6 +97,13 @@ get_noaa_hms_smoke_polygons <- function(
       .bind = TRUE,
       .show_progress = FALSE
     )
+  
+  # Handle no rows/columns (replace with NULL)
+  is_empty <- nrow(hms_smoke) == 0 | ncol(hms_smoke) == 0
+  if (is_empty) {
+    hms_smoke <- NULL
+  }
+  return(hms_smoke)
 }
 
 #' Colour palette for HMS smoke polygons
