@@ -10,7 +10,6 @@ save_map(
   self_contained = FALSE,
   library_dir = NULL,
   encoding = "UTF-8",
-  page_title = "My Map",
   ...
 )
 }
@@ -30,9 +29,6 @@ Default is \code{NULL}, in which case dependencies are written to a folder named
 
 \item{encoding}{The encoding to use when writing the file.
 Default is \code{"UTF-8"}.}
-
-\item{page_title}{The title of the page.
-Default is \code{"My Map"}.}
 
 \item{...}{Additional arguments to pass to \link[mapview:mapshot]{mapview::mapshot} (which calls \link[webshot:webshot]{webshot::webshot} for non-HTML files, and \link[htmlwidgets:saveWidget]{htmlwidgets::saveWidget} for HTML).}
 }

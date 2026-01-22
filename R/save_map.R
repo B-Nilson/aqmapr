@@ -14,8 +14,6 @@
 #'   Default is `NULL`, in which case dependencies are written to a folder named after `save_to` + "_files".
 #' @param encoding The encoding to use when writing the file.
 #'   Default is `"UTF-8"`.
-#' @param page_title The title of the page.
-#'   Default is `"My Map"`.
 #'
 #' @param ... Additional arguments to pass to [mapview::mapshot] (which calls [webshot::webshot] for non-HTML files, and [htmlwidgets::saveWidget] for HTML).
 #' @export
@@ -25,7 +23,6 @@ save_map <- function(
   self_contained = FALSE,
   library_dir = NULL,
   encoding = "UTF-8",
-  page_title = "My Map",
   ...
 ) {
   rlang::check_installed("webshot") # TODO: remove once PR #516 for mapview is merged
@@ -43,7 +40,6 @@ save_map <- function(
     selfcontained = self_contained,
     libdir = library_dir,
     encoding = encoding,
-    title = page_title,
     ...
   )
 
