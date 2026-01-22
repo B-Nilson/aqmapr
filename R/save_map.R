@@ -25,7 +25,9 @@ save_map <- function(
   encoding = "UTF-8",
   ...
 ) {
-  rlang::check_installed("webshot") # TODO: remove once PR #516 for mapview is merged
+  if (FALSE) { # DONT RUN - just for making R CMD check happy with webshot as a dependency
+    webshot::`%>%` # webshot is required for mapview::mapshot, but only as Suggested
+  }
   stopifnot("leaflet" %in% class(map))
   stopifnot(
     is.character(save_to),

@@ -26,7 +26,8 @@ Imports:
     rlang,
     S7,
     stringr,
-    units
+    units,
+    webshot
 Remotes:  
     github::B-Nilson/handyr,
     github::B-Nilson/aqhi,
@@ -38,8 +39,7 @@ Suggests:
     geojson,
     pbapply,
     sf,
-    testthat (>= 3.0.0),
-    webshot
+    testthat (>= 3.0.0)
 Config/testthat/edition: 3
 LazyData: true
 Collate: 
