@@ -31,79 +31,37 @@
 #'   ))
 #' )
 get_noaa_hms_smoke_polygons <- function(
-  select_times = Sys.time(),
+  select_time = Sys.time(),
   data_dir = tempdir(),
   quiet = FALSE
 ) {
   desired_cols <- c(
     satellite = "Satellite",
     "period",
-    "density" = "Density"
+    density = "Density"
   )
 
-  # Download and unzip new runs as needed
-  select_times |>
-    get_hms_zip(
-      data_dir = data_dir,
-      quiet = quiet
-    )
+  # Download and unzip as needed
+  hms_files <- select_time |>
+    get_hms_zip(data_dir = data_dir, quiet = quiet)
+  shape_path <- hms_files[endsWith(hms_files, ".shp")]
 
-  # Build shp file name path
-  shape_names <- "hms_smoke%s.shp" |>
-    sprintf(format(select_times, "%Y%m%d"))
-  shape_paths <- data_dir |>
-    file.path(shape_names)
+  # Load shapefile and cleanup
+  hms_smoke <- shape_path |> read_hms_shp()
 
-  # Load shapefile(s) and cleanup
-  hms_smoke <- shape_paths |>
-    handyr::for_each(
-      sf::read_sf,
-      .bind = TRUE,
-      .show_progress = FALSE
-    ) |>
-    dplyr::mutate(
-      # Format dates properly
-      dplyr::across(
-        c("Start", "End"),
-        ~ lubridate::as_datetime(.x, format = "%Y%j %H%M", tz = "UTC")
-      ),
-      period = lubridate::interval(.data$Start, .data$End),
-      # Set density to factor
-      Density = factor(.data$Density, levels = c("Heavy", "Medium", "Light")),
-    ) |>
-    dplyr::filter(!sf::st_is_empty(.data$geometry)) |>
-    sf::st_make_valid() |>
-    # Combine into multipolygons by period/density
-    dplyr::summarise(
-      .by = c("period", "Density"),
-      Satellite = unique(.data$Satellite) |> paste(collapse = " + "),
-      geometry = sf::st_union(.data$geometry)
-    ) |>
-    # Select/rename columns
-    dplyr::select(dplyr::all_of(desired_cols))
-
-  # Remove overlap of polygons so opacity works properly
-  hms_smoke <- hms_smoke |>
-    split(~period) |>
-    handyr::for_each(
-      \(fcst_data) {
-        fcst_data |>
-          dplyr::arrange(dplyr::desc(.data$density)) |>
-          sf::st_transform(3857) |>
-          sf::st_difference() |>
-          sf::st_transform("WGS84") |>
-          dplyr::arrange(.data$density)
-      },
-      .bind = TRUE,
-      .show_progress = FALSE
-    )
-  
   # Handle no rows/columns (replace with NULL)
   is_empty <- nrow(hms_smoke) == 0 | ncol(hms_smoke) == 0
   if (is_empty) {
     hms_smoke <- NULL
   }
-  return(hms_smoke)
+
+  # Combine start/end date and select/rename columns
+  hms_smoke |>
+    dplyr::mutate(
+      period = .data[[date_cols[1]]] |>
+        lubridate::interval(.data[[date_cols[2]]])
+    ) |>
+    dplyr::select(dplyr::all_of(desired_cols))
 }
 
 #' Colour palette for HMS smoke polygons
@@ -167,6 +125,7 @@ get_hms_zip <- function(
     handyr::for_each(
       .enumerate = TRUE,
       .show_progress = !quiet,
+      .as_list = TRUE,
       \(zip_url, i) {
         if (is_todays[i] || !file.exists(run_zips[i])) {
           zip_url |>
@@ -178,5 +137,52 @@ get_hms_zip <- function(
           if (unzip) unzip(run_zips[i], exdir = data_dir)
         }
       }
-    )
+    ) |>
+    unlist()
+}
+
+read_hms_shp <- function(
+  shp_path,
+  date_fmt = "%Y%j %H%M",
+  date_tz = "UTC",
+  date_cols = c("Start", "End"),
+  density_levels = c("Heavy", "Medium", "Light")
+) {
+  shp_path |>
+    sf::read_sf() |>
+    dplyr::mutate(
+      # Format dates properly
+      dplyr::across(
+        dplyr::all_of(date_cols),
+        \(x) x |> lubridate::as_datetime(format = date_fmt, tz = date_tz)
+      ),
+      # Set density to factor
+      Density = .data$Density |> factor(levels = density_levels),
+    ) |>
+    # Remove empty geometries and fix invalid geometries
+    dplyr::filter(!sf::st_is_empty(.data$geometry)) |>
+    sf::st_make_valid() |>
+    # Combine into multipolygons by period/density
+    dplyr::summarise(
+      .by = dplyr::all_of(c("Density", date_cols)),
+      Satellite = .data$Satellite |> unique() |> paste(collapse = " + "),
+      geometry = .data$geometry |> sf::st_union()
+    ) |>
+    # Sort by period/density
+    dplyr::arrange(
+      dplyr::pick(dplyr::all_of(date_cols)),
+      dplyr::desc(.data$Density)
+    ) |>
+    # Remove overlap of polygons so opacity works properly
+    dplyr::group_split(dplyr::pick(dplyr::all_of(date_cols))) |>
+    lapply(
+      \(fcst_data) {
+        fcst_data |>
+          sf::st_transform(3857) |>
+          sf::st_difference() |>
+          sf::st_transform("WGS84") |>
+          dplyr::arrange(.data$Density)
+      }
+    ) |>
+    dplyr::bind_rows()
 }
