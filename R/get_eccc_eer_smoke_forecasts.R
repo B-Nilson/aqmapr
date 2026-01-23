@@ -111,24 +111,12 @@ get_eccc_eer_smoke_forecasts <- function(
     sf::st_cast("POLYGON") |>
     sf::st_make_valid() |>
     # Select/rename columns
-    dplyr::select(dplyr::all_of(desired_cols))
+    dplyr::select(dplyr::all_of(desired_cols)) |>
+    # Remove overlap of polygons so opacity works properly
+    dplyr::arrange(.data$min_pm25) |>
+    dplyr::group_by(.data$forecast_time) |>
+    remove_polygon_overlap()
 
-  # Remove overlap of polygons so opacity works properly
-  eer_smoke <- eer_smoke |>
-    split(~forecast_time) |>
-    handyr::for_each(
-      \(fcst_data) {
-        fcst_data |>
-          dplyr::arrange(dplyr::desc(.data$min_pm25)) |>
-          sf::st_transform(3857) |>
-          sf::st_difference() |>
-          sf::st_transform("WGS84") |>
-          dplyr::arrange(.data$min_pm25)
-      },
-      .bind = TRUE,
-      .show_progress = FALSE
-    )
-  
   # Handle no rows/columns (replace with NULL)
   is_empty <- nrow(eer_smoke) == 0 | ncol(eer_smoke) == 0
   if (is_empty) {

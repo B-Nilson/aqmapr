@@ -16,7 +16,7 @@
 #' @export
 #'
 #' @examples
-#' hms <- get_noaa_hms_smoke_polygons()
+#' hms <- get_noaa_hms_smoke()
 #' make_leaflet_map(
 #'   polygon_layers = list(PolygonLayer(
 #'     group = "HMS Smoke",
@@ -30,7 +30,7 @@
 #'     fill_palette = hms_smoke_pal()
 #'   ))
 #' )
-get_noaa_hms_smoke_polygons <- function(
+get_noaa_hms_smoke <- function(
   select_time = Sys.time(),
   data_dir = tempdir(),
   quiet = FALSE
@@ -41,14 +41,34 @@ get_noaa_hms_smoke_polygons <- function(
     density = "Density"
   )
 
-  # Download, unzip, and read data
-  hms_smoke <- select_time |>
-    get_hms_data(data_dir = data_dir, quiet = quiet, cache = TRUE)
+  select_time <- select_time |> lubridate::with_tz("America/Vancouver")
+  shape_date <- select_time |> format("%Y%m%d")
+  shape_month <- select_time |> format("%Y/%m")
+  is_todays <- select_time >= lubridate::today(tzone = "UTC")
+
+  # Build url to desired zip file
+  source_url <- "https://satepsanone.nesdis.noaa.gov/pub/FIRE/web/HMS/Smoke_Polygons/Shapefile"
+  source_template <- "%s/%s/hms_smoke%s.zip"
+  zip_url <- source_template |>
+    sprintf(source_url, shape_month, shape_date)
+
+  # Download, unzip, read
+  local_path <- "%s/hms_%s_shp.zip" |>
+    sprintf(data_dir, shape_date)
+  hms_smoke <- zip_url |>
+    handyr::get_and_unzip(
+      local_path = local_path,
+      unzip_dir = data_dir,
+      cache = cache,
+      quiet = quiet
+    ) |>
+    stringr::str_subset(pattern = ".*\\.shp$") |>
+    read_hms_shp()
 
   # Handle no rows/columns (replace with NULL)
   is_empty <- nrow(hms_smoke) == 0 | ncol(hms_smoke) == 0
   if (is_empty) {
-    hms_smoke <- NULL
+    return(NULL)
   }
 
   # Combine start/end date and select/rename columns
@@ -90,39 +110,6 @@ hms_smoke_pal <- function(hms_smoke_density = NULL) {
   pal(as.character(hms_smoke_density))
 }
 
-get_hms_data <- function(
-  select_time = Sys.time(),
-  data_dir = tempdir(),
-  quiet = FALSE,
-  cache = TRUE
-) {
-  select_time <- select_time |> lubridate::with_tz("America/Vancouver")
-  shape_date <- select_time |> format("%Y%m%d")
-  shape_month <- select_time |> format("%Y/%m")
-  is_todays <- select_time >= lubridate::today(tzone = "UTC")
-
-  # Build url to desired zip file
-  source_url <- "https://satepsanone.nesdis.noaa.gov/pub/FIRE/web/HMS/Smoke_Polygons/Shapefile"
-  source_template <- "%s/%s/hms_smoke%s.zip"
-  zip_url <- source_template |>
-    sprintf(source_url, shape_month, shape_date)
-
-  # Download and unzip as needed
-  local_path <- "%s/hms_%s_shp.zip" |>
-    sprintf(data_dir, shape_date)
-  hms_files <- zip_url |>
-    handyr::get_and_unzip(
-      local_path = local_path,
-      unzip_dir = data_dir,
-      cache = cache,
-      quiet = quiet
-    )
-  
-  # Read data
-  hms_files[endsWith(hms_files, ".shp")] |> 
-    read_hms_shp()
-}
-
 read_hms_shp <- function(
   shp_path,
   date_fmt = "%Y%j %H%M",
@@ -130,41 +117,50 @@ read_hms_shp <- function(
   date_cols = c("Start", "End"),
   density_levels = c("Heavy", "Medium", "Light")
 ) {
-  shp_path |>
-    sf::read_sf() |>
+  sf::read_sf(shp_path) |>
+    # Fix types
     dplyr::mutate(
-      # Format dates properly
       dplyr::across(
         dplyr::all_of(date_cols),
         \(x) x |> lubridate::as_datetime(format = date_fmt, tz = date_tz)
       ),
-      # Set density to factor
       Density = .data$Density |> factor(levels = density_levels),
     ) |>
-    # Remove empty geometries and fix invalid geometries
-    dplyr::filter(!sf::st_is_empty(.data$geometry)) |>
-    sf::st_make_valid() |>
     # Combine into multipolygons by period/density
-    dplyr::summarise(
+    combine_polygons(
       .by = dplyr::all_of(c("Density", date_cols)),
-      Satellite = .data$Satellite |> unique() |> paste(collapse = " + "),
-      geometry = .data$geometry |> sf::st_union()
+      Satellite = .data$Satellite |> unique() |> paste(collapse = " + ")
     ) |>
-    # Sort by period/density
+    # Remove overlap of polygons so opacity works properly
     dplyr::arrange(
       dplyr::pick(dplyr::all_of(date_cols)),
       dplyr::desc(.data$Density)
     ) |>
-    # Remove overlap of polygons so opacity works properly
-    dplyr::group_split(dplyr::pick(dplyr::all_of(date_cols))) |>
-    lapply(
-      \(fcst_data) {
-        fcst_data |>
-          sf::st_transform(3857) |>
+    dplyr::group_by(dplyr::pick(dplyr::all_of(date_cols))) |>
+    remove_polygon_overlap()
+}
+
+combine_polygons <- function(polygon_data, .by = NULL, ...) {
+  polygon_data |>
+    dplyr::filter(!sf::st_is_empty(.data$geometry)) |>
+    sf::st_make_valid() |>
+    dplyr::summarise(
+      .by = rlang::enquo(.by),
+      geometry = .data$geometry |> sf::st_union(),
+      ...
+    )
+}
+
+remove_polygon_overlap <- function(polygon_data, equal_area_crs = 3857) {
+  polygon_data |>
+    dplyr::group_modify(
+      \(group_data) {
+        group_data |>
+          sf::st_transform(equal_area_crs) |>
           sf::st_difference() |>
-          sf::st_transform("WGS84") |>
-          dplyr::arrange(.data$Density)
-      }
-    ) |>
-    dplyr::bind_rows()
+          sf::st_transform(sf::st_crs(group_data))
+      },
+      .keep = TRUE
+    ) |> 
+    dplyr::ungroup()
 }
