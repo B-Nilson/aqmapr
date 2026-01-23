@@ -41,13 +41,9 @@ get_noaa_hms_smoke_polygons <- function(
     density = "Density"
   )
 
-  # Download and unzip as needed
-  hms_files <- select_time |>
-    get_hms_zip(data_dir = data_dir, quiet = quiet)
-  shape_path <- hms_files[endsWith(hms_files, ".shp")]
-
-  # Load shapefile and cleanup
-  hms_smoke <- shape_path |> read_hms_shp()
+  # Download, unzip, and read data
+  hms_smoke <- select_time |>
+    get_hms_data(data_dir = data_dir, quiet = quiet, cache = TRUE)
 
   # Handle no rows/columns (replace with NULL)
   is_empty <- nrow(hms_smoke) == 0 | ncol(hms_smoke) == 0
@@ -94,51 +90,37 @@ hms_smoke_pal <- function(hms_smoke_density = NULL) {
   pal(as.character(hms_smoke_density))
 }
 
-get_hms_zip <- function(
-  select_times = Sys.time(),
+get_hms_data <- function(
+  select_time = Sys.time(),
   data_dir = tempdir(),
-  unzip = TRUE,
-  quiet = FALSE
+  quiet = FALSE,
+  cache = TRUE
 ) {
-  # Build url to desired zip file(s)
-  select_times <- select_times |> lubridate::with_tz("America/New_York")
-  is_todays <- select_times >= lubridate::with_tz(Sys.Date(), "UTC")
-  source_template <- "https://satepsanone.nesdis.noaa.gov/pub/FIRE/web/HMS/Smoke_Polygons/Shapefile/%s/%s/%s.zip"
-  shape_names <- paste0("hms_smoke", format(select_times, "%Y%m%d"))
+  select_time <- select_time |> lubridate::with_tz("America/Vancouver")
+  shape_date <- select_time |> format("%Y%m%d")
+  shape_month <- select_time |> format("%Y/%m")
+  is_todays <- select_time >= lubridate::today(tzone = "UTC")
 
-  zip_urls <- source_template |>
-    sprintf(
-      lubridate::year(select_times),
-      format(select_times, "%m"),
-      shape_names
-    )
+  # Build url to desired zip file
+  source_url <- "https://satepsanone.nesdis.noaa.gov/pub/FIRE/web/HMS/Smoke_Polygons/Shapefile"
+  source_template <- "%s/%s/hms_smoke%s.zip"
+  zip_url <- source_template |>
+    sprintf(source_url, shape_month, shape_date)
 
-  # Download and unzip new runs as needed
-  run_zips <- data_dir |>
-    file.path(
-      paste0("hms_", format(select_times, "%Y%m%d"), "_shp.zip")
+  # Download and unzip as needed
+  local_path <- "%s/hms_%s_shp.zip" |>
+    sprintf(data_dir, shape_date)
+  hms_files <- zip_url |>
+    handyr::get_and_unzip(
+      local_path = local_path,
+      unzip_dir = data_dir,
+      cache = cache,
+      quiet = quiet
     )
-  if (!quiet) {
-    rlang::check_installed("pbapply")
-  }
-  zip_urls |>
-    handyr::for_each(
-      .enumerate = TRUE,
-      .show_progress = !quiet,
-      .as_list = TRUE,
-      \(zip_url, i) {
-        if (is_todays[i] || !file.exists(run_zips[i])) {
-          zip_url |>
-            utils::download.file(
-              destfile = run_zips[i],
-              mode = "wb",
-              quiet = quiet
-            )
-          if (unzip) unzip(run_zips[i], exdir = data_dir)
-        }
-      }
-    ) |>
-    unlist()
+  
+  # Read data
+  hms_files[endsWith(hms_files, ".shp")] |> 
+    read_hms_shp()
 }
 
 read_hms_shp <- function(
