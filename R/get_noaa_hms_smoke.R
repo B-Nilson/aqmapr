@@ -48,8 +48,7 @@ get_noaa_hms_smoke <- function(
 
   # Build url to desired zip file
   source_url <- "https://satepsanone.nesdis.noaa.gov/pub/FIRE/web/HMS/Smoke_Polygons/Shapefile"
-  source_template <- "%s/%s/hms_smoke%s.zip"
-  zip_url <- source_template |>
+  zip_url <- "%s/%s/hms_smoke%s.zip" |>
     sprintf(source_url, shape_month, shape_date)
 
   # Download, unzip, read
@@ -154,13 +153,12 @@ combine_polygons <- function(polygon_data, .by = NULL, ...) {
 remove_polygon_overlap <- function(polygon_data, equal_area_crs = 3857) {
   polygon_data |>
     dplyr::group_modify(
-      \(group_data) {
+      \(group_data, ...) {
         group_data |>
           sf::st_transform(equal_area_crs) |>
           sf::st_difference() |>
           sf::st_transform(sf::st_crs(group_data))
-      },
-      .keep = TRUE
+      }
     ) |> 
     dplyr::ungroup()
 }

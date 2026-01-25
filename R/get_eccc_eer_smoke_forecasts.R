@@ -4,7 +4,7 @@
 #' They run dispersion models using fire information and ECCC weather models.
 #' See \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/}{here} for more information.
 #'
-#' @param select_times POSIXct time(s) to download data for
+#' @param select_time POSIXct time to download data for
 #' @param region String specifying the region to download data for. Currently only "Canada" is supported.
 #' @param data_dir Directory to store downloaded data in. Defaults to tempdir().
 #' @param quiet Logical. Should output from `download.file` be suppressed?
@@ -22,106 +22,49 @@
 #'   ))
 #' )
 get_eccc_eer_smoke_forecasts <- function(
-  select_times = Sys.time(),
+  select_time = Sys.time(),
   region = "Canada",
   data_dir = tempdir(),
-  quiet = FALSE
+  quiet = FALSE,
+  cache = TRUE
 ) {
-  # cat(paste0('c("', paste(get_eer_regions(Sys.time()), collapse = '", "'), '")'))
-  stopifnot(lubridate::is.POSIXct(select_times), length(select_times) > 0)
-  stopifnot(
-    region %in%
-      c(
-        "Canada",
-        "AB_SK_North",
-        "AB_SK_South",
-        "Atlantic_East",
-        "Atlantic_Labrador",
-        "Atlantic_West",
-        "BC_AB_North",
-        "BC_North",
-        "BC_South",
-        "BC_South_Cranbrook",
-        "BC_South_Lytton",
-        "BC_South_Williams_Lake",
-        "Great_Lakes",
-        "MB_ON_South",
-        "NB_CFB_Gagetown",
-        "NS_South",
-        "NT",
-        "NU",
-        "ON_North",
-        "QC_Central",
-        "QC_North",
-        "QC_South",
-        "SK_MB_North",
-        "SK_MB_South",
-        "YT",
-        "YT_North"
-      )
-  )
+  stopifnot(lubridate::is.POSIXct(select_time), length(select_time) > 0)
+  check_eer_region(region)
   stopifnot(is.character(data_dir), length(data_dir) == 1)
-
-  desired_cols <- c(
-    "region",
-    "model_time",
-    "forecast_time",
-    min_pm25 = "Interval",
-    altitude = "Height"
-  )
+  stopifnot(is.logical(quiet), length(quiet) == 1)
 
   # Floor to nearest UTC hour
-  select_times <- select_times |>
+  select_time <- select_time |>
     lubridate::with_tz("UTC") |>
     lubridate::floor_date("hours") |>
     unique()
+  model_run <- select_time |>
+    lubridate::floor_date("6 hours")
 
-  # Download and unzip new runs as needed
-  select_times |>
-    lubridate::floor_date("6 hours") |>
-    get_eer_zip(data_dir = data_dir, region = region, quiet = quiet)
+  # Build url to this runs zip file
+  zip_url <- "%s/shp_%s.zip" |>
+    sprintf(make_eer_zip_dir(model_run), region)
+  local_path <- "%s/eer_%s_%s_shp.zip" |>
+    sprintf(data_dir, region, format(model_run, "%Y%m%d-%H%M"))
+  shp_pattern <- ".*%s\\.shp$" |> sprintf(format(select_time, "%Y%m%d-%H00"))
 
-  # Build shp file name path
-  shape_names <- "shp_%s_%s" |>
-    sprintf(region, format(select_times, "%Y%m%d-%H%M"))
-  shape_paths <- data_dir |>
-    file.path(shape_names, paste0(shape_names, ".shp"))
-
-  # Load shapefile, convert to POLYGON and cleanup
-  eer_smoke <- shape_paths |>
-    handyr::for_each(
-      \(path, i) {
-        path |>
-          sf::read_sf() |>
-          # Add useful info
-          dplyr::mutate(
-            Height = .data$Height |> units::set_units("m"),
-            model_time = select_times[i] |>
-              lubridate::floor_date("6 hours"),
-            forecast_time = select_times[i],
-            region = region
-          )
-      },
-      .bind = TRUE,
-      .show_progress = FALSE,
-      .enumerate = TRUE
+  # Download, unzip, read
+  eer_smoke <- zip_url |>
+    handyr::get_and_unzip(
+      local_path = local_path,
+      unzip_dir = data_dir,
+      cache = cache,
+      quiet = quiet
     ) |>
-    dplyr::filter(!sf::st_is_empty(.data$geometry)) |>
-    # LINESTRING -> POLYGON
-    sf::st_cast("POLYGON") |>
-    sf::st_make_valid() |>
-    # Select/rename columns
-    dplyr::select(dplyr::all_of(desired_cols)) |>
-    # Remove overlap of polygons so opacity works properly
-    dplyr::arrange(.data$min_pm25) |>
-    dplyr::group_by(.data$forecast_time) |>
-    remove_polygon_overlap()
+    stringr::str_subset(pattern = shp_pattern) |>
+    read_eer_shp()
 
   # Handle no rows/columns (replace with NULL)
   is_empty <- nrow(eer_smoke) == 0 | ncol(eer_smoke) == 0
   if (is_empty) {
     eer_smoke <- NULL
   }
+
   return(eer_smoke)
 }
 
@@ -157,74 +100,79 @@ eer_smoke_pal <- function(eer_pm25_ugm3 = NULL) {
   pal(eer_pm25_ugm3)
 }
 
-get_eer_zip <- function(
-  model_runs,
-  region = "Canada",
-  data_dir = tempdir(),
-  unzip = TRUE,
-  quiet = FALSE
-) {
-  is_todays <- model_runs >= lubridate::with_tz(Sys.Date(), "UTC")
-  if (any(is_todays)) {
-    is_todays <- c(is_todays, TRUE)
-  }
-
-  # Build url to this runs zip file
-  zip_urls <- model_runs |>
-    make_eer_zip_dir() |>
-    paste0("shp_", region, ".zip")
-
-  # Download and unzip new runs as needed
-  unzip_details <- zip_urls |>
-    stringr::str_extract(
-      paste0(region, "/(.+?)/shp/(shp_.+?)\\.zip"),
-      group = 1:2
-    )
-  local_paths <- data_dir |>
-    file.path(unzip_details[, 1] |> paste0("_", unzip_details[, 2], ".zip"))
-  if (!quiet) {
-    rlang::check_installed("pbapply")
-  }
-  zip_urls |>
-    handyr::for_each(
-      .enumerate = TRUE,
-      .show_progress = !quiet,
-      \(zip_url, i) {
-        if (is_todays[i] || !file.exists(local_paths[i])) {
-          success <- zip_url |>
-            utils::download.file(
-              destfile = local_paths[i],
-              mode = "wb",
-              quiet = quiet
-            ) |>
-            suppressWarnings() |>
-            handyr::on_error(.return = NULL) # Fails near 24 UTC when latest transitions to next day
-          if (unzip & !is.null(success)) unzip(local_paths[i], exdir = data_dir)
-        }
-      }
-    )
+read_eer_shp <- function(shp_path) {
+  desired_cols <- c(
+    "region",
+    "model_time",
+    "forecast_time",
+    min_pm25 = "Interval",
+    altitude = "Height"
+  )
+  shp_path |>
+    sf::read_sf() |>
+    # Add useful info
+    dplyr::mutate(
+      Height = .data$Height |> units::set_units("m"),
+      model_time = model_run,
+      forecast_time = select_time,
+      region = region
+    ) |>
+    # Drop empty geometries and convert to POLYGON
+    dplyr::filter(!sf::st_is_empty(.data$geometry)) |>
+    sf::st_cast("POLYGON") |>
+    sf::st_make_valid() |>
+    # Remove overlap of polygons so opacity works properly
+    dplyr::arrange(dplyr::desc(.data$Interval)) |>
+    dplyr::group_by(.data$forecast_time) |>
+    remove_polygon_overlap() |>
+    sf::st_sf() |>
+    # Select/rename desired columns
+    dplyr::select(dplyr::all_of(desired_cols))
 }
 
-make_eer_zip_dir <- function(model_runs) {
-  is_todays <- model_runs >= lubridate::with_tz(Sys.Date(), "UTC")
+make_eer_zip_dir <- function(model_run) {
   source_template <- "https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/%s/Canada/%s/shp/"
-  timestamps <- format(model_runs, "%Y%m%d.%H00")
+  is_todays <- model_run >= lubridate::today(tzone = "UTC")
   if (any(is_todays)) {
-    timestamps <- c(timestamps, "latest")
+    timestamp <- "latest"
+  } else {
+    timestamp <- format(model_run, "%Y%m%d.%H00")
   }
   source_template |>
-    sprintf(format(model_runs, "%HUTC"), timestamps) |>
-    unique()
+    sprintf(format(model_run, "%HUTC"), timestamp)
 }
 
-get_eer_regions <- function(select_time) {
-  zip_dir <- select_time |>
-    lubridate::floor_date("6 hours") |>
-    make_eer_zip_dir()
-  zip_dir |>
-    url() |>
-    readLines() |>
-    stringr::str_subset("href=\".*zip\"") |>
-    stringr::str_extract("href=\"shp_(.*?).zip\"", group = 1) |>
-    unique()
+check_eer_region <- function(region) {
+  stopifnot(
+    length(region) == 1,
+    region %in%
+      c(
+        "Canada",
+        "AB_SK_North",
+        "AB_SK_South",
+        "Atlantic_East",
+        "Atlantic_Labrador",
+        "Atlantic_West",
+        "BC_AB_North",
+        "BC_North",
+        "BC_South",
+        "BC_South_Cranbrook",
+        "BC_South_Lytton",
+        "BC_South_Williams_Lake",
+        "Great_Lakes",
+        "MB_ON_South",
+        "NB_CFB_Gagetown",
+        "NS_South",
+        "NT",
+        "NU",
+        "ON_North",
+        "QC_Central",
+        "QC_North",
+        "QC_South",
+        "SK_MB_North",
+        "SK_MB_South",
+        "YT",
+        "YT_North"
+      )
+  )
 }
