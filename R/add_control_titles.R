@@ -3,19 +3,20 @@
 #' @description
 #' Adds titles to differiate the basemap/overlays sections of a Leaflet layer control.
 #'
-#' @param map A leaflet map object.
 #' @param base_title (Optional) The title to display in the base maps section of the layer control.
 #'   Default is `"Basemaps"`.
 #' @param layers_title (Optional) The title to display in the overlays section of the layer control.
 #'   Default is `"Layers"`.
 #' @param en_francais (Optional) If TRUE, the defaults for `base_title` and `layers_title` will be in French.
 #'   Default is `FALSE.`
+#' @inheritParams make_leaflet_map
 #' @export
 add_control_titles <- function(
   map,
   base_title = if (en_francais) "Th\u00E9mes" else "Basemaps",
   layers_title = if (en_francais) "Couches" else "Layers",
-  en_francais = FALSE
+  en_francais = FALSE,
+  as_reference = FALSE
 ) {
   stopifnot("leaflet" %in% class(map))
   stopifnot(
@@ -46,6 +47,6 @@ add_control_titles <- function(
   js_path <- "js/add_control_titles.js" |>
     system.file(package = "aqmapr")
   map |>
-    include_scripts(paths = js_path, as_reference = FALSE) |>
+    include_scripts(paths = js_path, as_reference = as_reference) |>
     htmlwidgets::onRender(on_render_js)
 }

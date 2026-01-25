@@ -8,12 +8,11 @@ add_control_titles(
   map,
   base_title = if (en_francais) "Thémes" else "Basemaps",
   layers_title = if (en_francais) "Couches" else "Layers",
-  en_francais = FALSE
+  en_francais = FALSE,
+  as_reference = FALSE
 )
 }
 \arguments{
-\item{map}{A leaflet map object.}
-
 \item{base_title}{(Optional) The title to display in the base maps section of the layer control.
 Default is \code{"Basemaps"}.}
 
@@ -22,6 +21,11 @@ Default is \code{"Layers"}.}
 
 \item{en_francais}{(Optional) If TRUE, the defaults for \code{base_title} and \code{layers_title} will be in French.
 Default is \code{FALSE.}}
+
+\item{as_reference}{(Optional). If TRUE, js/css will be referenced in the map header. If FALSE, the js/css will be embeded directly in the map.
+Requires local server to be running (see \code{\link[=start_server]{start_server()}}), or the js and css files need to be hosted in "/js" and "/css" respectively relative to the html file.
+Run \code{system.file("js", package = "aqmapr")}/\code{system.file("css", package = "aqmapr")} to find the location of the js/css files respectively.
+Default is FALSE.}
 }
 \description{
 Adds titles to differiate the basemap/overlays sections of a Leaflet layer control.

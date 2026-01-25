@@ -10,10 +10,12 @@ make_leaflet_map(
   polygon_layers = list(),
   wms_layers = list(),
   page_title = NULL,
+  layer_control_titles = c("Basemaps", "Layers"),
   attribution = NULL,
   center_on_opened_popup = FALSE,
   track_map_state = FALSE,
   include_timestamp = FALSE,
+  include_scalebar = TRUE,
   as_reference = FALSE
 )
 }
@@ -30,6 +32,10 @@ Default is an empty list (no points/polygons/WMS layers added).}
 \item{page_title}{(Optional).
 A character string of the title to display in the browser tab when the map is saved to an HTML file.
 Default \code{NULL} (no title).}
+
+\item{layer_control_titles}{(Optional).
+A 2-length character vector to use for the basemap and layer control titles.
+Default is c("Basemaps", "Layers").}
 
 \item{attribution}{(Optional).
 A character string of the attribution text (HTML supported) to display in the bottom right of the map alongside the basemap attribution.
@@ -48,6 +54,13 @@ Default is FALSE.}
 If TRUE, the current timestamp (browser time) will be included in a bottom left leaflet control.
 If a single POSIXct object is passed, it will be used as the timestamp instead of the current time.
 Default is FALSE.}
+
+\item{include_scalebar}{(Optional).
+If \code{TRUE}, a scale bar will be included in the bottom left leaflet control.
+If instead a character equal to
+\code{"bottomright"}, \code{"topleft"}, \code{"bottomleft"}, or \code{"topright"}
+is passed, it will be used as the position of the scale bar.
+Default is \code{TRUE}.}
 
 \item{as_reference}{(Optional). If TRUE, js/css will be referenced in the map header. If FALSE, the js/css will be embeded directly in the map.
 Requires local server to be running (see \code{\link[=start_server]{start_server()}}), or the js and css files need to be hosted in "/js" and "/css" respectively relative to the html file.
