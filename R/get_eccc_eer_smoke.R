@@ -1,4 +1,4 @@
-#' Get ECCC EER smoke forecasts
+#' Get ECCC EER smoke forecast
 #'
 #' The Environmental Emergency Response group at Environment and Climate Change Canada (ECCC) provides smoke forecasts for Canada.
 #' They run dispersion models using fire information and ECCC weather models.
@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples
-#' eer <- get_eccc_eer_smoke_forecasts()
+#' eer <- get_eccc_eer_smoke()
 #' make_leaflet_map(
 #'   polygon_layers = list(PolygonLayer(
 #'     group = "EER Smoke",
@@ -21,7 +21,7 @@
 #'     display_by_default = FALSE
 #'   ))
 #' )
-get_eccc_eer_smoke_forecasts <- function(
+get_eccc_eer_smoke <- function(
   select_time = Sys.time(),
   region = "Canada",
   data_dir = tempdir(),

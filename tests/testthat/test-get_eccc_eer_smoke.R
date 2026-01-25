@@ -1,5 +1,5 @@
 test_that("basic case works", {
-  eer <- get_eccc_eer_smoke_forecasts(quiet = TRUE) |>
+  eer <- get_eccc_eer_smoke(quiet = TRUE) |>
     expect_no_error() |>
     expect_no_warning()
 

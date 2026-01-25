@@ -57,7 +57,7 @@ Collate:
     'aqmapr-package.R'
     'center_on_opened_popup.R'
     'data.R'
-    'get_eccc_eer_smoke_forecasts.R'
+    'get_eccc_eer_smoke.R'
     'get_noaa_hms_smoke_polygons.R'
     'helpers.R'
     'icons.R'

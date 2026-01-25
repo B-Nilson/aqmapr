@@ -84,7 +84,7 @@ make_aqmap <- function(
       data = canadata::provinces_and_territories,
       opacity = 0.2
     ),
-    # get_eccc_eer_smoke_forecasts() |>
+    # get_eccc_eer_smoke() |>
     #   PolygonLayer(
     #     group = "Modelled Smoke",
     #     data = _,
