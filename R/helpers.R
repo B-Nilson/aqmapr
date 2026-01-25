@@ -1,3 +1,13 @@
+# TODO: move to handyr
+escape_symbol <- function(x, symbol = "'") {
+  x |>
+    gsub(
+      pattern = symbol,
+      replacement = paste0("\\", symbol),
+      fixed = TRUE
+    )
+}
+
 # Determine when a local file was last updated relative to when it should have been
 # TODO: support basic file index urls
 # TODO: move to handyr

@@ -31,7 +31,7 @@ test_that("basic case works", {
 
   expect_true(any(grepl(
     body,
-    pattern = "add_control_titles('--- Basemaps ---', '--- Layers ---');",
+    pattern = "add_control_titles('--- Basemaps ---', '--- Layers ---')",
     fixed = TRUE
   )))
 })

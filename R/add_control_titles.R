@@ -27,25 +27,25 @@ add_control_titles <- function(
     length(layers_title) == 1 | is.null(base_title)
   )
 
+  # Handle NULLs
   if (is.null(base_title)) {
     base_title <- ""
   }
   if (is.null(layers_title)) {
     layers_title <- ""
   }
-  base_title <- gsub("'", "\\'", base_title)
-  layers_title <- gsub("'", "\\'", layers_title)
 
-  on_render_js <- "add_control_titles('%s', '%s');" |>
+  # Build JS for inserting titles
+  base_title <- base_title |> escape_symbol("'")
+  layers_title <- layers_title |> escape_symbol("'")
+  on_render_js <- "(el, x) => add_control_titles('%s', '%s')" |>
     sprintf(base_title, layers_title) |>
-    gsub(pattern = "''", replacement = "null")
+    gsub(pattern = "''", replacement = "null", fixed = TRUE)
 
+  # Include js file inline in the header along with on_render_js inline
   js_path <- "js/add_control_titles.js" |>
     system.file(package = "aqmapr")
-
   map |>
-    include_scripts(paths = js_path) |>
-    htmlwidgets::onRender(
-      "function(el, x) { %s }" |> sprintf(on_render_js)
-    )
+    include_scripts(paths = js_path, as_reference = FALSE) |>
+    htmlwidgets::onRender(on_render_js)
 }
