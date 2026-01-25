@@ -7,7 +7,8 @@
 get_noaa_hms_smoke(
   select_time = Sys.time(),
   data_dir = tempdir(),
-  quiet = FALSE
+  quiet = FALSE,
+  cache = TRUE
 )
 }
 \arguments{
