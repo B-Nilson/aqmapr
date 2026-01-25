@@ -28,7 +28,7 @@ Imports:
     stringr,
     units,
     webshot
-Remotes:  
+Remotes: 
     github::B-Nilson/handyr,
     github::B-Nilson/aqhi,
     github::B-Nilson/canadata

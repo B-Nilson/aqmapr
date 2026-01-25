@@ -25,7 +25,8 @@ save_map <- function(
   encoding = "UTF-8",
   ...
 ) {
-  if (FALSE) { # DONT RUN - just for making R CMD check happy with webshot as a dependency
+  if (FALSE) {
+    # DONT RUN - just for making R CMD check happy with webshot as a dependency
     webshot::`%>%` # webshot is required for mapview::mapshot, but only as Suggested
   }
   stopifnot("leaflet" %in% class(map))

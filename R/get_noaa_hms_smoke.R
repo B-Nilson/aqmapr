@@ -159,6 +159,6 @@ remove_polygon_overlap <- function(polygon_data, equal_area_crs = 3857) {
           sf::st_difference() |>
           sf::st_transform(sf::st_crs(group_data))
       }
-    ) |> 
+    ) |>
     dplyr::ungroup()
 }
