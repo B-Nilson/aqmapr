@@ -11,6 +11,9 @@
 #' @param page_title (Optional).
 #'   A character string of the title to display in the browser tab when the map is saved to an HTML file.
 #'   Default `NULL` (no title).
+#' @param attribution (Optional).
+#'   A character string of the attribution text (HTML supported) to display in the bottom right of the map alongside the basemap attribution.
+#'   Default is `NULL` (no attribution).
 #' @param center_on_opened_popup (Optional).
 #'   If TRUE, the map will be centered on the popup when it is opened.
 #'   Default is FALSE.
@@ -64,6 +67,7 @@ make_leaflet_map <- function(
   polygon_layers = list(),
   wms_layers = list(),
   page_title = NULL,
+  attribution = NULL,
   center_on_opened_popup = FALSE,
   track_map_state = FALSE,
   include_timestamp = FALSE,
@@ -99,6 +103,7 @@ make_leaflet_map <- function(
   base_map <- leaflet::leaflet() |>
     add_base_maps(base_maps = base_maps) |>
     set_page_title(page_title = page_title) |>
+    add_attribution(attribution, sep = " | ") |> 
     # Cache provider tiles for faster reload times
     leaflet.extras::enableTileCaching()
 

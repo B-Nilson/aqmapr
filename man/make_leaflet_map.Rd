@@ -10,6 +10,7 @@ make_leaflet_map(
   polygon_layers = list(),
   wms_layers = list(),
   page_title = NULL,
+  attribution = NULL,
   center_on_opened_popup = FALSE,
   track_map_state = FALSE,
   include_timestamp = FALSE,
@@ -29,6 +30,10 @@ Default is an empty list (no points/polygons/WMS layers added).}
 \item{page_title}{(Optional).
 A character string of the title to display in the browser tab when the map is saved to an HTML file.
 Default \code{NULL} (no title).}
+
+\item{attribution}{(Optional).
+A character string of the attribution text (HTML supported) to display in the bottom right of the map alongside the basemap attribution.
+Default is \code{NULL} (no attribution).}
 
 \item{center_on_opened_popup}{(Optional).
 If TRUE, the map will be centered on the popup when it is opened.
