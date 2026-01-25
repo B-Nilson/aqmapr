@@ -1,5 +1,5 @@
 test_that("basic case works", {
-  hms <- get_noaa_hms_smoke_polygons(quiet = TRUE) |>
+  hms <- get_noaa_hms_smoke(quiet = TRUE) |>
     expect_no_error() |>
     expect_no_warning()
 

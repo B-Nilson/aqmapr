@@ -33,7 +33,8 @@
 get_noaa_hms_smoke <- function(
   select_time = Sys.time(),
   data_dir = tempdir(),
-  quiet = FALSE
+  quiet = FALSE,
+  cache = TRUE
 ) {
   desired_cols <- c(
     satellite = "Satellite",
@@ -45,6 +46,7 @@ get_noaa_hms_smoke <- function(
   shape_date <- select_time |> format("%Y%m%d")
   shape_month <- select_time |> format("%Y/%m")
   is_todays <- select_time >= lubridate::today(tzone = "UTC")
+  date_cols <- c("Start", "End")
 
   # Build url to desired zip file
   source_url <- "https://satepsanone.nesdis.noaa.gov/pub/FIRE/web/HMS/Smoke_Polygons/Shapefile"
@@ -62,7 +64,7 @@ get_noaa_hms_smoke <- function(
       quiet = quiet
     ) |>
     stringr::str_subset(pattern = ".*\\.shp$") |>
-    read_hms_shp()
+    read_hms_shp(date_cols = date_cols)
 
   # Handle no rows/columns (replace with NULL)
   is_empty <- nrow(hms_smoke) == 0 | ncol(hms_smoke) == 0
@@ -144,7 +146,7 @@ combine_polygons <- function(polygon_data, .by = NULL, ...) {
     dplyr::filter(!sf::st_is_empty(.data$geometry)) |>
     sf::st_make_valid() |>
     dplyr::summarise(
-      .by = rlang::enquo(.by),
+      .by = .by,
       geometry = .data$geometry |> sf::st_union(),
       ...
     )
@@ -160,5 +162,6 @@ remove_polygon_overlap <- function(polygon_data, equal_area_crs = 3857) {
           sf::st_transform(sf::st_crs(group_data))
       }
     ) |>
-    dplyr::ungroup()
+    dplyr::ungroup() |>
+    sf::st_sf()
 }

@@ -33,6 +33,14 @@ get_eccc_eer_smoke <- function(
   stopifnot(is.character(data_dir), length(data_dir) == 1)
   stopifnot(is.logical(quiet), length(quiet) == 1)
 
+  desired_cols <- c(
+    "region",
+    "model_time",
+    "forecast_time",
+    min_pm25 = "Interval",
+    altitude = "Height"
+  )
+
   # Floor to nearest UTC hour
   select_time <- select_time |>
     lubridate::with_tz("UTC") |>
@@ -57,15 +65,22 @@ get_eccc_eer_smoke <- function(
       quiet = quiet
     ) |>
     stringr::str_subset(pattern = shp_pattern) |>
-    read_eer_shp()
+    read_eer_shp(model_run = model_run)
 
   # Handle no rows/columns (replace with NULL)
-  is_empty <- nrow(eer_smoke) == 0 | ncol(eer_smoke) == 0
+  is_empty <- nrow(eer_smoke) == 0 | ncol(eer_smoke) == 0 | is.null(eer_smoke)
   if (is_empty) {
-    eer_smoke <- NULL
+    return(NULL)
   }
 
-  return(eer_smoke)
+  # Add metadata and sort/rename cols
+  eer_smoke |>
+    dplyr::mutate(
+      model_time = model_run,
+      forecast_time = select_time,
+      region = region
+    ) |>
+    dplyr::select(dplyr::all_of(desired_cols))
 }
 
 #' Colour palette for EER smoke forecasts
@@ -100,34 +115,18 @@ eer_smoke_pal <- function(eer_pm25_ugm3 = NULL) {
   pal(eer_pm25_ugm3)
 }
 
-read_eer_shp <- function(shp_path) {
-  desired_cols <- c(
-    "region",
-    "model_time",
-    "forecast_time",
-    min_pm25 = "Interval",
-    altitude = "Height"
-  )
+read_eer_shp <- function(shp_path, model_run) {
   shp_path |>
     sf::read_sf() |>
-    # Add useful info
-    dplyr::mutate(
-      Height = .data$Height |> units::set_units("m"),
-      model_time = model_run,
-      forecast_time = select_time,
-      region = region
-    ) |>
+    dplyr::mutate(Height = .data$Height |> units::set_units("m")) |>
     # Drop empty geometries and convert to POLYGON
     dplyr::filter(!sf::st_is_empty(.data$geometry)) |>
     sf::st_cast("POLYGON") |>
     sf::st_make_valid() |>
     # Remove overlap of polygons so opacity works properly
     dplyr::arrange(dplyr::desc(.data$Interval)) |>
-    dplyr::group_by(.data$forecast_time) |>
-    remove_polygon_overlap() |>
-    sf::st_sf() |>
-    # Select/rename desired columns
-    dplyr::select(dplyr::all_of(desired_cols))
+    dplyr::group_by(.data$Height) |>
+    remove_polygon_overlap()
 }
 
 make_eer_zip_dir <- function(model_run) {
