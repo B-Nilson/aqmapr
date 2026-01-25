@@ -1,36 +1,50 @@
 
 const tooltip_template_dir = "/html"
 const tooltip_template_paths = {
-    tooltip: tooltip_template_dir +  "/monitor_tooltip.html",
-    row: tooltip_template_dir +  "/monitor_popup_table_row.html"
+    template: tooltip_template_dir + "/monitor_tooltip.html",
+    row: tooltip_template_dir + "/monitor_popup_table_row.html"
 };
 let tooltip_templates = load_html_templates(tooltip_template_paths);
 
 async function make_monitor_tooltip(
-    station_name,
-    monitor_type,
-    values = { date_stamp: "2025-01-01T01:00:00Z", pm25_1hr: -1, pm25_3hr: -1, pm25_24hr: -1 }
+    placeholders = { station_name: "Station Name", monitor_type: "Monitor Type", date_stamp: "2025-01-01T01:00:00Z", health_message: "Health message." },
+    table_values = { pm25_10min: -1, pm25_1hr: -1 },
+    table_labels = { pm25_10min: "10-min average", pm25_1hr: "1-hour average", pm25_3hr: "3-hour average", pm25_24hr: "24-hour average" },
+    table_units = { pm25_10min: "&mu;g m <sup>-3</sup>", pm25_1hr: "&mu;g m <sup>-3</sup>", pm25_3hr: "&mu;g m <sup>-3</sup>", pm25_24hr: "&mu;g m <sup>-3</sup>" },
+    title = "{{station_name}}",
+    subtitle = "{{monitor_type}} monitor",
+    table_header = "Observed PM<sub>2.5</sub> as of: {{date_stamp}}",
+    footnote = "{{health_message}}",
+    null_text = "-"
 ) {
-    let pm25_units = "&mu;g m <sup>-3</sup>";
-    let placeholders = {
-        "title": station_name,
-        "subtitle": monitor_type + " monitor",
-        "table_header": "As of: " + values.date_stamp,
-        "values": {
-            "10-min average": { value: values.pm25_10min ?? "-", units: pm25_units },
-            "1-hour average": { value: values.pm25_1hr ?? "-", units: pm25_units },
-            "3-hour average": { value: values.pm25_3hr ?? "-", units: pm25_units },
-            "24-hour average": { value: values.pm25_24hr ?? "-", units: pm25_units }
-        }
+    // Swap out any placeholders in the text variables
+    title = replace_placeholders(title, placeholders);
+    table_header = replace_placeholders(table_header, placeholders);
+    subtitle = replace_placeholders(subtitle, placeholders);
+    footnote = replace_placeholders(footnote, placeholders);
+
+    // Build placeholders object for inserting text into templates
+    let tooltip_placeholders = {
+        "title": title,
+        "subtitle": subtitle,
+        "table_header": table_header,
+        "footnote": footnote,
+        "values": {}
+    };
+    for (let key in table_values) {
+        tooltip_placeholders.values[key] = {
+            value: table_values[key] ?? null_text,
+            units: table_units[key],
+            header: table_labels[key]
+        };
     }
-    if (!("pm25_10min" in values)) {
-        delete placeholders["values"]["10-min average"];
-    }
+
+    // Build tooltip from html templates in html/
     try {
-        let popup = await make_popup(placeholders);
-        return popup
+        let tooltip = await make_tooltip(tooltip_placeholders);
+        return tooltip;
     } catch (error) {
-        console.error("Error making monitor popup:", error);
+        console.error("Error making monitor tooltip:", error);
     }
 }
 
@@ -39,22 +53,13 @@ async function make_tooltip(
         "title": "Title",
         "subtitle": "Subtitle",
         "table_header": "Table Header",
+        "footnote": "Footnote",
         "values": {
-            "name1": { value: "1", units: "units" },
-            "name2": { value: "1", units: "units" }
+            "key1": { value: "1", units: "units", header: "Header 1" },
+            "key2": { value: "1", units: "units", header: "Header 2" }
         }
     }
 ) {
-    let templates = await tooltip_templates;
-    // Replace placeholders in the templates
-    let tooltip_rows = Object.keys(placeholders.values).map((name) => {
-        let value = placeholders.values[name];
-        return replace_placeholders(templates.row, { "header": name, "value": value.value, "units": value.units });
-    });
-
-    let tooltip = replace_placeholders(
-        templates.tooltip,
-        Object.assign(placeholders, { "table_rows": tooltip_rows.join("") })
-    );
-    return tooltip
+    return make_popup(placeholders, tooltip_templates);
 };
+

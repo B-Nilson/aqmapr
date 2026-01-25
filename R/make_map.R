@@ -7,11 +7,12 @@ make_aqmap <- function(
   ),
   js_dir = system.file("js", package = "aqmapr"),
   js_endpoint = "/js",
+  css_dir = system.file("css", package = "aqmapr"),
+  css_endpoint = "/css",
   use_references = TRUE,
   page_title = "AQmap"
 ) {
-  rlang::check_installed("canadata")
-  # General javascript files
+  # javascript/css files to include
   js_files <- c(
     "aqhi.js",
     "make_monitor_popup.js",
@@ -24,88 +25,17 @@ make_aqmap <- function(
   } else {
     js_paths <- file.path(js_endpoint, js_files)
   }
+  css_files <- "monitor_popup.css"
+  if (!use_references) {
+    css_paths <- file.path(css_dir, css_files)
+  } else {
+    css_paths <- file.path(css_endpoint, css_files)
+  }
 
-  # Define WMS layers to display
+  # Define layers to display
+  point_layers <- networks |> make_aqmap_point_layers()
+  polygon_layers <- make_aqmap_polygon_layers()
   wms_layers <- make_aqmap_wms_layers()
-
-  # Define point layers to display
-  popup_fn_template <- paste(
-    "JS:::make_monitor_popup(",
-    "data.%s,",
-    "data.%s, {",
-    "date_stamp: data.%s,",
-    "pm25_10min: data.%s,",
-    "pm25_1hr: data.%s,",
-    "pm25_3hr: data.%s,",
-    "pm25_24hr: data.%s});"
-  )
-
-  point_layers <- networks |>
-    lapply(\(network) {
-      # Build popup/tooltip
-      popup <- popup_fn_template |>
-        sprintf(
-          "name",
-          "network_type",
-          "date_stamp",
-          "pm25_10min",
-          "pm25_1hr",
-          "pm25_3hr",
-          "pm25_24hr"
-        )
-      if (network == "agency") {
-        popup <- popup |>
-          stringr::str_remove("pm25_10min: .+?, ")
-      }
-      tooltip <- popup |>
-        stringr::str_replace(
-          "JS:::make_monitor_popup",
-          "JS:::make_monitor_tooltip"
-        )
-      # Build layer
-      PointLayer(
-        group = pretty_text(network),
-        data_url = "/data/recent/%s/geojson" |> sprintf(network),
-        data_url_columns = list(
-          iconUrl = "iconUrl",
-          pane = "pane",
-          zIndexOffset = "zIndexOffset",
-          iconSize = "iconSize",
-          label = tooltip,
-          popup = popup
-        ),
-        display_by_default = TRUE
-      )
-    })
-
-  # Get extra layers
-  polygon_layers <- list(
-    PolygonLayer(
-      data = canadata::provinces_and_territories,
-      opacity = 0.2
-    ),
-    # get_eccc_eer_smoke() |>
-    #   PolygonLayer(
-    #     group = "Modelled Smoke",
-    #     data = _,
-    #     fill = ~min_pm25,
-    #     fill_palette = eer_smoke_pal(),
-    #     display_by_default = FALSE
-    #   ) |>
-    stop("disabled for testing") |>
-      handyr::on_error(.return = NULL, .warn = TRUE),
-    # get_noaa_hms_smoke() |>
-    # PolygonLayer(
-    #   group = "Visible Smoke",
-    #   data = _,
-    #   fill = ~density,
-    #   fill_palette = hms_smoke_pal(),
-    #   display_by_default = FALSE
-    # ) |>
-    stop("disabled for testing") |>
-      handyr::on_error(.return = NULL, .warn = TRUE)
-  )
-  polygon_layers <- polygon_layers[which(!sapply(polygon_layers, is.null))]
 
   # Build basemap
   map <- base_maps |>
@@ -119,12 +49,8 @@ make_aqmap <- function(
       wms_layers = wms_layers,
       page_title = page_title
     ) |>
-    # Include custom js used by various parts of the map
-    include_scripts(paths = js_paths, as_reference = use_references) |>
-    include_scripts(
-      paths = system.file("css/monitor_popup.css", package = "aqmapr"),
-      as_reference = use_references
-    ) |>
+    # Include custom css/js used by various parts of the map
+    include_scripts(paths = c(js_paths, css_paths), as_reference = use_references) |>
     htmlwidgets::onRender("handle_page_render")
 
   # Add offline/online panes and icon legend
@@ -139,6 +65,88 @@ make_aqmap <- function(
   }
 
   return(map)
+}
+
+make_aqmap_point_layers <- function(networks) {
+  placeholders_arg <- paste(
+    "{ date_stamp: data.%s,",
+    "station_name: data.%s,",
+    "monitor_type: data.%s,",
+    "health_message: aqhi_health_messages[get_aqhi_category(data.%s)] }"
+  ) |>
+    sprintf("date_stamp", "name", "network_type", "pm25_1hr")
+
+  values_arg <- paste(
+    "{ pm25_10min: data.%s,",
+    "pm25_1hr: data.%s,",
+    "pm25_3hr: data.%s,",
+    "pm25_24hr: data.%s }"
+  ) |>
+    sprintf("pm25_10min", "pm25_1hr", "pm25_3hr", "pm25_24hr")
+
+  # Build popup/tooltip
+  popup <- "JS:::make_monitor_popup(%s, %s);" |>
+    sprintf(placeholders_arg, values_arg)
+  tooltip <- "JS:::make_monitor_tooltip(%s, %s);" |>
+    sprintf(placeholders_arg, values_arg) # TODO: ensure tooltip args match...
+
+  data_url_columns <- list(
+    iconUrl = "iconUrl",
+    pane = "pane",
+    zIndexOffset = "zIndexOffset",
+    iconSize = "iconSize"
+  )
+  networks |>
+    lapply(\(network) {
+      # Remove 10min placeholder from popup/tooltip templates for agency monitors
+      url_columns <- data_url_columns
+      url_columns$popup <- (network == "agency") |>
+        ifelse(popup |> stringr::str_remove("pm25_10min: .+?, "), popup)
+      url_columns$label <- (network == "agency") |>
+        ifelse(tooltip |> stringr::str_remove("pm25_10min: .+?, "), tooltip)
+      # Build layer
+      PointLayer(
+        group = pretty_text(network),
+        data_url = "/data/recent/%s/geojson" |> sprintf(network),
+        data_url_columns = url_columns,
+        display_by_default = TRUE
+      )
+    })
+}
+
+make_aqmap_polygon_layers <- function() {
+  rlang::check_installed("canadata")
+  eer_smoke <- get_eccc_eer_smoke()
+  hms_smoke <- get_noaa_hms_smoke()
+
+  polygon_layers <- list(
+    PolygonLayer(
+      data = canadata::provinces_and_territories,
+      opacity = 0.2
+    ),
+    PolygonLayer(
+      group = "Modelled Smoke",
+      data = eer_smoke,
+      fill = ~min_pm25,
+      fill_palette = eer_smoke_pal(),
+      display_by_default = FALSE
+    ) |>
+      handyr::on_error(.return = NULL, .warn = TRUE),
+    PolygonLayer(
+      group = "Visible Smoke",
+      data = hms_smoke,
+      fill = ~density,
+      fill_palette = hms_smoke_pal(),
+      display_by_default = FALSE
+    ) |>
+      handyr::on_error(.return = NULL, .warn = TRUE)
+  )
+  missing_layers <- sapply(polygon_layers, is.null)
+  if (!all(missing_layers)) {
+    return(polygon_layers[which(!missing_layers)])
+  } else {
+    return(list())
+  }
 }
 
 make_aqmap_wms_layers <- function() {

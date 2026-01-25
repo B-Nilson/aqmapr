@@ -87,22 +87,23 @@ LeafletWidget.methods.addJsonPointerLayer = async function (
                 // add tooltips/popups if available
                 onEachFeature: async function (feature, layer) {
                     let data = feature.properties;
+                    let has_tooltip = data && (data[keys.label] || keys.label.startsWith("JS:::"));
+                    let has_popup = data && (data[keys.popup] || keys.popup.startsWith("JS:::"));
                     // add tooltips
-                    if (data && (data[keys.label] || keys.label.startsWith("JS:::"))) {
+                    if (has_tooltip) {
                         let tooltip = keys.label.startsWith("JS:::") ?
                             await eval(keys.label.substring(5)) :
                             data[keys.label];
                         layer.bindTooltip(tooltip, tooltip_options);
                     };
                     // add popups
-                    if (data && (data[keys.popup] || keys.popup.startsWith("JS:::"))) {
+                    if (has_popup) {
                         let popup = keys.popup.startsWith("JS:::") ?
                             await eval(keys.popup.substring(5)) :
                             data[keys.popup];
                         layer.bindPopup(popup, popup_options);
                     };
                 }
-
             });
             if (layer_id || group) {
                 _map.layerManager.addLayer(layer, "geojson", layer_id, group);
