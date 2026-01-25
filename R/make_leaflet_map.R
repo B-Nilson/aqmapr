@@ -104,8 +104,9 @@ make_leaflet_map <- function(
     add_base_maps(base_maps = base_maps) |>
     set_page_title(page_title = page_title) |>
     add_attribution(attribution, sep = " | ") |> 
+    leaflet.extras::addFullscreenControl() |>
     add_locator_button() |>
-    # Cache provider tiles for faster reload times
+    leaflet.extras::addResetMapButton() |>
     leaflet.extras::enableTileCaching()
 
   # Center map on popups when they are opened if desired
