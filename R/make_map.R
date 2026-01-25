@@ -94,7 +94,7 @@ make_aqmap <- function(
     #   ) |>
     stop("disabled for testing") |>
       handyr::on_error(.return = NULL, .warn = TRUE),
-    # get_noaa_hms_smoke_polygons() |>
+    # get_noaa_hms_smoke() |>
     # PolygonLayer(
     #   group = "Visible Smoke",
     #   data = _,

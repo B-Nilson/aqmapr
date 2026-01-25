@@ -12,7 +12,7 @@
 #'
 #' See \href{https://www.ospo.noaa.gov/products/land/hms.html#about}{here} for more information.
 #'
-#' @inheritParams get_eccc_eer_smoke_forecasts
+#' @inheritParams get_eccc_eer_smoke
 #' @export
 #'
 #' @examples
