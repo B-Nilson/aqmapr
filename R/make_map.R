@@ -220,9 +220,7 @@ format_for_geojson <- function(out_data) {
     make_icon_svg(
       values = out_data$pm25_1hr,
       icon_dir = system.file("images/icons", package = "aqmapr"),
-      marker_size_missing = 17,
-      for_legend = FALSE,
-      force = FALSE
+      for_legend = FALSE
     )
 
   # Reformat to geojson for populating map markers
@@ -242,7 +240,7 @@ format_for_geojson <- function(out_data) {
           icon_dir = "/icons",
           for_legend = FALSE
         ),
-      iconSize = ifelse(is.na(.data$pm25_1hr), 21, 30),
+      iconSize = ifelse(is.na(.data$pm25_1hr), 20, 29),
       network_type = .data$monitor_type |>
         factor(
           levels = c("FEM", "PA", "EGG"),

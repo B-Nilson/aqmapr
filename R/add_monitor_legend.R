@@ -28,8 +28,7 @@ add_monitor_legend <- function(
     make_icon_svg(
       values = rep(0, length(networks)),
       icon_dir = icon_dir,
-      for_legend = TRUE,
-      force = FALSE
+      for_legend = TRUE
     )
 
   # Make legend title

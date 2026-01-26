@@ -1,9 +1,9 @@
 make_icon_svg <- function(
   groups,
   values,
-  font_sizes = c(119, 99, 90),
-  marker_size = 33,
-  marker_size_missing = NULL,
+  font_sizes = c(121, 103, 90),
+  marker_size = 26,
+  marker_size_missing = 17,
   for_legend = FALSE,
   force = FALSE,
   icon_dir = system.file("images/icons", package = "aqmapr"),
