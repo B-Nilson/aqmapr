@@ -231,7 +231,7 @@ format_for_geojson <- function(out_data) {
       zIndexOffset = ifelse(
         is.na(.data$pm25_1hr),
         0,
-        round(.data$pm25_1hr * 10)
+        round(.data$pm25_1hr * 10 / as.numeric(.data$network)^2)
       ),
       iconUrl = .data$network |>
         as.character() |>
@@ -246,7 +246,8 @@ format_for_geojson <- function(out_data) {
           levels = c("FEM", "PA", "EGG"),
           labels = c("Regulatory (FEM)", "PurpleAir (PA)", "AQegg (EGG)")
         ),
-    ) |>
+    ) |> 
+    dplyr::arrange(dplyr::desc(.data$network), .data$pm25_1hr) |>
     dplyr::select(dplyr::all_of(desired_cols)) |>
     sf::st_as_sf(coords = c("lng", "lat"))
 }
