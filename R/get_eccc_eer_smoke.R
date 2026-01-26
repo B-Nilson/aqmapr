@@ -116,14 +116,19 @@ eer_smoke_pal <- function(eer_pm25_ugm3 = NULL) {
 }
 
 read_eer_shp <- function(shp_path, model_run) {
-  shp_path |>
+  # read in, drop empty, convert to POLYGON from LINESTRING
+  eer_raw <- shp_path |>
     sf::read_sf() |>
     dplyr::mutate(Height = .data$Height |> units::set_units("m")) |>
-    # Drop empty geometries and convert to POLYGON
     dplyr::filter(!sf::st_is_empty(.data$geometry)) |>
     sf::st_cast("POLYGON") |>
-    sf::st_make_valid() |>
-    # Remove overlap of polygons so opacity works properly
+    sf::st_make_valid()
+  if (nrow(eer_raw) == 0) {
+    return(eer_raw)
+  }
+  
+  # Remove overlap of polygons so opacity works properly
+  eer_raw |>
     dplyr::arrange(dplyr::desc(.data$Interval)) |>
     dplyr::group_by(.data$Height) |>
     remove_polygon_overlap()
