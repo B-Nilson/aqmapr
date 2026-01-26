@@ -87,22 +87,12 @@ LeafletWidget.methods.addJsonPointerLayer = async function (
                 // add tooltips/popups if available
                 onEachFeature: async function (feature, layer) {
                     let data = feature.properties;
-                    let has_tooltip = data && (data[keys.label] || keys.label.startsWith("JS:::"));
-                    let has_popup = data && (data[keys.popup] || keys.popup.startsWith("JS:::"));
                     // add tooltips
-                    if (has_tooltip) {
-                        let tooltip = keys.label.startsWith("JS:::") ?
-                            await eval(keys.label.substring(5)) :
-                            data[keys.label];
-                        layer.bindTooltip(tooltip, tooltip_options);
-                    };
+                    let tooltip = await handle_JS_tag(keys.label, data);
+                    if (tooltip) layer.bindTooltip(tooltip, tooltip_options);
                     // add popups
-                    if (has_popup) {
-                        let popup = keys.popup.startsWith("JS:::") ?
-                            await eval(keys.popup.substring(5)) :
-                            data[keys.popup];
-                        layer.bindPopup(popup, popup_options);
-                    };
+                    let popup = await handle_JS_tag(keys.popup, data);
+                    if (popup) layer.bindPopup(popup, popup_options);
                 }
             });
             if (layer_id || group) {
@@ -111,3 +101,13 @@ LeafletWidget.methods.addJsonPointerLayer = async function (
             if (_add_to_map) layer.addTo(_map);
         });
 };
+
+// evaluate keys tagged with JS::: as JS, otherwise assume its a key in data
+async function handle_JS_tag(text, data) {
+    let has_key_or_tag = data &&
+        (data[text] || text.startsWith("JS:::"));
+    if (!has_key_or_tag) return null;
+    has_js_tag = text.startsWith("JS:::");
+    result = has_js_tag ? eval(text.substring(5)) : data[text];
+    return result;
+}
