@@ -73,8 +73,8 @@ add_map_timestamp <- function(
 
   js_path <- system.file("js/convert_utc_to_local.js", package = "aqmapr")
   hcharts_path <- "https://code.highcharts.com/highcharts.js"
-  prefix <- gsub("'", "\\'", prefix) # Escape single quotes
-  hover_text <- gsub("'", "\\'", hover_text) # Escape single quotes
+  prefix <- prefix |> escape_symbol("'")
+  hover_text <- hover_text |> escape_symbol("'")
   ts_placeholder <- timestamp |>
     lubridate::with_tz(tzone = "UTC") |>
     format("%Y-%m-%dT%H:%M:%SZ")

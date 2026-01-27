@@ -128,14 +128,16 @@ parse_colours <- function(value, data = NULL, palette = NULL) {
   is_list_form <- is.list(value) &
     identical(sort(names(value)), c("palette", "values"))
   has_data <- !is.null(data) & sum(dim(data)) > 0
+  needs_pull <- "formula" %in% class(out$values) & has_data
+  needs_pull_has_pal <- needs_pull & !is.null(palette)
   if (is_list_form) {
     out <- value
-    if ("formula" %in% class(out$values) & has_data) {
+    if (needs_pull) {
       out$values <- data |>
         dplyr::pull(!!rlang::as_quosure(out$values))
     }
     value <- out$palette(out$values)
-  } else if ("formula" %in% class(value) & has_data & !is.null(palette)) {
+  } else if (needs_pull_has_pal) {
     out$values <- data |>
       dplyr::pull(!!rlang::as_quosure(value))
     out$palette <- palette

@@ -165,9 +165,10 @@ PointLayer <- new_class(
     data = class_data.frame |>
       new_property(
         setter = \(self, value) {
+          needs_sf <- !"sf" %in% class(value) & ncol(value) & nrow(value)
           if (is.null(value)) {
             self@data <- value
-          } else if (!"sf" %in% class(value) & ncol(value) & nrow(value)) {
+          } else if (needs_sf) {
             self@data <- value |>
               sf::st_as_sf(coords = c(self@x_col, self@y_col), crs = self@crs)
           } else {
@@ -176,7 +177,8 @@ PointLayer <- new_class(
           return(self)
         },
         validator = \(value) {
-          if (!is.null(value) & ncol(value) & nrow(value)) {
+          has_data <- !is.null(value) & ncol(value) & nrow(value)
+          if (has_data) {
             if (!"sf" %in% class(value)) {
               "must be an `sf` data.frame"
             } else if (
@@ -226,7 +228,8 @@ PolygonLayer <- new_class(
   properties = list(
     data = class_data.frame |>
       new_property(validator = \(value) {
-        if (!is.null(value) & ncol(value) & nrow(value)) {
+        has_data <- !is.null(value) & ncol(value) & nrow(value)
+        if (has_data) {
           if (!"sf" %in% class(value)) {
             "must be an `sf` data.frame"
           }

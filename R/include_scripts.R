@@ -58,7 +58,8 @@ include_scripts <- function(
     stopifnot(all(types %in% c("css", "js")))
   }
 
-  if (is.null(texts) & !as_reference) {
+  needs_import <- is.null(texts) & !as_reference
+  if (needs_import) {
     inputs <- paths |>
       lapply(\(path) {
         path |>

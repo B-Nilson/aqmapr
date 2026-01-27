@@ -139,7 +139,8 @@ icon_from_svg_template <- function(dir, groups, placeholders) {
   svg[is_plus] <- svg[is_plus] |>
     gsub(
       pattern = 'dominant-baseline="central"',
-      replacement = 'alignment-baseline="middle"'
+      replacement = 'alignment-baseline="middle"',
+      fixed = TRUE
     )
   return(svg)
 }
