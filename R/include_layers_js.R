@@ -1,6 +1,7 @@
 #' Include js in a Leaflet map header with references to layers
 #'
 #' @inheritParams make_leaflet_map
+#' @inheritParams add_geojson_layer
 #' @return A leaflet map with the script file(s) included in the page header
 #' @export
 #' @examples

@@ -13,6 +13,8 @@ add_control_titles(
 )
 }
 \arguments{
+\item{map}{A Leaflet map object}
+
 \item{base_title}{(Optional) The title to display in the base maps section of the layer control.
 Default is \code{"Basemaps"}.}
 

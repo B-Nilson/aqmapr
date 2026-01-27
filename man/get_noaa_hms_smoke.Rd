@@ -17,6 +17,8 @@ get_noaa_hms_smoke(
 \item{data_dir}{Directory to store downloaded data in. Defaults to tempdir().}
 
 \item{quiet}{Logical. Should output from \code{download.file} be suppressed?}
+
+\item{cache}{Logical. Should the downloaded data be cached? Defaults to TRUE.}
 }
 \description{
 The National Oceanic and Atmospheric Administration provides smoke polygons based on visual analysis of satellite data for the Hazard Mapping System (HMS)

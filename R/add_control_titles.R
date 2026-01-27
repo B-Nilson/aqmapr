@@ -1,6 +1,5 @@
 #' Insert titles into a Leaflet layer control
 #'
-#' @description
 #' Adds titles to differiate the basemap/overlays sections of a Leaflet layer control.
 #'
 #' @param base_title (Optional) The title to display in the base maps section of the layer control.
@@ -10,6 +9,7 @@
 #' @param en_francais (Optional) If TRUE, the defaults for `base_title` and `layers_title` will be in French.
 #'   Default is `FALSE.`
 #' @inheritParams make_leaflet_map
+#' @inheritParams add_geojson_layer
 #' @export
 add_control_titles <- function(
   map,

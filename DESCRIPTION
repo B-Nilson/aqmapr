@@ -46,7 +46,7 @@ Collate:
     'add_attribution.R'
     'add_base_maps.R'
     'add_control_titles.R'
-    'add_json_layer.R'
+    'add_geojson_layer.R'
     's7_classes.R'
     's7_layers.R'
     'add_layer_to_map.R'

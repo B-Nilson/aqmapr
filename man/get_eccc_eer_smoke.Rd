@@ -20,6 +20,8 @@ get_eccc_eer_smoke(
 \item{data_dir}{Directory to store downloaded data in. Defaults to tempdir().}
 
 \item{quiet}{Logical. Should output from \code{download.file} be suppressed?}
+
+\item{cache}{Logical. Should the downloaded data be cached? Defaults to TRUE.}
 }
 \description{
 The Environmental Emergency Response group at Environment and Climate Change Canada (ECCC) provides smoke forecasts for Canada.

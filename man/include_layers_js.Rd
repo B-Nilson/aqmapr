@@ -13,6 +13,8 @@ include_layers_js(
 )
 }
 \arguments{
+\item{map}{A Leaflet map object}
+
 \item{base_maps}{(Optional).
 A character vector named basemaps from \link[leaflet:providers]{leaflet::providers} to add to the map.
 Names will be used in the control menu for the basemaps if provided.

@@ -8,6 +8,7 @@
 #' @param region String specifying the region to download data for. Currently only "Canada" is supported.
 #' @param data_dir Directory to store downloaded data in. Defaults to tempdir().
 #' @param quiet Logical. Should output from `download.file` be suppressed?
+#' @param cache Logical. Should the downloaded data be cached? Defaults to TRUE.
 #' @export
 #'
 #' @examples
