@@ -19,7 +19,7 @@ test_that("basic case with polygons data works", {
     data = canadata::provinces_and_territories,
     fill = "black",
     opacity = 0.1,
-    label = ~name
+    label = ~name_en
   ))
   make_leaflet_map(polygon_layers = polygon_layers) |>
     expect_no_error() |>
