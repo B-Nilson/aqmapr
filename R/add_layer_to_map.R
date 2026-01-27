@@ -40,9 +40,9 @@ add_to_map <- "add_to_map" |>
       }
       # Add legend if desired
       legend_desired <- layer@use_fill &
-          length(layer@fill_values) &
-          length(layer@group) &
-          !identical(layer@fill_values, layer@fill)
+        length(layer@fill_values) &
+        length(layer@group) &
+        !identical(layer@fill_values, layer@fill)
       if (legend_desired) {
         map <- map |>
           leaflet::addLegend(

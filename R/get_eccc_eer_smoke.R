@@ -126,7 +126,7 @@ read_eer_shp <- function(shp_path, model_run) {
   if (nrow(eer_raw) == 0) {
     return(eer_raw)
   }
-  
+
   # Remove overlap of polygons so opacity works properly
   eer_raw |>
     dplyr::arrange(dplyr::desc(.data$Interval)) |>

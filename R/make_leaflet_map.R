@@ -90,7 +90,9 @@ make_leaflet_map <- function(
       all(sapply(point_layers, \(layer) S7::S7_inherits(layer, PointLayer))),
     inherits(polygon_layers, "list"),
     length(polygon_layers) == 0 |
-      all(sapply(polygon_layers, \(layer) S7::S7_inherits(layer, PolygonLayer))),
+      all(sapply(polygon_layers, \(layer) {
+        S7::S7_inherits(layer, PolygonLayer)
+      })),
     inherits(wms_layers, "list"),
     length(wms_layers) == 0 |
       all(sapply(wms_layers, \(layer) S7::S7_inherits(layer, WMSLayer))),

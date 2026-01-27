@@ -18,7 +18,7 @@
 #' )
 #'
 add_attribution <- function(map, ..., sep = " | ") {
-  attribution <- sep |> 
+  attribution <- sep |>
     paste0(paste(..., sep = sep, collapse = sep))
   no_attribution <- attribution == sep
   if (no_attribution) {

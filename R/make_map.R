@@ -50,7 +50,10 @@ make_aqmap <- function(
       page_title = page_title
     ) |>
     # Include custom css/js used by various parts of the map
-    include_scripts(paths = c(js_paths, css_paths), as_reference = use_references) |>
+    include_scripts(
+      paths = c(js_paths, css_paths),
+      as_reference = use_references
+    ) |>
     htmlwidgets::onRender("handle_page_render")
 
   # Add offline/online panes and icon legend
@@ -246,7 +249,7 @@ format_for_geojson <- function(out_data) {
           levels = c("FEM", "PA", "EGG"),
           labels = c("Regulatory (FEM)", "PurpleAir (PA)", "AQegg (EGG)")
         ),
-    ) |> 
+    ) |>
     dplyr::arrange(dplyr::desc(.data$network), .data$pm25_1hr) |>
     dplyr::select(dplyr::all_of(desired_cols)) |>
     sf::st_as_sf(coords = c("lng", "lat"))
