@@ -28,7 +28,7 @@ get_eccc_eer_smoke <- function(
   quiet = FALSE,
   cache = TRUE
 ) {
-  stopifnot(lubridate::is.POSIXct(select_time), length(select_time) > 0)
+  stopifnot(lubridate::is.POSIXct(select_time), length(select_time) == 1)
   check_eer_region(region)
   stopifnot(is.character(data_dir), length(data_dir) == 1)
   stopifnot(is.logical(quiet), length(quiet) == 1)
@@ -44,8 +44,7 @@ get_eccc_eer_smoke <- function(
   # Floor to nearest UTC hour
   select_time <- select_time |>
     lubridate::with_tz("UTC") |>
-    lubridate::floor_date("hours") |>
-    unique()
+    lubridate::floor_date("hours")
   model_run <- select_time |>
     lubridate::floor_date("6 hours")
 
