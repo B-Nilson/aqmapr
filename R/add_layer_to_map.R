@@ -113,7 +113,7 @@ S7::method(add_to_map, PointLayer) <- function(layer, map) {
 # Define method to add polygon layers to map
 #' @include s7_layers.R
 S7::method(add_to_map, PolygonLayer) <- function(layer, map) {
-  pane_name <- ifelse(is.list(layer@pane), layer@pane$name, layer@pane)
+  pane_name <- if (is.list(layer@pane)) layer@pane$name else layer@pane
   if (!length(layer@data_url)) {
     map <- map |>
       leaflet::addPolygons(
