@@ -69,6 +69,7 @@ get_eccc_eer_smoke <- function(
   # Handle no rows/columns (replace with NULL)
   is_empty <- nrow(eer_smoke) == 0 | ncol(eer_smoke) == 0 | is.null(eer_smoke)
   if (is_empty) {
+    warning("No layers in this run's EER smoke forecast, returning NULL.")
     return(NULL)
   }
 
