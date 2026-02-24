@@ -72,7 +72,6 @@ add_map_timestamp <- function(
   stopifnot(is.logical(en_francais), length(en_francais) == 1)
 
   js_path <- system.file("js/convert_utc_to_local.js", package = "aqmapr")
-  hcharts_path <- "https://code.highcharts.com/highcharts.js"
   prefix <- prefix |> escape_symbol("'")
   hover_text <- hover_text |> escape_symbol("'")
   ts_placeholder <- timestamp |>
@@ -88,8 +87,6 @@ add_map_timestamp <- function(
     ) |>
     # Include js file inline in the header
     include_scripts(paths = js_path, as_reference = as_reference) |>
-    # Include highcharts reference in the header for R-like timestamp formatting
-    include_scripts(paths = hcharts_path, as_reference = TRUE) |>
     # Define _map variable on page render
     htmlwidgets::onRender(
       "function(el, x) { format_map_timestamp('%s', %s, '%s', '%s', %s); }" |>

@@ -18,24 +18,45 @@ get_browser_timezone = function (en_francais = false) {
     return timeString.split(' ')[timeZoneIndex];
 }
 
-replace_date_placeholder = function (text, date_format, tz, en_francais = false) {
-    Highcharts.setOptions({
-        time: { useUTC: true, timezoneOffset: (new Date().getTimezoneOffset()) }
+function replace_date_placeholder(text, date_format, tz, en_francais = false) {
+    const pattern = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/g;
+    const dates = text.match(pattern);
+    if (!dates) return text;
+
+    const locale = en_francais ? "fr-CA" : "en-CA";
+
+    const formatOptions = buildFormatOptions(date_format);
+
+    const formatter = new Intl.DateTimeFormat(locale, {
+        ...formatOptions,
+        timeZone: tz
     });
-    if (en_francais) {
-        Highcharts.setOptions({
-            lang: {
-                shortMonths: ["janv.", "févr.", "mars", "avr.", "mai", "juin", "juil.", "août", "sept.", "oct.", "nov.", "déc."]
-            }
-        });
-    }
-    const pattern = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/;
-    const regex = new RegExp(pattern, 'g');
-    const dates = text.match(regex);
-    if (dates) {
-        return dates.reduce((acc, date) => {
-            const formattedDate = Highcharts.dateFormat(date_format, new Date(date).getTime());
-            return acc.replace(date, formattedDate + ' ' + tz);
-        }, text);
-    }
+
+    return dates.reduce((acc, dateStr) => {
+        const date = new Date(dateStr);
+        const formattedDate = formatter.format(date);
+        return acc.replace(dateStr, `${formattedDate} ${tz}`);
+    }, text);
+}
+
+
+/**
+ * Minimal token mapper to approximate Highcharts.dateFormat
+ * Extend as needed.
+ */
+function buildFormatOptions(format) {
+    const options = {};
+
+    if (format.includes('%Y')) options.year = 'numeric';
+    if (format.includes('%y')) options.year = '2-digit';
+    if (format.includes('%B')) options.month = 'long';
+    else if (format.includes('%b')) options.month = 'short';
+    else if (format.includes('%m')) options.month = '2-digit';
+
+    if (format.includes('%e') || format.includes('%d')) options.day = '2-digit';
+    if (format.includes('%H')) options.hour = '2-digit';
+    if (format.includes('%M')) options.minute = '2-digit';
+    if (format.includes('%S')) options.second = '2-digit';
+
+    return options;
 }
