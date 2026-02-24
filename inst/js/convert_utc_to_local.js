@@ -30,10 +30,12 @@ replace_date_placeholder = function (text, date_format, tz, en_francais = false)
         });
     }
     const pattern = /\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z/;
-    const dateMatch = text.match(pattern);
-    if (dateMatch) {
-        const date = new Date(dateMatch[0]).getTime();
-        const formattedDate = Highcharts.dateFormat(date_format, date);
-        return text.replace(dateMatch[0], formattedDate + ' ' + tz);
+    const regex = new RegExp(pattern, 'g');
+    const dates = text.match(regex);
+    if (dates) {
+        return dates.reduce((acc, date) => {
+            const formattedDate = Highcharts.dateFormat(date_format, new Date(date).getTime());
+            return acc.replace(date, formattedDate + ' ' + tz);
+        }, text);
     }
 }
