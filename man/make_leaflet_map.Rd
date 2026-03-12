@@ -10,6 +10,7 @@ make_leaflet_map(
   polygon_layers = list(),
   wms_layers = list(),
   page_title = NULL,
+  add_basemaps_to_layer_control = TRUE,
   layer_control_titles = c("Basemaps", "Layers"),
   attribution = NULL,
   center_on_opened_popup = FALSE,
@@ -32,6 +33,9 @@ Default is an empty list (no points/polygons/WMS layers added).}
 \item{page_title}{(Optional).
 A character string of the title to display in the browser tab when the map is saved to an HTML file.
 Default \code{NULL} (no title).}
+
+\item{add_basemaps_to_layer_control}{(Optional).
+If TRUE, controls for the provided \code{base_maps} will be added to the layer control, creating the control if needed.}
 
 \item{layer_control_titles}{(Optional).
 A 2-length character vector to use for the basemap and layer control titles.

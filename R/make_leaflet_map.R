@@ -11,6 +11,8 @@
 #' @param page_title (Optional).
 #'   A character string of the title to display in the browser tab when the map is saved to an HTML file.
 #'   Default `NULL` (no title).
+#' @param add_basemaps_to_layer_control (Optional).
+#'   If TRUE, controls for the provided `base_maps` will be added to the layer control, creating the control if needed.
 #' @param layer_control_titles (Optional).
 #'   A 2-length character vector to use for the basemap and layer control titles.
 #'   Default is c("Basemaps", "Layers").
@@ -76,6 +78,7 @@ make_leaflet_map <- function(
   polygon_layers = list(),
   wms_layers = list(),
   page_title = NULL,
+  add_basemaps_to_layer_control = TRUE,
   layer_control_titles = c("Basemaps", "Layers"),
   attribution = NULL,
   center_on_opened_popup = FALSE,
@@ -110,6 +113,7 @@ make_leaflet_map <- function(
       attribution = attribution,
       include_scalebar = include_scalebar,
       include_timestamp = include_timestamp,
+      include_layer_control = add_basemaps_to_layer_control,
       as_reference = as_reference
     ) |>
     # Insert js to define layer names for other js functions
@@ -146,6 +150,7 @@ make_base_map <- function(
   attribution = NULL,
   include_timestamp = FALSE,
   include_scalebar = TRUE,
+  include_layer_control = TRUE,
   as_reference = FALSE
 ) {
   stopifnot(
@@ -158,7 +163,7 @@ make_base_map <- function(
     length(include_scalebar) == 1
   )
   base_map <- leaflet::leaflet() |>
-    add_base_maps(base_maps = base_maps) |>
+    add_base_maps(base_maps = base_maps, add_to_layer_control = include_layer_control) |>
     add_control_titles(
       base_title = layer_control_titles[1],
       layers_title = layer_control_titles[2],
