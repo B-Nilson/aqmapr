@@ -1,5 +1,5 @@
 format_map_timestamp = function (hover_text = null, remove_transparency = true, date_format = "%Y %b %d %H:%M", tz = "browser", en_francais = false) {
-    if (tz === "browser") tz = get_browser_timezone(en_francais);
+    if (tz === "browser") tz = get_browser_timezone();
     let timestamp_div = document.getElementById('map_timestamp');
     if (!timestamp_div) return
     // Replace UTC date placeholder with local time prended with `prefix`
@@ -10,12 +10,8 @@ format_map_timestamp = function (hover_text = null, remove_transparency = true, 
     if (remove_transparency) timestamp_div.style.backgroundColor = "rgba(255, 255, 255)";
 }
 
-get_browser_timezone = function (en_francais = false) {
-    const options = { timeZoneName: 'short' };
-    const locale = en_francais ? 'fr-ca' : 'en-us';
-    const timeString = new Date().toLocaleTimeString(locale, options);
-    const timeZoneIndex = en_francais ? 6 : 2;
-    return timeString.split(' ')[timeZoneIndex];
+get_browser_timezone = function () {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone
 }
 
 function replace_date_placeholder(text, date_format, tz, en_francais = false) {
@@ -29,13 +25,14 @@ function replace_date_placeholder(text, date_format, tz, en_francais = false) {
 
     const formatter = new Intl.DateTimeFormat(locale, {
         ...formatOptions,
-        timeZone: tz
+        timeZone: tz,
+        timeZoneName: "short"
     });
 
     return dates.reduce((acc, dateStr) => {
         const date = new Date(dateStr);
         const formattedDate = formatter.format(date);
-        return acc.replace(dateStr, `${formattedDate} ${tz}`);
+        return acc.replace(dateStr, formattedDate);
     }, text);
 }
 

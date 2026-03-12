@@ -71,17 +71,22 @@ add_map_timestamp <- function(
   stopifnot(is.logical(as_reference), length(as_reference) == 1)
   stopifnot(is.logical(en_francais), length(en_francais) == 1)
 
-  js_path <- system.file("js/convert_utc_to_local.js", package = "aqmapr")
-  prefix <- prefix |> escape_symbol("'")
-  hover_text <- hover_text |> escape_symbol("'")
+  js_path <- "js/convert_utc_to_local.js" |> 
+    system.file(package = "aqmapr")
   ts_placeholder <- timestamp |>
     lubridate::with_tz(tzone = "UTC") |>
     format("%Y-%m-%dT%H:%M:%SZ")
 
+  timestamp_tz <- attr(timestamp, "tzone")
+  if (is.null(timestamp_tz) || timestamp_tz == "") {
+    timestamp_tz <- Sys.timezone()
+  }
+
   map |>
     # Add the timestamp control - UTC placeholder will be replaced by JS
     leaflet::addControl(
-      html = paste0('<big><strong>', prefix, ts_placeholder, '</strong></big>'),
+      html = '<big><strong>%s%s</strong></big>' |>
+        sprintf(prefix |> escape_symbol("'"), ts_placeholder),
       layerId = "map_timestamp",
       position = position
     ) |>
@@ -91,11 +96,10 @@ add_map_timestamp <- function(
     htmlwidgets::onRender(
       "function(el, x) { format_map_timestamp('%s', %s, '%s', '%s', %s); }" |>
         sprintf(
-          hover_text,
+          hover_text |> escape_symbol("'"),
           tolower(remove_transparency),
-          date_format,
-          use_browser_timezone |>
-            ifelse(yes = "browser", no = format(timestamp, "%Z")),
+          date_format |> escape_symbol("'"),
+          ifelse(use_browser_timezone, "browser", timestamp_tz),
           tolower(en_francais)
         )
     )
