@@ -9,7 +9,7 @@ center_on_opened_popup <- function(map, ...) {
 
   js_file <- "js/center_on_popup.js" |>
     system.file(package = "aqmapr")
-  on_popup_open_js <- "(e) => { center_on_popup(_map_global) }"
+  on_popup_open_js <- "(e) => { requestAnimationFrame(() => { center_on_popup(_map_global) }) }"
   map |>
     include_scripts(paths = js_file, ...) |>
     htmlwidgets::onRender(
