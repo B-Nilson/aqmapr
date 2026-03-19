@@ -9,6 +9,7 @@
 #'   Each value must be found in [leaflet::providers].
 #'   If names are provided, they will be used as the layer group names.
 #'   If names are not provided, the values of `base_maps` will be used as the layer group names.
+#' @param add_to_layer_control If TRUE (default), the base maps will be added to the layer control, creating the layer control if not existing.
 #'
 #' @return A leaflet map object with the base maps added.
 #'
@@ -23,7 +24,7 @@
 #'   "Terrain" = providers$Stamen.Terrain
 #' )
 #' map |> add_base_maps(base_maps)
-add_base_maps <- function(map, base_maps) {
+add_base_maps <- function(map, base_maps, add_to_layer_control = TRUE) {
   stopifnot("leaflet" %in% class(map))
   stopifnot(
     is.character(base_maps),
@@ -48,8 +49,10 @@ add_base_maps <- function(map, base_maps) {
   }
 
   # Insert base layers into basemap control (create control if needed)
-  map <- map |>
-    append_to_layer_control(base_groups = names(base_maps))
+  if (add_to_layer_control) {
+    map <- map |>
+      append_to_layer_control(base_groups = names(base_maps))
+  }
 
   return(map)
 }

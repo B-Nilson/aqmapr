@@ -4,7 +4,7 @@
 \alias{add_base_maps}
 \title{Add multiple basemap providers to a Leaflet map}
 \usage{
-add_base_maps(map, base_maps)
+add_base_maps(map, base_maps, add_to_layer_control = TRUE)
 }
 \arguments{
 \item{map}{A leaflet map object}
@@ -13,6 +13,8 @@ add_base_maps(map, base_maps)
 Each value must be found in \link[leaflet:providers]{leaflet::providers}.
 If names are provided, they will be used as the layer group names.
 If names are not provided, the values of \code{base_maps} will be used as the layer group names.}
+
+\item{add_to_layer_control}{If TRUE (default), the base maps will be added to the layer control, creating the layer control if not existing.}
 }
 \value{
 A leaflet map object with the base maps added.
