@@ -94,7 +94,8 @@ add_map_timestamps <- function(
     # Add the timestamp control - placeholder(s) will be formatted by JS
     leaflet::addControl(
       html = '<big><strong>%s%s</strong></big>' |>
-        sprintf(prefixes |> escape_symbol("'"), ts_placeholders),
+        sprintf(prefixes |> escape_symbol("'"), ts_placeholders) |> 
+        paste(collapse = "<br>"),
       layerId = "map_timestamp",
       position = position
     ) |>
