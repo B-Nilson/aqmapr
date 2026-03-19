@@ -146,7 +146,7 @@ combine_polygons <- function(polygon_data, .by = NULL, ...) {
     dplyr::filter(!sf::st_is_empty(.data$geometry)) |>
     sf::st_make_valid() |>
     dplyr::summarise(
-      .by = .by,
+      .by = {{.by}},
       geometry = .data$geometry |> sf::st_union(),
       ...
     )
