@@ -6,7 +6,7 @@ test_that("basic case works", {
         sf::st_as_sf(coords = c("lng", "lat")),
       fill_palette = eer_smoke_pal(),
       fill = ~pm25,
-      popup = ~ as.character(pm25)
+      popup = ~ rep("<br>", 6) |> paste(collapse = "")
     ))
   )
 

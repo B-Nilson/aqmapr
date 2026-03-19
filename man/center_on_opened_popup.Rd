@@ -12,7 +12,7 @@ center_on_opened_popup(map, ...)
 \item{...}{Additional arguments to pass to \code{\link[=include_scripts]{include_scripts()}}}
 }
 \value{
-A leaflet map object with a centered popup
+A leaflet map object with JS to center the map on popups when opened
 }
 \description{
 Center map on popup when opened
