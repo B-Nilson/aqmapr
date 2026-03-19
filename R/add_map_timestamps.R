@@ -1,14 +1,14 @@
-#' Add a timestamp to the bottom left of a Leaflet map
+#' Add one or more timestamps to a Leaflet map
 #'
 #' The timestamp is included in a leaflet control (bottom left by default)
 #' and is displayed in the same timezone as the browser by default.
-#' "Last updated: " is pre-pended by default, but can be changed with `prefix`.
+#' "Last updated: " is pre-pended by default, but can be changed with `prefixes`.
 #' The timestamp can be displayed in French by setting `en_francais` to TRUE.
 #'
 #' @param map A leaflet map object
-#' @param timestamp A POSIXt object representing the timestamp to display.
+#' @param timestamps One or more POSIXt objects representing the timestamps to display.
 #'   Default is the current time using `Sys.time()`.
-#' @param prefix A string to prepend to the timestamp.
+#' @param prefixes One or more character values to prepend to each timestamp.
 #'   Default is "Last updated: "
 #'   OR "Dernière mise à jour: " if `en_francais` is TRUE
 #' @param date_format A string specifying the format of the timestamp.
@@ -40,11 +40,11 @@
 #'
 #' leaflet() |>
 #'   add_base_maps(base_maps = "OpenStreetMap") |>
-#'   add_map_timestamp(timestamp = as.POSIXct("2022-01-01 00:00:00", tz = "UTC"))
-add_map_timestamp <- function(
+#'   add_map_timestamps(timestamps = as.POSIXct("2022-01-01 00:00:00", tz = "UTC"))
+add_map_timestamps <- function(
   map,
-  timestamp = Sys.time(),
-  prefix = ifelse(
+  timestamps = Sys.time(),
+  prefixes = ifelse(
     en_francais,
     "Derni\u00E8re mise \u00E0 jour: ",
     "Last updated: "
@@ -58,8 +58,16 @@ add_map_timestamp <- function(
   en_francais = FALSE
 ) {
   stopifnot("leaflet" %in% class(map))
-  stopifnot(lubridate::is.POSIXct(timestamp), length(timestamp) == 1)
-  stopifnot(is.character(prefix), length(prefix) == 1)
+  stopifnot(
+    lubridate::is.POSIXct(timestamps),
+    length(timestamp) > 0,
+    length(timestamps) == 1 | length(timestamps) == length(prefixes)
+  )
+  stopifnot(
+    is.character(prefixes),
+    length(prefixes) > 0,
+    length(prefixes) == 1 | length(prefixes) == length(timestamps)
+  )
   stopifnot(is.character(date_format), length(date_format) == 1)
   stopifnot(is.character(hover_text), length(hover_text) == 1)
   stopifnot(
@@ -71,22 +79,22 @@ add_map_timestamp <- function(
   stopifnot(is.logical(as_reference), length(as_reference) == 1)
   stopifnot(is.logical(en_francais), length(en_francais) == 1)
 
-  js_path <- "js/convert_utc_to_local.js" |> 
+  js_path <- "js/convert_utc_to_local.js" |>
     system.file(package = "aqmapr")
-  ts_placeholder <- timestamp |>
+  ts_placeholders <- timestamps |>
     lubridate::with_tz(tzone = "UTC") |>
     format("%Y-%m-%dT%H:%M:%SZ")
 
-  timestamp_tz <- attr(timestamp, "tzone")
+  timestamp_tz <- attr(timestamps, "tzone")
   if (is.null(timestamp_tz) || timestamp_tz == "") {
     timestamp_tz <- Sys.timezone()
   }
 
   map |>
-    # Add the timestamp control - UTC placeholder will be replaced by JS
+    # Add the timestamp control - placeholder(s) will be formatted by JS
     leaflet::addControl(
       html = '<big><strong>%s%s</strong></big>' |>
-        sprintf(prefix |> escape_symbol("'"), ts_placeholder),
+        sprintf(prefixes |> escape_symbol("'"), ts_placeholders),
       layerId = "map_timestamp",
       position = position
     ) |>

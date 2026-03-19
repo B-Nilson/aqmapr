@@ -185,8 +185,8 @@ make_base_map <- function(
       include_timestamp <- Sys.time()
     }
     base_map <- base_map |>
-      add_map_timestamp(
-        timestamp = include_timestamp,
+      add_map_timestamps(
+        timestamps = include_timestamp,
         as_reference = as_reference
       )
   }
