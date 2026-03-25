@@ -51,7 +51,7 @@ Collate:
     's7_layers.R'
     'add_layer_to_map.R'
     'add_locator_button.R'
-    'add_map_timestamp.R'
+    'add_map_timestamps.R'
     'add_monitor_legend.R'
     'add_wms_layers.R'
     'app.R'

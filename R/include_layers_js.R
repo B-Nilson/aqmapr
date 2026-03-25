@@ -23,6 +23,9 @@ include_layers_js <- function(
   polygon_layers = list(),
   wms_layers = list()
 ) {
+  if (is.null(names(base_maps))) {
+    names(base_maps) <- base_maps
+  }
   stopifnot(
     is.character(base_maps),
     length(base_maps) > 0,

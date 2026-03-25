@@ -153,6 +153,9 @@ make_base_map <- function(
   include_layer_control = TRUE,
   as_reference = FALSE
 ) {
+  if (is.null(names(base_maps))) {
+    names(base_maps) <- base_maps
+  }
   stopifnot(
     is.character(base_maps),
     length(base_maps) > 0,
@@ -182,8 +185,8 @@ make_base_map <- function(
       include_timestamp <- Sys.time()
     }
     base_map <- base_map |>
-      add_map_timestamp(
-        timestamp = include_timestamp,
+      add_map_timestamps(
+        timestamps = include_timestamp,
         as_reference = as_reference
       )
   }
