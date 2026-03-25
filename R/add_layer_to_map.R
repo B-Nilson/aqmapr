@@ -184,12 +184,12 @@ S7::method(add_to_map, WMSLayer) <- function(layer, map) {
     htmlwidgets::onRender(
       on_render_template |>
         sprintf(
-          layer@group,
+          layer@group |> escape_symbol("'"),
           tolower(layer@display_by_default),
-          layer@group,
-          layer@group,
-          layer@group,
-          layer@group
+          layer@group |> escape_symbol("'"),
+          layer@group |> escape_symbol("'"),
+          layer@group |> escape_symbol("'"),
+          layer@group |> escape_symbol("'")
         )
     )
 }
