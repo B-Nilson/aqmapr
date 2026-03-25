@@ -18,7 +18,7 @@ add_wms_layers <- function(map, wms_layers) {
 #'
 #' @param urls,layers,styles,opacities,legend_urls,legend_positions,formats,versions,display_by_defaults
 #'   1 or more character (or numeric for `opacities`) values of the URL(s) of the WMS service,
-#'   layer name(s) and style(s) to display at set opacities, legend URL(s) and position(s), layer format(s), and WMS version(s).
+#'   layer name(s), class name(s) and style(s) to display at set opacities, legend URL(s) and position(s), layer format(s), and WMS version(s).
 #'   Inputs will be recycled to a common length - single values will be repeated as needed.
 #'   The names of `layers` will be used as the layer group names if present.
 #' @return wms_layer object
@@ -27,6 +27,7 @@ make_wms_layers <- function(
   urls,
   layers,
   styles,
+  class_names = NULL,
   opacities = 0.8,
   legend_urls = NA,
   legend_positions = "bottomleft",
@@ -43,6 +44,7 @@ make_wms_layers <- function(
       layer = _,
       group = names(layers),
       url = urls,
+      class_name = class_names,
       style = styles,
       opacity = opacities,
       legend_url = legend_urls,
@@ -66,6 +68,7 @@ make_wms_layers <- function(
           layer = inputs$layer[i],
           group = group,
           format = inputs$format[i],
+          class_name = inputs$class_name[i],
           style = inputs$style[i],
           opacity = inputs$opacity[i],
           version = inputs$version[i],
