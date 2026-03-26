@@ -165,13 +165,14 @@ S7::method(add_to_map, WMSLayer) <- function(layer, map) {
         styles = layer@style,
         opacity = layer@opacity,
         transparent = layer@transparent,
-        pane = pane_name
+        pane = pane_name,
+        className = layer@class_name
       )
     ) |>
     # Add legend
     leaflet::addControl(
       layerId = layer@group |>
-        stringr::str_replace_all(" |\\.", "_"),
+        stringr::str_replace_all("[ .,']", "_"),
       html = legend_template |>
         sprintf(layer@group, layer@legend_url),
       position = layer@legend_position
