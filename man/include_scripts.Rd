@@ -13,7 +13,7 @@ include_scripts(
 )
 }
 \arguments{
-\item{htmlwidget}{An htmlwidgets widget object (leaflet map, reactable table, etc)}
+\item{htmlwidget}{An \code{htmlwidget} or \code{shiny.tag} object}
 
 \item{texts, paths}{The individual script contents to be included (texts)
 or the path(s) to the script file(s) relative to the html file containing the widget.

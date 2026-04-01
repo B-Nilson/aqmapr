@@ -4,7 +4,7 @@
 #' (see [htmlwidgets::prependContent]).
 #' `paths` must be relative to the html file containing the widget and be accessible by the html file.
 #'
-#' @param htmlwidget An htmlwidgets widget object (leaflet map, reactable table, etc)
+#' @param htmlwidget An `htmlwidget` or `shiny.tag` object
 #' @param texts,paths
 #'   The individual script contents to be included (texts)
 #'   or the path(s) to the script file(s) relative to the html file containing the widget.
@@ -38,7 +38,7 @@ include_scripts <- function(
   types = NULL,
   as_reference = FALSE
 ) {
-  stopifnot("htmlwidget" %in% class(htmlwidget))
+  stopifnot(any(c("htmlwidget", "shiny.tag") %in% class(htmlwidget)))
   stopifnot(
     !is.null(texts) | !is.null(paths),
     is.null(texts) | is.null(paths)
