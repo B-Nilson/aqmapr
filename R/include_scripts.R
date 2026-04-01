@@ -1,13 +1,13 @@
 #' Include a css/js file in a Leaflet map header
 #'
-#' Allows for including references to custom css/js in a Leaflet html widget
-#' (see [leaflet::leaflet] and [htmlwidgets::prependContent]).
-#' `paths` must be relative to the html file containing the map and be accessible by the html file.
+#' Allows for including references to custom css/js in an html widget
+#' (see [htmlwidgets::prependContent]).
+#' `paths` must be relative to the html file containing the widget and be accessible by the html file.
 #'
-#' @param map A leaflet map object
+#' @param htmlwidget An htmlwidgets widget object (leaflet map, reactable table, etc)
 #' @param texts,paths
 #'   The individual script contents to be included (texts)
-#'   or the path(s) to the script file(s) relative to the html file containing the map.
+#'   or the path(s) to the script file(s) relative to the html file containing the widget.
 #'   One of `texts` or `paths` must be provided, but not both.
 #'   If `texts` is provided, `types` must also be provided.
 #' @param types The type(s) of script file(s), either "css" or "js"
@@ -18,7 +18,7 @@
 #'   If FALSE, `texts` will be used, or the paths will be read in, and that will be included in the tags directly.
 #'   Default is FALSE.
 #'
-#' @return A leaflet map with the script file(s) included in the page header
+#' @return The htmlwidget with the script file(s) included in the page header
 #' @export
 #' @examples
 #' library(leaflet)
@@ -32,13 +32,13 @@
 #'     as_reference = FALSE
 #'   )
 include_scripts <- function(
-  map,
+  htmlwidget,
   texts = NULL,
   paths = NULL,
   types = NULL,
   as_reference = FALSE
 ) {
-  stopifnot("leaflet" %in% class(map))
+  stopifnot("htmlwidget" %in% class(htmlwidget))
   stopifnot(
     !is.null(texts) | !is.null(paths),
     is.null(texts) | is.null(paths)
@@ -79,7 +79,7 @@ include_scripts <- function(
     types <- rep(types, length(inputs))
   }
 
-  # Loop through and add scripts to map header
+  # Loop through and add scripts to htmlwidget header
   for (i in seq_along(inputs)) {
     input <- inputs[[i]]
     type <- types[i]
@@ -101,9 +101,9 @@ include_scripts <- function(
       }
     }
 
-    # Add to map
-    map <- map |>
+    # Add to htmlwidget
+    htmlwidget <- htmlwidget |>
       htmlwidgets::prependContent(htmltools::tags$head(script_tag))
   }
-  return(map)
+  return(htmlwidget)
 }

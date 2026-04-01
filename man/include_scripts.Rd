@@ -5,7 +5,7 @@
 \title{Include a css/js file in a Leaflet map header}
 \usage{
 include_scripts(
-  map,
+  htmlwidget,
   texts = NULL,
   paths = NULL,
   types = NULL,
@@ -13,10 +13,10 @@ include_scripts(
 )
 }
 \arguments{
-\item{map}{A leaflet map object}
+\item{htmlwidget}{An htmlwidgets widget object (leaflet map, reactable table, etc)}
 
 \item{texts, paths}{The individual script contents to be included (texts)
-or the path(s) to the script file(s) relative to the html file containing the map.
+or the path(s) to the script file(s) relative to the html file containing the widget.
 One of \code{texts} or \code{paths} must be provided, but not both.
 If \code{texts} is provided, \code{types} must also be provided.}
 
@@ -30,12 +30,12 @@ If FALSE, \code{texts} will be used, or the paths will be read in, and that will
 Default is FALSE.}
 }
 \value{
-A leaflet map with the script file(s) included in the page header
+The htmlwidget with the script file(s) included in the page header
 }
 \description{
-Allows for including references to custom css/js in a Leaflet html widget
-(see \link[leaflet:leaflet]{leaflet::leaflet} and \link[htmlwidgets:prependContent]{htmlwidgets::prependContent}).
-\code{paths} must be relative to the html file containing the map and be accessible by the html file.
+Allows for including references to custom css/js in an html widget
+(see \link[htmlwidgets:prependContent]{htmlwidgets::prependContent}).
+\code{paths} must be relative to the html file containing the widget and be accessible by the html file.
 }
 \examples{
 library(leaflet)
