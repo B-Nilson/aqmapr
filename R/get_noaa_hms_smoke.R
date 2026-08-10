@@ -16,6 +16,12 @@
 #' @param timeout Number of seconds to allow for downloading the shapefile zip.
 #'   Defaults to `max(getOption("timeout"), 300)`. Increase this if downloads
 #'   fail on a slow connection.
+#' @param cache_refresh_hours How old (in hours) the cached copy of the current
+#'   day's file can be before it is re-downloaded. NOAA updates today's HMS
+#'   smoke file throughout the day, so an early-morning download quickly goes
+#'   stale. Past files never change and stay cached indefinitely. Defaults to 1.
+#'   Use `Inf` to never refresh the current day's file, or `0` to always
+#'   re-download it.
 #' @export
 #'
 #' @examples
@@ -38,9 +44,15 @@ get_noaa_hms_smoke <- function(
   data_dir = tempdir(),
   quiet = FALSE,
   cache = TRUE,
-  timeout = max(getOption("timeout"), 300)
+  timeout = max(getOption("timeout"), 300),
+  cache_refresh_hours = 1
 ) {
   stopifnot(is.numeric(timeout), length(timeout) == 1, timeout > 0)
+  stopifnot(
+    is.numeric(cache_refresh_hours),
+    length(cache_refresh_hours) == 1,
+    cache_refresh_hours >= 0
+  )
 
   desired_cols <- c(
     satellite = "Satellite",
@@ -51,7 +63,9 @@ get_noaa_hms_smoke <- function(
   select_time <- select_time |> lubridate::with_tz("America/Vancouver")
   shape_date <- select_time |> format("%Y%m%d")
   shape_month <- select_time |> format("%Y/%m")
-  is_todays <- select_time >= lubridate::today(tzone = "UTC")
+  # NOAA updates the current day's smoke file throughout the day, while past
+  # files never change
+  is_todays <- shape_date == format(Sys.time(), "%Y%m%d", tz = "America/Vancouver")
   date_cols <- c("Start", "End")
 
   # Build url to desired zip file
@@ -62,6 +76,10 @@ get_noaa_hms_smoke <- function(
   # Download, unzip, read
   local_path <- "%s/hms_%s_shp.zip" |>
     sprintf(data_dir, shape_date)
+  # Refresh the current day's cached file once it goes stale
+  if (hms_cache_stale(local_path, is_todays, cache, cache_refresh_hours)) {
+    unlink(local_path)
+  }
   old_timeout <- getOption("timeout")
   options(timeout = timeout)
   on.exit(options(timeout = old_timeout), add = TRUE)
@@ -187,4 +205,10 @@ remove_polygon_overlap <- function(polygon_data, equal_area_crs = 3857) {
     ) |>
     dplyr::ungroup() |>
     sf::st_sf()
+}
+
+# Should the cached copy of the current day's HMS file be re-downloaded?
+hms_cache_stale <- function(local_path, is_todays, cache, cache_refresh_hours) {
+  is_todays && cache && file.exists(local_path) &&
+    get_file_age(local_path) > lubridate::dhours(cache_refresh_hours)
 }

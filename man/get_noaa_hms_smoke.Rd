@@ -9,7 +9,8 @@ get_noaa_hms_smoke(
   data_dir = tempdir(),
   quiet = FALSE,
   cache = TRUE,
-  timeout = max(getOption("timeout"), 300)
+  timeout = max(getOption("timeout"), 300),
+  cache_refresh_hours = 1
 )
 }
 \arguments{
@@ -24,6 +25,13 @@ get_noaa_hms_smoke(
 \item{timeout}{Number of seconds to allow for downloading the shapefile zip.
 Defaults to \code{max(getOption("timeout"), 300)}. Increase this if downloads
 fail on a slow connection.}
+
+\item{cache_refresh_hours}{How old (in hours) the cached copy of the current
+day's file can be before it is re-downloaded. NOAA updates today's HMS
+smoke file throughout the day, so an early-morning download quickly goes
+stale. Past files never change and stay cached indefinitely. Defaults to 1.
+Use \code{Inf} to never refresh the current day's file, or \code{0} to always
+re-download it.}
 }
 \description{
 The National Oceanic and Atmospheric Administration provides smoke polygons based on visual analysis of satellite data for the Hazard Mapping System (HMS)
