@@ -51,16 +51,22 @@ test_that("clean_eer_files removes only old EER artifacts", {
   # Old EER artifacts (removed)
   old_zip <- file.path(dir, "eer_Canada_20260101-0000_shp.zip")
   old_hour_dir <- file.path(dir, "shp_Canada_20260101-0000")
+  old_run_dir <- file.path(dir, "eer_Canada_20260101-0000_shp")
   dir.create(old_hour_dir)
+  dir.create(old_run_dir)
   writeLines("x", old_zip)
   writeLines("x", file.path(old_hour_dir, "a.shp"))
+  writeLines("x", file.path(old_run_dir, "a.shp"))
 
   # Fresh EER artifacts (kept)
   new_zip <- file.path(dir, "eer_Canada_20260810-1200_shp.zip")
   new_hour_dir <- file.path(dir, "shp_Canada_20260810-1300")
+  new_run_dir <- file.path(dir, "eer_Canada_20260810-1200_shp")
   dir.create(new_hour_dir)
+  dir.create(new_run_dir)
   writeLines("x", new_zip)
   writeLines("x", file.path(new_hour_dir, "a.shp"))
+  writeLines("x", file.path(new_run_dir, "a.shp"))
 
   # Non-EER file that must be left alone
   other <- file.path(dir, "hms_20260810_shp.zip")
@@ -68,16 +74,23 @@ test_that("clean_eer_files removes only old EER artifacts", {
 
   Sys.setFileTime(old_zip, Sys.time() - lubridate::dhours(48))
   Sys.setFileTime(old_hour_dir, Sys.time() - lubridate::dhours(48))
+  Sys.setFileTime(old_run_dir, Sys.time() - lubridate::dhours(48))
 
   removed <- clean_eer_files(dir, keep_hours = 24)
 
   expect_setequal(
     basename(removed),
-    c("eer_Canada_20260101-0000_shp.zip", "shp_Canada_20260101-0000")
+    c(
+      "eer_Canada_20260101-0000_shp.zip",
+      "shp_Canada_20260101-0000",
+      "eer_Canada_20260101-0000_shp"
+    )
   )
   expect_false(file.exists(old_zip))
   expect_false(file.exists(old_hour_dir))
+  expect_false(file.exists(old_run_dir))
   expect_true(file.exists(new_zip))
   expect_true(file.exists(new_hour_dir))
+  expect_true(file.exists(new_run_dir))
   expect_true(file.exists(other))
 })

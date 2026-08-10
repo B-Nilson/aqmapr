@@ -76,35 +76,46 @@ get_noaa_hms_smoke <- function(
   # Download, unzip, read
   local_path <- "%s/hms_%s_shp.zip" |>
     sprintf(data_dir, shape_date)
-  # Refresh the current day's cached file once it goes stale
+  # Extracted shapefiles for this date (used to skip re-unzipping on cached calls)
+  extracted_pattern <- sprintf("^hms_smoke%s.*\\.shp$", shape_date)
+  # Refresh the current day's cached file once it goes stale. Also drop the
+  # extracted shapefile: NOAA appends new smoke analysis to today's file, so
+  # the old extraction must not be reused after a refresh.
   if (cache_file_stale(local_path, is_todays, cache, cache_refresh_hours)) {
     unlink(local_path)
+    unlink(list.files(data_dir, pattern = extracted_pattern, full.names = TRUE))
   }
   old_timeout <- getOption("timeout")
   options(timeout = timeout)
   on.exit(options(timeout = old_timeout), add = TRUE)
-  shp_paths <- tryCatch(
-    zip_url |>
-      handyr::get_and_unzip(
-        local_path = local_path,
-        unzip_dir = data_dir,
-        cache = cache,
-        quiet = quiet
-      ) |>
-      stringr::str_subset(pattern = ".*\\.shp$"),
-    error = function(e) {
-      # Drop any partial download so a cached retry re-downloads cleanly
-      unlink(local_path)
-      stop(
-        sprintf(
-          "Failed to get HMS smoke polygons for %s: %s.",
-          format(select_time, "%Y-%m-%d"),
-          conditionMessage(e)
-        ),
-        call. = FALSE
-      )
-    }
-  )
+
+  # If this date's shapefile is already extracted, reuse it without
+  # downloading or unzipping again
+  shp_paths <- list.files(data_dir, pattern = extracted_pattern, full.names = TRUE)
+  if (!cache || length(shp_paths) == 0) {
+    shp_paths <- tryCatch(
+      zip_url |>
+        handyr::get_and_unzip(
+          local_path = local_path,
+          unzip_dir = data_dir,
+          cache = cache,
+          quiet = quiet
+        ) |>
+        stringr::str_subset(pattern = ".*\\.shp$"),
+      error = function(e) {
+        # Drop any partial download so a cached retry re-downloads cleanly
+        unlink(local_path)
+        stop(
+          sprintf(
+            "Failed to get HMS smoke polygons for %s: %s.",
+            format(select_time, "%Y-%m-%d"),
+            conditionMessage(e)
+          ),
+          call. = FALSE
+        )
+      }
+    )
+  }
   hms_smoke <- read_hms_shp(shp_paths, date_cols = date_cols)
 
   # Handle no rows/columns (replace with NULL)

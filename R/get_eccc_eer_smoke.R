@@ -99,13 +99,20 @@ get_eccc_eer_smoke <- function(
   local_path <- "%s/eer_%s_%s_shp.zip" |>
     sprintf(data_dir, region, format(model_run, "%Y%m%d-%H%M"))
   shp_pattern <- ".*%s\\.shp$" |> sprintf(format(select_time, "%Y%m%d-%H00"))
+  # Per-run extraction directory, so cached calls can skip re-extracting the
+  # ~48 per-hour folders that `get_and_unzip` unpacks each time
+  extract_dir <- "%s/eer_%s_%s_shp" |>
+    sprintf(data_dir, region, format(model_run, "%Y%m%d-%H%M"))
 
-  # Refresh the current day's cached `latest` zip once it goes stale
+  # Refresh the current day's cached `latest` zip once it goes stale. When
+  # refreshing, also drop the extracted folders: a new run reuses the same
+  # per-hour folder names with different content, so they must be re-extracted.
   if (cache_file_stale(local_path, is_todays, cache, cache_refresh_hours)) {
     unlink(local_path)
+    unlink(extract_dir, recursive = TRUE)
   }
 
-  # Remove old cached EER files (zips and extracted hour folders) on exit
+  # Remove old cached EER files (zips and extracted per-run folders) on exit
   if (!is.infinite(cleanup_keep_hours)) {
     on.exit(try(clean_eer_files(data_dir, cleanup_keep_hours), silent = TRUE), add = TRUE)
   }
@@ -114,29 +121,40 @@ get_eccc_eer_smoke <- function(
   old_timeout <- getOption("timeout")
   options(timeout = timeout)
   on.exit(options(timeout = old_timeout), add = TRUE)
-  shp_paths <- tryCatch(
-    zip_url |>
-      handyr::get_and_unzip(
-        local_path = local_path,
-        unzip_dir = data_dir,
-        cache = cache,
-        quiet = quiet
-      ) |>
-      stringr::str_subset(pattern = shp_pattern),
-    error = function(e) {
-      # Drop any partial download so a cached retry re-downloads cleanly
-      unlink(local_path)
-      stop(
-        sprintf(
-          "Failed to get EER smoke forecast for %s: %s. Note that ECC only archives the most recent ~%d days of runs.",
-          format(model_run, "%Y-%m-%d %H:%M UTC"),
-          conditionMessage(e),
-          archive_days
-        ),
-        call. = FALSE
-      )
-    }
+
+  # If this run's shapefiles are already extracted, reuse them without
+  # downloading or unzipping again
+  shp_paths <- list.files(
+    extract_dir,
+    pattern = shp_pattern,
+    recursive = TRUE,
+    full.names = TRUE
   )
+  if (!cache || length(shp_paths) == 0) {
+    shp_paths <- tryCatch(
+      zip_url |>
+        handyr::get_and_unzip(
+          local_path = local_path,
+          unzip_dir = extract_dir,
+          cache = cache,
+          quiet = quiet
+        ) |>
+        stringr::str_subset(pattern = shp_pattern),
+      error = function(e) {
+        # Drop any partial download so a cached retry re-downloads cleanly
+        unlink(local_path)
+        stop(
+          sprintf(
+            "Failed to get EER smoke forecast for %s: %s. Note that ECC only archives the most recent ~%d days of runs.",
+            format(model_run, "%Y-%m-%d %H:%M UTC"),
+            conditionMessage(e),
+            archive_days
+          ),
+          call. = FALSE
+        )
+      }
+    )
+  }
 
   # No shapefile for the requested hour (EER zips omit the run's initial
   # hour), so treat it like an empty forecast
@@ -216,11 +234,11 @@ read_eer_shp <- function(shp_path, model_run) {
     remove_polygon_overlap()
 }
 
-# Remove cached EER zips and extracted per-hour folders older than `keep_hours`
+# Remove cached EER zips and extracted per-run folders older than `keep_hours`
 clean_eer_files <- function(data_dir, keep_hours) {
   artifacts <- list.files(
     data_dir,
-    pattern = "^(eer_.*_shp\\.zip|shp_.*_[0-9]{8}-[0-9]{4})$",
+    pattern = "^(eer_.*_shp\\.zip|shp_.*_[0-9]{8}-[0-9]{4}|eer_.*_[0-9]{8}-[0-9]{4}_shp)$",
     full.names = TRUE
   )
   ages_hours <- artifacts |>
