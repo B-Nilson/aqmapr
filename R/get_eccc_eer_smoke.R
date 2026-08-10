@@ -132,14 +132,14 @@ get_eccc_eer_smoke <- function(
   )
   if (!cache || length(shp_paths) == 0) {
     shp_paths <- tryCatch(
-      zip_url |>
-        handyr::get_and_unzip(
-          local_path = local_path,
-          unzip_dir = extract_dir,
-          cache = cache,
-          quiet = quiet
-        ) |>
-        stringr::str_subset(pattern = shp_pattern),
+      get_and_unzip_retry(
+        zip_url = zip_url,
+        local_path = local_path,
+        unzip_dir = extract_dir,
+        cache = cache,
+        quiet = quiet,
+        pattern = shp_pattern
+      ),
       error = function(e) {
         # Drop any partial download so a cached retry re-downloads cleanly
         unlink(local_path)
@@ -164,7 +164,23 @@ get_eccc_eer_smoke <- function(
   }
 
   # Read and clean the shapefile
-  eer_smoke <- read_eer_shp(shp_paths, model_run = model_run)
+  eer_smoke <- tryCatch(
+    read_eer_shp(shp_paths, model_run = model_run),
+    error = function(e) {
+      # A corrupt extracted shapefile should not poison the cache: drop it (and
+      # the zip) so the next call re-downloads instead of failing on it forever
+      unlink(local_path)
+      unlink(extract_dir, recursive = TRUE)
+      stop(
+        sprintf(
+          "Failed to read EER smoke forecast for %s: %s.",
+          format(model_run, "%Y-%m-%d %H:%M UTC"),
+          conditionMessage(e)
+        ),
+        call. = FALSE
+      )
+    }
+  )
 
   # Handle no rows/columns (replace with NULL)
   is_empty <- nrow(eer_smoke) == 0 | ncol(eer_smoke) == 0 | is.null(eer_smoke)

@@ -94,14 +94,14 @@ get_noaa_hms_smoke <- function(
   shp_paths <- list.files(data_dir, pattern = extracted_pattern, full.names = TRUE)
   if (!cache || length(shp_paths) == 0) {
     shp_paths <- tryCatch(
-      zip_url |>
-        handyr::get_and_unzip(
-          local_path = local_path,
-          unzip_dir = data_dir,
-          cache = cache,
-          quiet = quiet
-        ) |>
-        stringr::str_subset(pattern = ".*\\.shp$"),
+      get_and_unzip_retry(
+        zip_url = zip_url,
+        local_path = local_path,
+        unzip_dir = data_dir,
+        cache = cache,
+        quiet = quiet,
+        pattern = ".*\\.shp$"
+      ),
       error = function(e) {
         # Drop any partial download so a cached retry re-downloads cleanly
         unlink(local_path)
@@ -116,7 +116,23 @@ get_noaa_hms_smoke <- function(
       }
     )
   }
-  hms_smoke <- read_hms_shp(shp_paths, date_cols = date_cols)
+  # A corrupt extracted shapefile should not poison the cache: drop it (and the
+  # zip) so the next call re-downloads instead of failing on it forever
+  hms_smoke <- tryCatch(
+    read_hms_shp(shp_paths, date_cols = date_cols),
+    error = function(e) {
+      unlink(local_path)
+      unlink(list.files(data_dir, pattern = extracted_pattern, full.names = TRUE))
+      stop(
+        sprintf(
+          "Failed to read HMS smoke polygons for %s: %s.",
+          format(select_time, "%Y-%m-%d"),
+          conditionMessage(e)
+        ),
+        call. = FALSE
+      )
+    }
+  )
 
   # Handle no rows/columns (replace with NULL)
   is_empty <- nrow(hms_smoke) == 0 | ncol(hms_smoke) == 0
@@ -222,4 +238,44 @@ remove_polygon_overlap <- function(polygon_data, equal_area_crs = 3857) {
 cache_file_stale <- function(local_path, is_todays, cache, cache_refresh_hours) {
   is_todays && cache && file.exists(local_path) &&
     get_file_age(local_path) > lubridate::dhours(cache_refresh_hours)
+}
+
+# Download (or reuse the cached) shapefile zip and return the extracted paths
+# matching `pattern`. If the cached zip turns out to be corrupt (unzip warns and
+# yields no matches), it is deleted and downloaded again once, so a bad cache
+# can never block a fresh fetch. If the retry also fails, the bad file is
+# dropped and a warning is emitted so the next call tries again.
+get_and_unzip_retry <- function(zip_url, local_path, unzip_dir, cache, quiet, pattern) {
+  attempt <- function() {
+    warned <- FALSE
+    paths <- withCallingHandlers(
+      zip_url |>
+        handyr::get_and_unzip(
+          local_path = local_path,
+          unzip_dir = unzip_dir,
+          cache = cache,
+          quiet = quiet
+        ) |>
+        stringr::str_subset(pattern = pattern),
+      warning = function(w) {
+        warned <<- TRUE
+        invokeRestart("muffleWarning")
+      }
+    )
+    list(paths = paths, warned = warned)
+  }
+
+  res <- attempt()
+  if (length(res$paths) == 0 && res$warned && file.exists(local_path)) {
+    # Corrupt cached zip (or truncated download): drop it and try once more
+    unlink(local_path)
+    res <- attempt()
+  }
+  if (length(res$paths) == 0 && res$warned) {
+    # The fresh download was also bad: drop the partial file so the next call
+    # re-downloads rather than failing on it again
+    unlink(local_path)
+    warning("Downloaded shapefile zip appears to be corrupt and could not be re-downloaded.")
+  }
+  res$paths
 }

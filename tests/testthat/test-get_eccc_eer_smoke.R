@@ -16,6 +16,39 @@ test_that("basic case works", {
   )
 })
 
+test_that("corrupt cached zip self-heals on a live call", {
+  # An archived NU run known to contain smoke
+  select_time <- lubridate::with_tz(
+    as.POSIXct(paste0(format(lubridate::today(tzone = "UTC") - 1, "%Y-%m-%d"), " 13:00:00"), tz = "UTC"),
+    "UTC"
+  )
+  region <- "NU"
+  dir <- tempfile()
+  dir.create(dir)
+
+  # Plant a corrupt zip at the cache key for this run
+  model_run <- select_time |>
+    lubridate::with_tz("UTC") |>
+    lubridate::floor_date("6 hours")
+  local_path <- file.path(
+    dir,
+    sprintf("eer_%s_%s_shp.zip", region, format(model_run, "%Y%m%d-%H%M"))
+  )
+  writeLines("not a zip", local_path)
+
+  eer <- get_eccc_eer_smoke(
+    select_time = select_time,
+    region = region,
+    data_dir = dir,
+    quiet = TRUE
+  )
+  expect_no_error(eer)
+  expect_false(is.null(eer))
+  expect_true(nrow(eer) >= 1)
+  # The corrupt zip was replaced by a fresh download
+  expect_true(file.exists(local_path))
+})
+
 test_that("make_eer_zip_dir builds correct urls", {
   today <- lubridate::today(tzone = "UTC")
 
