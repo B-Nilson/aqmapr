@@ -11,7 +11,8 @@ get_eccc_eer_smoke(
   quiet = FALSE,
   cache = TRUE,
   archive_days = 8,
-  timeout = max(getOption("timeout"), 300)
+  timeout = max(getOption("timeout"), 300),
+  cache_refresh_hours = 1
 )
 }
 \arguments{
@@ -33,6 +34,13 @@ ECC only archives the most recent ~8 days of runs, so requesting an older
 \item{timeout}{Number of seconds to allow for downloading the shapefile zip.
 Defaults to \code{max(getOption("timeout"), 300)}. Increase this if downloads
 fail on a slow connection.}
+
+\item{cache_refresh_hours}{How old (in hours) the cached copy of the current
+day's forecast can be before it is re-downloaded. The current day's data is
+served from ECC's \code{latest} alias, which switches to a newer run once it is
+posted, so an old cached copy quickly goes stale. Archived runs never change
+and stay cached indefinitely. Defaults to 1. Use \code{Inf} to never refresh the
+current day's file, or \code{0} to always re-download it.}
 }
 \description{
 The Environmental Emergency Response group at Environment and Climate Change Canada (ECCC) provides smoke forecasts for Canada.

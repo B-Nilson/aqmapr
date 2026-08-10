@@ -22,6 +22,12 @@
 #' @param timeout Number of seconds to allow for downloading the shapefile zip.
 #'   Defaults to `max(getOption("timeout"), 300)`. Increase this if downloads
 #'   fail on a slow connection.
+#' @param cache_refresh_hours How old (in hours) the cached copy of the current
+#'   day's forecast can be before it is re-downloaded. The current day's data is
+#'   served from ECC's `latest` alias, which switches to a newer run once it is
+#'   posted, so an old cached copy quickly goes stale. Archived runs never change
+#'   and stay cached indefinitely. Defaults to 1. Use `Inf` to never refresh the
+#'   current day's file, or `0` to always re-download it.
 #' @export
 #'
 #' @examples
@@ -42,7 +48,8 @@ get_eccc_eer_smoke <- function(
   quiet = FALSE,
   cache = TRUE,
   archive_days = 8,
-  timeout = max(getOption("timeout"), 300)
+  timeout = max(getOption("timeout"), 300),
+  cache_refresh_hours = 1
 ) {
   stopifnot(lubridate::is.POSIXct(select_time), length(select_time) == 1)
   check_eer_region(region)
@@ -54,6 +61,11 @@ get_eccc_eer_smoke <- function(
     archive_days > 0
   )
   stopifnot(is.numeric(timeout), length(timeout) == 1, timeout > 0)
+  stopifnot(
+    is.numeric(cache_refresh_hours),
+    length(cache_refresh_hours) == 1,
+    cache_refresh_hours >= 0
+  )
 
   desired_cols <- c(
     "region",
@@ -69,6 +81,9 @@ get_eccc_eer_smoke <- function(
     lubridate::floor_date("hours")
   model_run <- select_time |>
     lubridate::floor_date("6 hours")
+  # The current day's forecast comes from the mutable `latest` alias, while
+  # archived runs never change
+  is_todays <- model_run >= (lubridate::today(tzone = "UTC") |> lubridate::as_datetime())
 
   # Build url to this runs zip file
   zip_url <- "%s/shp_%s.zip" |>
@@ -76,6 +91,11 @@ get_eccc_eer_smoke <- function(
   local_path <- "%s/eer_%s_%s_shp.zip" |>
     sprintf(data_dir, region, format(model_run, "%Y%m%d-%H%M"))
   shp_pattern <- ".*%s\\.shp$" |> sprintf(format(select_time, "%Y%m%d-%H00"))
+
+  # Refresh the current day's cached `latest` zip once it goes stale
+  if (cache_file_stale(local_path, is_todays, cache, cache_refresh_hours)) {
+    unlink(local_path)
+  }
 
   # Download and unzip the run's shapefiles
   old_timeout <- getOption("timeout")

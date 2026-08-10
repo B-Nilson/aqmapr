@@ -77,7 +77,7 @@ get_noaa_hms_smoke <- function(
   local_path <- "%s/hms_%s_shp.zip" |>
     sprintf(data_dir, shape_date)
   # Refresh the current day's cached file once it goes stale
-  if (hms_cache_stale(local_path, is_todays, cache, cache_refresh_hours)) {
+  if (cache_file_stale(local_path, is_todays, cache, cache_refresh_hours)) {
     unlink(local_path)
   }
   old_timeout <- getOption("timeout")
@@ -207,8 +207,8 @@ remove_polygon_overlap <- function(polygon_data, equal_area_crs = 3857) {
     sf::st_sf()
 }
 
-# Should the cached copy of the current day's HMS file be re-downloaded?
-hms_cache_stale <- function(local_path, is_todays, cache, cache_refresh_hours) {
+# Should a cached download be re-fetched because it has gone stale?
+cache_file_stale <- function(local_path, is_todays, cache, cache_refresh_hours) {
   is_todays && cache && file.exists(local_path) &&
     get_file_age(local_path) > lubridate::dhours(cache_refresh_hours)
 }
