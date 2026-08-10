@@ -116,6 +116,12 @@ get_noaa_hms_smoke <- function(
       }
     )
   }
+  # No shapefile for the requested date, so treat it like an empty forecast
+  if (length(shp_paths) == 0) {
+    warning("No layers in this run's HMS smoke forecast, returning NULL.")
+    return(NULL)
+  }
+
   # A corrupt extracted shapefile should not poison the cache: drop it (and the
   # zip) so the next call re-downloads instead of failing on it forever
   hms_smoke <- tryCatch(
@@ -186,6 +192,9 @@ read_hms_shp <- function(
   date_cols = c("Start", "End"),
   density_levels = c("Heavy", "Medium", "Light")
 ) {
+  if (is.null(shp_path) || length(shp_path) == 0) {
+    stop("No HMS shapefile paths to read.", call. = FALSE)
+  }
   sf::read_sf(shp_path) |>
     # Fix types
     dplyr::mutate(
@@ -241,10 +250,7 @@ cache_file_stale <- function(local_path, is_todays, cache, cache_refresh_hours) 
 }
 
 # Download (or reuse the cached) shapefile zip and return the extracted paths
-# matching `pattern`. If the cached zip turns out to be corrupt (unzip warns and
-# yields no matches), it is deleted and downloaded again once, so a bad cache
-# can never block a fresh fetch. If the retry also fails, the bad file is
-# dropped and a warning is emitted so the next call tries again.
+# matching `pattern`.
 get_and_unzip_retry <- function(zip_url, local_path, unzip_dir, cache, quiet, pattern) {
   attempt <- function() {
     warned <- FALSE
@@ -266,12 +272,12 @@ get_and_unzip_retry <- function(zip_url, local_path, unzip_dir, cache, quiet, pa
   }
 
   res <- attempt()
-  if (length(res$paths) == 0 && res$warned && file.exists(local_path)) {
-    # Corrupt cached zip (or truncated download): drop it and try once more
+  if (res$warned && file.exists(local_path)) {
+    # Corrupt cached zip (or truncated/partial download): drop it and try once more
     unlink(local_path)
     res <- attempt()
   }
-  if (length(res$paths) == 0 && res$warned) {
+  if (res$warned) {
     # The fresh download was also bad: drop the partial file so the next call
     # re-downloads rather than failing on it again
     unlink(local_path)

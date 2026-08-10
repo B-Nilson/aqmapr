@@ -232,6 +232,9 @@ eer_smoke_pal <- function(eer_pm25_ugm3 = NULL) {
 }
 
 read_eer_shp <- function(shp_path, model_run) {
+  if (is.null(shp_path) || length(shp_path) == 0) {
+    stop("No EER shapefile paths to read.", call. = FALSE)
+  }
   # read in, drop empty, convert to POLYGON from LINESTRING
   eer_raw <- shp_path |>
     sf::read_sf() |>

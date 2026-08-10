@@ -93,6 +93,68 @@ test_that("get_and_unzip_retry drops the bad file when the fetch keeps failing",
   expect_false(file.exists(local_path))
 })
 
+test_that("get_and_unzip_retry re-downloads when unzip warns but partially extracts", {
+  dir <- tempfile()
+  dir.create(dir)
+  local_path <- file.path(dir, "cached.zip")
+  writeLines("not a zip", local_path)
+
+  calls <- 0
+  fake_get_and_unzip <- function(zip_url, local_path, unzip_dir, cache, quiet, ...) {
+    calls <<- calls + 1
+    if (calls == 1) {
+      warning("error 1 in extracting from zip file")
+    } else {
+      # The re-download replaces the bad cached zip
+      writeLines("fresh zip", local_path)
+    }
+    file.path(unzip_dir, "hms_smoke20260101.shp")
+  }
+  local_mocked_bindings(get_and_unzip = fake_get_and_unzip, .package = "handyr")
+
+  paths <- get_and_unzip_retry(
+    zip_url = "file://unused",
+    local_path = local_path,
+    unzip_dir = file.path(dir, "out"),
+    cache = TRUE,
+    quiet = TRUE,
+    pattern = ".*\\.shp$"
+  )
+  expect_length(paths, 1)
+  # A partial extraction with warnings now triggers a re-download instead of
+  # silently returning possibly-truncated shapefiles
+  expect_equal(calls, 2)
+  expect_true(file.exists(local_path))
+})
+
+test_that("get_and_unzip_retry drops a zip whose extraction keeps partially failing", {
+  dir <- tempfile()
+  dir.create(dir)
+  local_path <- file.path(dir, "cached.zip")
+  writeLines("not a zip", local_path)
+
+  fake_get_and_unzip <- function(zip_url, local_path, unzip_dir, cache, quiet, ...) {
+    warning("error 1 in extracting from zip file")
+    file.path(unzip_dir, "hms_smoke20260101.shp")
+  }
+  local_mocked_bindings(get_and_unzip = fake_get_and_unzip, .package = "handyr")
+
+  expect_warning(
+    paths <- get_and_unzip_retry(
+      zip_url = "file://unused",
+      local_path = local_path,
+      unzip_dir = file.path(dir, "out"),
+      cache = TRUE,
+      quiet = TRUE,
+      pattern = ".*\\.shp$"
+    ),
+    "corrupt"
+  )
+  expect_length(paths, 1)
+  # The bad file is dropped so the next call re-downloads
+  expect_false(file.exists(local_path))
+})
+
 test_that("corrupt cached zip self-heals on a live call", {
   select_time <- Sys.time()
   shape_date <- select_time |>
