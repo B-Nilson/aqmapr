@@ -4,11 +4,21 @@
 #' They run dispersion models using fire information and ECCC weather models.
 #' See \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/}{here} for more information.
 #'
+#' @details
+#' Only the most recently posted run is available for the current day, and
+#' archived runs are kept for only the most recent ~8 days. EER shapefiles
+#' also omit the initial hour of each model run, so `select_time`s that fall
+#' exactly on a run start (00/06/12/18 UTC) return NULL with a warning.
+#'
 #' @param select_time POSIXct time to download data for
-#' @param region String specifying the region to download data for. Currently only "Canada" is supported.
+#' @param region String specifying the EER region to download data for (e.g. "Canada").
+#'   See `check_eer_region()` for the full list of supported regions.
 #' @param data_dir Directory to store downloaded data in. Defaults to tempdir().
 #' @param quiet Logical. Should output from `download.file` be suppressed?
 #' @param cache Logical. Should the downloaded data be cached? Defaults to TRUE.
+#' @param archive_days Number of days of past model runs to allow.
+#'   ECC only archives the most recent ~8 days of runs, so requesting an older
+#'   `select_time` errors with a clear message. Defaults to 8.
 #' @export
 #'
 #' @examples
@@ -27,12 +37,14 @@ get_eccc_eer_smoke <- function(
   region = "Canada",
   data_dir = tempdir(),
   quiet = FALSE,
-  cache = TRUE
+  cache = TRUE,
+  archive_days = 8
 ) {
   stopifnot(lubridate::is.POSIXct(select_time), length(select_time) == 1)
   check_eer_region(region)
   stopifnot(is.character(data_dir), length(data_dir) == 1)
   stopifnot(is.logical(quiet), length(quiet) == 1)
+  stopifnot(is.numeric(archive_days), length(archive_days) == 1, archive_days > 0)
 
   desired_cols <- c(
     "region",
@@ -51,21 +63,43 @@ get_eccc_eer_smoke <- function(
 
   # Build url to this runs zip file
   zip_url <- "%s/shp_%s.zip" |>
-    sprintf(make_eer_zip_dir(model_run), region)
+    sprintf(make_eer_zip_dir(model_run, archive_days = archive_days), region)
   local_path <- "%s/eer_%s_%s_shp.zip" |>
     sprintf(data_dir, region, format(model_run, "%Y%m%d-%H%M"))
   shp_pattern <- ".*%s\\.shp$" |> sprintf(format(select_time, "%Y%m%d-%H00"))
 
-  # Download, unzip, read
-  eer_smoke <- zip_url |>
-    handyr::get_and_unzip(
-      local_path = local_path,
-      unzip_dir = data_dir,
-      cache = cache,
-      quiet = quiet
-    ) |>
-    stringr::str_subset(pattern = shp_pattern) |>
-    read_eer_shp(model_run = model_run)
+  # Download and unzip the run's shapefiles
+  shp_paths <- tryCatch(
+    zip_url |>
+      handyr::get_and_unzip(
+        local_path = local_path,
+        unzip_dir = data_dir,
+        cache = cache,
+        quiet = quiet
+      ) |>
+      stringr::str_subset(pattern = shp_pattern),
+    error = function(e) {
+      stop(
+        sprintf(
+          "Failed to get EER smoke forecast for %s: %s. Note that ECC only archives the most recent ~%d days of runs.",
+          format(model_run, "%Y-%m-%d %H:%M UTC"),
+          conditionMessage(e),
+          archive_days
+        ),
+        call. = FALSE
+      )
+    }
+  )
+
+  # No shapefile for the requested hour (EER zips omit the run's initial
+  # hour), so treat it like an empty forecast
+  if (length(shp_paths) == 0) {
+    warning("No layers in this run's EER smoke forecast, returning NULL.")
+    return(NULL)
+  }
+
+  # Read and clean the shapefile
+  eer_smoke <- read_eer_shp(shp_paths, model_run = model_run)
 
   # Handle no rows/columns (replace with NULL)
   is_empty <- nrow(eer_smoke) == 0 | ncol(eer_smoke) == 0 | is.null(eer_smoke)
@@ -135,16 +169,33 @@ read_eer_shp <- function(shp_path, model_run) {
     remove_polygon_overlap()
 }
 
-make_eer_zip_dir <- function(model_run) {
-  source_template <- "https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/%s/Canada/%s/shp/"
-  is_todays <- model_run >= lubridate::today(tzone = "UTC")
-  if (any(is_todays)) {
-    timestamp <- "latest"
+make_eer_zip_dir <- function(model_run, archive_days = 8) {
+  source_template <- "https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/%s/Canada/%s/shp"
+  today_utc <- lubridate::today(tzone = "UTC") |>
+    lubridate::as_datetime()
+  if (model_run >= today_utc) {
+    # Use the top-level "latest" alias: the most recently posted run
+    source_template |>
+      sprintf("latest", "latest")
   } else {
-    timestamp <- format(model_run, "%Y%m%d.%H00")
+    # Archived runs are kept for only a rolling ~`archive_days` day window
+    archive_cutoff <- today_utc - lubridate::days(archive_days)
+    if (model_run < archive_cutoff) {
+      stop(
+        sprintf(
+          "EER smoke forecasts are only archived for the most recent %d days (requested run: %s). Select a more recent time.",
+          archive_days,
+          format(model_run, "%Y-%m-%d %H:%M UTC")
+        ),
+        call. = FALSE
+      )
+    }
+    source_template |>
+      sprintf(
+        format(model_run, "%HUTC"),
+        format(model_run, "%Y%m%d.%H00")
+      )
   }
-  source_template |>
-    sprintf(format(model_run, "%HUTC"), timestamp)
 }
 
 check_eer_region <- function(region) {

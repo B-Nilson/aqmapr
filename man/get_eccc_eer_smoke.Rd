@@ -9,24 +9,36 @@ get_eccc_eer_smoke(
   region = "Canada",
   data_dir = tempdir(),
   quiet = FALSE,
-  cache = TRUE
+  cache = TRUE,
+  archive_days = 8
 )
 }
 \arguments{
 \item{select_time}{POSIXct time to download data for}
 
-\item{region}{String specifying the region to download data for. Currently only "Canada" is supported.}
+\item{region}{String specifying the EER region to download data for (e.g. "Canada").
+See \code{check_eer_region()} for the full list of supported regions.}
 
 \item{data_dir}{Directory to store downloaded data in. Defaults to tempdir().}
 
 \item{quiet}{Logical. Should output from \code{download.file} be suppressed?}
 
 \item{cache}{Logical. Should the downloaded data be cached? Defaults to TRUE.}
+
+\item{archive_days}{Number of days of past model runs to allow.
+ECC only archives the most recent ~8 days of runs, so requesting an older
+\code{select_time} errors with a clear message. Defaults to 8.}
 }
 \description{
 The Environmental Emergency Response group at Environment and Climate Change Canada (ECCC) provides smoke forecasts for Canada.
 They run dispersion models using fire information and ECCC weather models.
 See \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/}{here} for more information.
+}
+\details{
+Only the most recently posted run is available for the current day, and
+archived runs are kept for only the most recent ~8 days. EER shapefiles
+also omit the initial hour of each model run, so \code{select_time}s that fall
+exactly on a run start (00/06/12/18 UTC) return NULL with a warning.
 }
 \examples{
 eer <- get_eccc_eer_smoke()
