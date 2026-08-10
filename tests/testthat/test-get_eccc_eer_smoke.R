@@ -43,3 +43,41 @@ test_that("make_eer_zip_dir builds correct urls", {
     "only archived for the most recent"
   )
 })
+
+test_that("clean_eer_files removes only old EER artifacts", {
+  dir <- tempfile()
+  dir.create(dir)
+
+  # Old EER artifacts (removed)
+  old_zip <- file.path(dir, "eer_Canada_20260101-0000_shp.zip")
+  old_hour_dir <- file.path(dir, "shp_Canada_20260101-0000")
+  dir.create(old_hour_dir)
+  writeLines("x", old_zip)
+  writeLines("x", file.path(old_hour_dir, "a.shp"))
+
+  # Fresh EER artifacts (kept)
+  new_zip <- file.path(dir, "eer_Canada_20260810-1200_shp.zip")
+  new_hour_dir <- file.path(dir, "shp_Canada_20260810-1300")
+  dir.create(new_hour_dir)
+  writeLines("x", new_zip)
+  writeLines("x", file.path(new_hour_dir, "a.shp"))
+
+  # Non-EER file that must be left alone
+  other <- file.path(dir, "hms_20260810_shp.zip")
+  writeLines("x", other)
+
+  Sys.setFileTime(old_zip, Sys.time() - lubridate::dhours(48))
+  Sys.setFileTime(old_hour_dir, Sys.time() - lubridate::dhours(48))
+
+  removed <- clean_eer_files(dir, keep_hours = 24)
+
+  expect_setequal(
+    basename(removed),
+    c("eer_Canada_20260101-0000_shp.zip", "shp_Canada_20260101-0000")
+  )
+  expect_false(file.exists(old_zip))
+  expect_false(file.exists(old_hour_dir))
+  expect_true(file.exists(new_zip))
+  expect_true(file.exists(new_hour_dir))
+  expect_true(file.exists(other))
+})

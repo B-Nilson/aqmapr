@@ -12,7 +12,8 @@ get_eccc_eer_smoke(
   cache = TRUE,
   archive_days = 8,
   timeout = max(getOption("timeout"), 300),
-  cache_refresh_hours = 1
+  cache_refresh_hours = 1,
+  cleanup_keep_hours = 24
 )
 }
 \arguments{
@@ -41,6 +42,9 @@ served from ECC's \code{latest} alias, which switches to a newer run once it is
 posted, so an old cached copy quickly goes stale. Archived runs never change
 and stay cached indefinitely. Defaults to 1. Use \code{Inf} to never refresh the
 current day's file, or \code{0} to always re-download it.}
+
+\item{cleanup_keep_hours}{How old (in hours) cached EER files must be before
+they are removed. Defaults to 24. Use \code{Inf} to keep all files.}
 }
 \description{
 The Environmental Emergency Response group at Environment and Climate Change Canada (ECCC) provides smoke forecasts for Canada.

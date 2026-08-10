@@ -28,6 +28,8 @@
 #'   posted, so an old cached copy quickly goes stale. Archived runs never change
 #'   and stay cached indefinitely. Defaults to 1. Use `Inf` to never refresh the
 #'   current day's file, or `0` to always re-download it.
+#' @param cleanup_keep_hours How old (in hours) cached EER files must be before
+#'   they are removed. Defaults to 24. Use `Inf` to keep all files.
 #' @export
 #'
 #' @examples
@@ -49,7 +51,8 @@ get_eccc_eer_smoke <- function(
   cache = TRUE,
   archive_days = 8,
   timeout = max(getOption("timeout"), 300),
-  cache_refresh_hours = 1
+  cache_refresh_hours = 1,
+  cleanup_keep_hours = 24
 ) {
   stopifnot(lubridate::is.POSIXct(select_time), length(select_time) == 1)
   check_eer_region(region)
@@ -65,6 +68,11 @@ get_eccc_eer_smoke <- function(
     is.numeric(cache_refresh_hours),
     length(cache_refresh_hours) == 1,
     cache_refresh_hours >= 0
+  )
+  stopifnot(
+    is.numeric(cleanup_keep_hours),
+    length(cleanup_keep_hours) == 1,
+    cleanup_keep_hours >= 0
   )
 
   desired_cols <- c(
@@ -95,6 +103,11 @@ get_eccc_eer_smoke <- function(
   # Refresh the current day's cached `latest` zip once it goes stale
   if (cache_file_stale(local_path, is_todays, cache, cache_refresh_hours)) {
     unlink(local_path)
+  }
+
+  # Remove old cached EER files (zips and extracted hour folders) on exit
+  if (!is.infinite(cleanup_keep_hours)) {
+    on.exit(try(clean_eer_files(data_dir, cleanup_keep_hours), silent = TRUE), add = TRUE)
   }
 
   # Download and unzip the run's shapefiles
@@ -201,6 +214,22 @@ read_eer_shp <- function(shp_path, model_run) {
     dplyr::arrange(dplyr::desc(.data$Interval)) |>
     dplyr::group_by(.data$Height) |>
     remove_polygon_overlap()
+}
+
+# Remove cached EER zips and extracted per-hour folders older than `keep_hours`
+clean_eer_files <- function(data_dir, keep_hours) {
+  artifacts <- list.files(
+    data_dir,
+    pattern = "^(eer_.*_shp\\.zip|shp_.*_[0-9]{8}-[0-9]{4})$",
+    full.names = TRUE
+  )
+  ages_hours <- artifacts |>
+    purrr::map_dbl(\(f) get_file_age(f) |> as.numeric(units = "hours"))
+  old <- ages_hours > keep_hours
+  if (any(old)) {
+    unlink(artifacts[old], recursive = TRUE)
+  }
+  invisible(artifacts[old])
 }
 
 make_eer_zip_dir <- function(model_run, archive_days = 8) {
