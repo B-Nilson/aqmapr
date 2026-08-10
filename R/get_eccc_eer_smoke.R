@@ -19,6 +19,9 @@
 #' @param archive_days Number of days of past model runs to allow.
 #'   ECC only archives the most recent ~8 days of runs, so requesting an older
 #'   `select_time` errors with a clear message. Defaults to 8.
+#' @param timeout Number of seconds to allow for downloading the shapefile zip.
+#'   Defaults to `max(getOption("timeout"), 300)`. Increase this if downloads
+#'   fail on a slow connection.
 #' @export
 #'
 #' @examples
@@ -38,13 +41,19 @@ get_eccc_eer_smoke <- function(
   data_dir = tempdir(),
   quiet = FALSE,
   cache = TRUE,
-  archive_days = 8
+  archive_days = 8,
+  timeout = max(getOption("timeout"), 300)
 ) {
   stopifnot(lubridate::is.POSIXct(select_time), length(select_time) == 1)
   check_eer_region(region)
   stopifnot(is.character(data_dir), length(data_dir) == 1)
   stopifnot(is.logical(quiet), length(quiet) == 1)
-  stopifnot(is.numeric(archive_days), length(archive_days) == 1, archive_days > 0)
+  stopifnot(
+    is.numeric(archive_days),
+    length(archive_days) == 1,
+    archive_days > 0
+  )
+  stopifnot(is.numeric(timeout), length(timeout) == 1, timeout > 0)
 
   desired_cols <- c(
     "region",
@@ -69,6 +78,9 @@ get_eccc_eer_smoke <- function(
   shp_pattern <- ".*%s\\.shp$" |> sprintf(format(select_time, "%Y%m%d-%H00"))
 
   # Download and unzip the run's shapefiles
+  old_timeout <- getOption("timeout")
+  options(timeout = timeout)
+  on.exit(options(timeout = old_timeout), add = TRUE)
   shp_paths <- tryCatch(
     zip_url |>
       handyr::get_and_unzip(
@@ -79,6 +91,8 @@ get_eccc_eer_smoke <- function(
       ) |>
       stringr::str_subset(pattern = shp_pattern),
     error = function(e) {
+      # Drop any partial download so a cached retry re-downloads cleanly
+      unlink(local_path)
       stop(
         sprintf(
           "Failed to get EER smoke forecast for %s: %s. Note that ECC only archives the most recent ~%d days of runs.",

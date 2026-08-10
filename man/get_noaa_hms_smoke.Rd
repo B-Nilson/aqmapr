@@ -8,7 +8,8 @@ get_noaa_hms_smoke(
   select_time = Sys.time(),
   data_dir = tempdir(),
   quiet = FALSE,
-  cache = TRUE
+  cache = TRUE,
+  timeout = max(getOption("timeout"), 300)
 )
 }
 \arguments{
@@ -19,6 +20,10 @@ get_noaa_hms_smoke(
 \item{quiet}{Logical. Should output from \code{download.file} be suppressed?}
 
 \item{cache}{Logical. Should the downloaded data be cached? Defaults to TRUE.}
+
+\item{timeout}{Number of seconds to allow for downloading the shapefile zip.
+Defaults to \code{max(getOption("timeout"), 300)}. Increase this if downloads
+fail on a slow connection.}
 }
 \description{
 The National Oceanic and Atmospheric Administration provides smoke polygons based on visual analysis of satellite data for the Hazard Mapping System (HMS)

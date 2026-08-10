@@ -13,6 +13,9 @@
 #' See \href{https://www.ospo.noaa.gov/products/land/hms.html#about}{here} for more information.
 #'
 #' @inheritParams get_eccc_eer_smoke
+#' @param timeout Number of seconds to allow for downloading the shapefile zip.
+#'   Defaults to `max(getOption("timeout"), 300)`. Increase this if downloads
+#'   fail on a slow connection.
 #' @export
 #'
 #' @examples
@@ -34,8 +37,11 @@ get_noaa_hms_smoke <- function(
   select_time = Sys.time(),
   data_dir = tempdir(),
   quiet = FALSE,
-  cache = TRUE
+  cache = TRUE,
+  timeout = max(getOption("timeout"), 300)
 ) {
+  stopifnot(is.numeric(timeout), length(timeout) == 1, timeout > 0)
+
   desired_cols <- c(
     satellite = "Satellite",
     "period",
@@ -56,15 +62,32 @@ get_noaa_hms_smoke <- function(
   # Download, unzip, read
   local_path <- "%s/hms_%s_shp.zip" |>
     sprintf(data_dir, shape_date)
-  hms_smoke <- zip_url |>
-    handyr::get_and_unzip(
-      local_path = local_path,
-      unzip_dir = data_dir,
-      cache = cache,
-      quiet = quiet
-    ) |>
-    stringr::str_subset(pattern = ".*\\.shp$") |>
-    read_hms_shp(date_cols = date_cols)
+  old_timeout <- getOption("timeout")
+  options(timeout = timeout)
+  on.exit(options(timeout = old_timeout), add = TRUE)
+  shp_paths <- tryCatch(
+    zip_url |>
+      handyr::get_and_unzip(
+        local_path = local_path,
+        unzip_dir = data_dir,
+        cache = cache,
+        quiet = quiet
+      ) |>
+      stringr::str_subset(pattern = ".*\\.shp$"),
+    error = function(e) {
+      # Drop any partial download so a cached retry re-downloads cleanly
+      unlink(local_path)
+      stop(
+        sprintf(
+          "Failed to get HMS smoke polygons for %s: %s.",
+          format(select_time, "%Y-%m-%d"),
+          conditionMessage(e)
+        ),
+        call. = FALSE
+      )
+    }
+  )
+  hms_smoke <- read_hms_shp(shp_paths, date_cols = date_cols)
 
   # Handle no rows/columns (replace with NULL)
   is_empty <- nrow(hms_smoke) == 0 | ncol(hms_smoke) == 0
@@ -146,7 +169,7 @@ combine_polygons <- function(polygon_data, .by = NULL, ...) {
     dplyr::filter(!sf::st_is_empty(.data$geometry)) |>
     sf::st_make_valid() |>
     dplyr::summarise(
-      .by = {{.by}},
+      .by = {{ .by }},
       geometry = .data$geometry |> sf::st_union(),
       ...
     )

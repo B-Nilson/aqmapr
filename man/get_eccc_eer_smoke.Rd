@@ -10,7 +10,8 @@ get_eccc_eer_smoke(
   data_dir = tempdir(),
   quiet = FALSE,
   cache = TRUE,
-  archive_days = 8
+  archive_days = 8,
+  timeout = max(getOption("timeout"), 300)
 )
 }
 \arguments{
@@ -28,6 +29,10 @@ See \code{check_eer_region()} for the full list of supported regions.}
 \item{archive_days}{Number of days of past model runs to allow.
 ECC only archives the most recent ~8 days of runs, so requesting an older
 \code{select_time} errors with a clear message. Defaults to 8.}
+
+\item{timeout}{Number of seconds to allow for downloading the shapefile zip.
+Defaults to \code{max(getOption("timeout"), 300)}. Increase this if downloads
+fail on a slow connection.}
 }
 \description{
 The Environmental Emergency Response group at Environment and Climate Change Canada (ECCC) provides smoke forecasts for Canada.
