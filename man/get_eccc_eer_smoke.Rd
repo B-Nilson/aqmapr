@@ -54,8 +54,10 @@ See \href{https://eer.cmc.ec.gc.ca/mandats/AutoSim/Fire/}{here} for more informa
 \details{
 Only the most recently posted run is available for the current day, and
 archived runs are kept for only the most recent ~8 days. EER shapefiles
-also omit the initial hour of each model run, so \code{select_time}s that fall
-exactly on a run start (00/06/12/18 UTC) return NULL with a warning.
+omit the initial hour of each model run (the model forecasts from the next
+hour onwards), so \code{select_time}s that fall exactly on a run start
+(00/06/12/18 UTC) are served from the previous run, which forecast that
+hour as its +6h output.
 }
 \examples{
 eer <- get_eccc_eer_smoke()

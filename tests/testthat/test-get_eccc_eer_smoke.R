@@ -49,6 +49,40 @@ test_that("corrupt cached zip self-heals on a live call", {
   expect_true(file.exists(local_path))
 })
 
+test_that("eer_model_run falls back to the previous run at run starts", {
+  run_start <- as.POSIXct("2026-08-10 00:00:00", tz = "UTC")
+
+  # Exact run start -> no forecast in this run, use the previous run's +6h
+  expect_identical(
+    eer_model_run(run_start),
+    run_start - lubridate::hours(6)
+  )
+
+  # Hours within a run's window come from that run
+  for (h in c(1, 2, 5)) {
+    expect_identical(
+      eer_model_run(run_start + lubridate::hours(h)),
+      run_start
+    )
+  }
+
+  # Hours after a run start belong to that run
+  for (h in c(7, 8, 11)) {
+    expect_identical(
+      eer_model_run(run_start + lubridate::hours(h)),
+      run_start + lubridate::hours(6)
+    )
+  }
+
+  # All four daily run starts shift back a run
+  for (h in c(0, 6, 12, 18)) {
+    expect_identical(
+      eer_model_run(run_start + lubridate::hours(h)),
+      run_start + lubridate::hours(h) - lubridate::hours(6)
+    )
+  }
+})
+
 test_that("make_eer_zip_dir builds correct urls", {
   today <- lubridate::today(tzone = "UTC")
 

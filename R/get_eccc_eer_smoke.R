@@ -7,8 +7,10 @@
 #' @details
 #' Only the most recently posted run is available for the current day, and
 #' archived runs are kept for only the most recent ~8 days. EER shapefiles
-#' also omit the initial hour of each model run, so `select_time`s that fall
-#' exactly on a run start (00/06/12/18 UTC) return NULL with a warning.
+#' omit the initial hour of each model run (the model forecasts from the next
+#' hour onwards), so `select_time`s that fall exactly on a run start
+#' (00/06/12/18 UTC) are served from the previous run, which forecast that
+#' hour as its +6h output.
 #'
 #' @param select_time POSIXct time to download data for
 #' @param region String specifying the EER region to download data for (e.g. "Canada").
@@ -87,8 +89,7 @@ get_eccc_eer_smoke <- function(
   select_time <- select_time |>
     lubridate::with_tz("UTC") |>
     lubridate::floor_date("hours")
-  model_run <- select_time |>
-    lubridate::floor_date("6 hours")
+  model_run <- eer_model_run(select_time)
   # The current day's forecast comes from the mutable `latest` alias, while
   # archived runs never change
   is_todays <- model_run >= (lubridate::today(tzone = "UTC") |> lubridate::as_datetime())
@@ -156,8 +157,7 @@ get_eccc_eer_smoke <- function(
     )
   }
 
-  # No shapefile for the requested hour (EER zips omit the run's initial
-  # hour), so treat it like an empty forecast
+  # No shapefile for the requested hour, so treat it like an empty forecast
   if (length(shp_paths) == 0) {
     warning("No layers in this run's EER smoke forecast, returning NULL.")
     return(NULL)
@@ -197,6 +197,23 @@ get_eccc_eer_smoke <- function(
       region = region
     ) |>
     dplyr::select(dplyr::all_of(desired_cols))
+}
+
+# Pick the model run whose forecast covers `select_time`. EER zips omit the
+# initial hour of each run (the model forecasts from the next hour onwards),
+# so a `select_time` that falls exactly on a run start (00/06/12/18 UTC) has
+# no forecast in that run; fall back to the previous run, which forecast that
+# hour as its +6h output.
+eer_model_run <- function(select_time) {
+  select_time <- select_time |>
+    lubridate::with_tz("UTC") |>
+    lubridate::floor_date("hours")
+  model_run <- select_time |>
+    lubridate::floor_date("6 hours")
+  if (model_run == select_time) {
+    model_run <- model_run - lubridate::hours(6)
+  }
+  model_run
 }
 
 #' Colour palette for EER smoke forecasts
