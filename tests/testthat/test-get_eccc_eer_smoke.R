@@ -16,6 +16,28 @@ test_that("basic case works", {
   )
 })
 
+test_that("shared-edge contour rings don't crash the overlay (regression)", {
+  # Fixture: ECCC EER Canada shapefile for 2026-08-09 02:00 UTC, filtered to
+  # the 500 and 5 ug/m3 bands. That hour's rings share edges, which used to
+  # make the single n-ary `sf::st_difference()` in remove_polygon_overlap()
+  # fail with GEOS "unable to assign free hole to a shell" and drop the whole
+  # smoke layer. Saved locally because the live archive only keeps ~8 days of
+  # runs; rebuild with data-raw/eer_bad_hour_fixture.R.
+  fixture <- readRDS(test_path("fixtures/eer_bad_hour.rds"))
+  dir <- tempfile("eer_fixture_")
+  dir.create(dir)
+  shp_path <- file.path(dir, "eer_bad_hour.shp")
+  sf::st_write(fixture, shp_path, quiet = TRUE)
+
+  eer <- read_eer_shp(shp_path) |> expect_no_error()
+
+  # Both bands survive, innermost first, with no empty geometries
+  expect_equal(nrow(eer), 2)
+  expect_equal(eer$Interval, c(500, 5))
+  expect_equal(as.numeric(eer$Height), c(1, 1))
+  expect_false(any(sf::st_is_empty(eer$geometry)))
+})
+
 test_that("corrupt cached zip self-heals on a live call", {
   # An archived NU run known to contain smoke
   select_time <- lubridate::with_tz(

@@ -235,12 +235,67 @@ remove_polygon_overlap <- function(polygon_data, equal_area_crs = 3857) {
       \(group_data, ...) {
         group_data |>
           sf::st_transform(equal_area_crs) |>
-          sf::st_difference() |>
+          remove_band_overlap() |>
           sf::st_transform(sf::st_crs(group_data))
       }
     ) |>
     dplyr::ungroup() |>
     sf::st_sf()
+}
+
+# Subtract, one band at a time, each band's overlap with the bands already
+# processed in its group. Callers arrange bands so the innermost (highest
+# concentration) come first, so each subsequent band becomes the ring outside
+# the union of the inner ones. This mirrors the n-ary `sf::st_difference()`
+# form (same per-band results, input row order kept, empty results dropped)
+# but drives GEOS with small pairwise inputs and `st_make_valid()` after every
+# step, which avoids the "unable to assign free hole to a shell" errors the
+# single n-ary call hits when adjacent contour rings share edges. If a step
+# still throws, that band is kept un-subtracted instead of failing the layer.
+remove_band_overlap <- function(band_data) {
+  n <- nrow(band_data)
+  if (n <= 1) {
+    return(band_data)
+  }
+  crs <- sf::st_crs(band_data)
+  pieces <- vector("list", n)
+  kept <- rep(FALSE, n)
+  inner_union <- NULL
+  for (i in seq_len(n)) {
+    piece <- sf::st_make_valid(band_data$geometry[i])
+    if (i > 1 && !is.null(inner_union)) {
+      union_inner <- tryCatch(
+        sf::st_make_valid(sf::st_union(inner_union)),
+        error = function(e) NULL
+      )
+      if (!is.null(union_inner)) {
+        piece <- tryCatch(
+          sf::st_make_valid(sf::st_difference(piece, union_inner)),
+          error = function(e) piece
+        )
+      }
+    }
+    # A fully-covered band makes GEOS return an empty (length-0) sfc rather
+    # than an sfc with an empty geometry, so check length as well as emptiness
+    if (length(piece) > 0 && !sf::st_is_empty(piece)) {
+      pieces[[i]] <- piece
+      kept[i] <- TRUE
+      inner_union <- if (is.null(inner_union)) {
+        piece
+      } else {
+        tryCatch(
+          sf::st_union(c(inner_union, piece)),
+          error = function(e) inner_union
+        )
+      }
+    }
+  }
+  if (!any(kept)) {
+    return(band_data[0, ])
+  }
+  band_data |>
+    dplyr::slice(which(kept)) |>
+    dplyr::mutate(geometry = sf::st_sfc(do.call(c, pieces[kept]), crs = crs))
 }
 
 # Should a cached download be re-fetched because it has gone stale?
